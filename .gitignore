@@ -24,7 +24,7 @@ secrets/
 
 # Datasets: large/raw/processed images and archives stay local.
 # Small documentation and reproducibility metadata ARE tracked:
-#   data/README.md, data/metadata/** (split manifests, class maps, counts)
+#   data/README.md, data/metadata/** (split manifests, class maps, counts, charts)
 data/*
 !data/README.md
 !data/metadata/
@@ -32,10 +32,15 @@ data/*
 datasets/
 data/raw/
 data/processed/
+data/inspection/
 *.zip
 *.tar
 *.tar.gz
 *.tgz
+# Sample grids embed dataset photographs — never commit them
+**/sample_grid*.png
+**/sample_grid*.jpg
+**/sample_grid*.jpeg
 
 # Trained model binaries and checkpoints stay local.
 # Small documentation and evaluation metadata ARE tracked:

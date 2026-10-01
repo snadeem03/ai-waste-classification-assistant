@@ -1,0 +1,37 @@
+{
+  "dataset": "RealWaste",
+  "source_page_url": "https://archive.ics.uci.edu/dataset/908/realwaste",
+  "source_download_url": "https://archive.ics.uci.edu/static/public/908/realwaste.zip",
+  "source_doi": "https://doi.org/10.24432/C5SS4G",
+  "retrieved_at_utc": "2026-10-01T21:44:03+00:00",
+  "retrieval_timestamp_note": "Timestamp records when THIS machine retrieved the archive. It does not prove the dataset content changed.",
+  "archive": {
+    "path": "data/raw/realwaste.zip",
+    "bytes": 688545323,
+    "action": "reused_existing_archive",
+    "downloaded_now": false
+  },
+  "checksum": {
+    "algorithm": "SHA-256",
+    "locally_computed_sha256": "1ede08b32358ee62065bcc1c8cb47a2ece04e8dff5b1fb53342bb8750895b2f3",
+    "publisher_checksum": null,
+    "publisher_checksum_note": "UCI's RealWaste page did not publish a checksum for the zip when this metadata was written. publisher_checksum is null on purpose \u2014 do not invent one."
+  },
+  "url_verification": {
+    "url": "https://archive.ics.uci.edu/static/public/908/realwaste.zip",
+    "http_status": 200,
+    "final_url": "https://archive.ics.uci.edu/static/public/908/realwaste.zip",
+    "content_type": null,
+    "content_disposition": null,
+    "zip_magic_ok": true,
+    "checked_at_utc": "2026-10-01T21:44:01+00:00"
+  },
+  "extraction": {
+    "action": "reused_existing_extraction",
+    "extracted_files": 0,
+    "rejected_paths": [],
+    "rejected_count": 0
+  },
+  "dataset_root": "data/raw/realwaste-main/RealWaste",
+  "git_policy": "Archives and extracted images stay ignored by Git. Only this small metadata file is tracked."
+}

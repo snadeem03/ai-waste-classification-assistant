@@ -1,0 +1,282 @@
+{
+  "generated_at_utc": "2026-10-01T21:42:40+00:00",
+  "class_mapping_path": "configs/class_mapping.json",
+  "class_order": [
+    "metal",
+    "organic",
+    "paper",
+    "plastic"
+  ],
+  "source_to_target": {
+    "Plastic": "plastic",
+    "Paper": "paper",
+    "Metal": "metal",
+    "Food Organics": "organic",
+    "Vegetation": "organic"
+  },
+  "excluded_source_categories": [
+    "Cardboard",
+    "Glass",
+    "Miscellaneous Trash",
+    "Textile Trash"
+  ],
+  "discovery": {
+    "dataset_root": "data/raw/realwaste-main/RealWaste",
+    "folders": [
+      {
+        "folder_name": "Cardboard",
+        "folder_path": "data/raw/realwaste-main/RealWaste/Cardboard",
+        "image_count": 461,
+        "matched_source_category": "Cardboard",
+        "mapped_target_class": null,
+        "is_excluded_source": true,
+        "is_mapped_for_training": false
+      },
+      {
+        "folder_name": "Food Organics",
+        "folder_path": "data/raw/realwaste-main/RealWaste/Food Organics",
+        "image_count": 411,
+        "matched_source_category": "Food Organics",
+        "mapped_target_class": "organic",
+        "is_excluded_source": false,
+        "is_mapped_for_training": true
+      },
+      {
+        "folder_name": "Glass",
+        "folder_path": "data/raw/realwaste-main/RealWaste/Glass",
+        "image_count": 420,
+        "matched_source_category": "Glass",
+        "mapped_target_class": null,
+        "is_excluded_source": true,
+        "is_mapped_for_training": false
+      },
+      {
+        "folder_name": "Metal",
+        "folder_path": "data/raw/realwaste-main/RealWaste/Metal",
+        "image_count": 790,
+        "matched_source_category": "Metal",
+        "mapped_target_class": "metal",
+        "is_excluded_source": false,
+        "is_mapped_for_training": true
+      },
+      {
+        "folder_name": "Miscellaneous Trash",
+        "folder_path": "data/raw/realwaste-main/RealWaste/Miscellaneous Trash",
+        "image_count": 495,
+        "matched_source_category": "Miscellaneous Trash",
+        "mapped_target_class": null,
+        "is_excluded_source": true,
+        "is_mapped_for_training": false
+      },
+      {
+        "folder_name": "Paper",
+        "folder_path": "data/raw/realwaste-main/RealWaste/Paper",
+        "image_count": 500,
+        "matched_source_category": "Paper",
+        "mapped_target_class": "paper",
+        "is_excluded_source": false,
+        "is_mapped_for_training": true
+      },
+      {
+        "folder_name": "Plastic",
+        "folder_path": "data/raw/realwaste-main/RealWaste/Plastic",
+        "image_count": 921,
+        "matched_source_category": "Plastic",
+        "mapped_target_class": "plastic",
+        "is_excluded_source": false,
+        "is_mapped_for_training": true
+      },
+      {
+        "folder_name": "Textile Trash",
+        "folder_path": "data/raw/realwaste-main/RealWaste/Textile Trash",
+        "image_count": 318,
+        "matched_source_category": "Textile Trash",
+        "mapped_target_class": null,
+        "is_excluded_source": true,
+        "is_mapped_for_training": false
+      },
+      {
+        "folder_name": "Vegetation",
+        "folder_path": "data/raw/realwaste-main/RealWaste/Vegetation",
+        "image_count": 436,
+        "matched_source_category": "Vegetation",
+        "mapped_target_class": "organic",
+        "is_excluded_source": false,
+        "is_mapped_for_training": true
+      }
+    ]
+  },
+  "count_comparison": {
+    "expected_source_counts_uci_card": {
+      "Cardboard": 461,
+      "Food Organics": 411,
+      "Glass": 420,
+      "Metal": 790,
+      "Miscellaneous Trash": 495,
+      "Paper": 500,
+      "Plastic": 921,
+      "Textile Trash": 318,
+      "Vegetation": 436
+    },
+    "expected_mapped_counts": {
+      "plastic": 921,
+      "paper": 500,
+      "metal": 790,
+      "organic": 847
+    },
+    "expected_selected_total": 3058,
+    "actual_original_counts": {
+      "Cardboard": 461,
+      "Food Organics": 411,
+      "Glass": 420,
+      "Metal": 790,
+      "Miscellaneous Trash": 495,
+      "Paper": 500,
+      "Plastic": 921,
+      "Textile Trash": 318,
+      "Vegetation": 436
+    },
+    "actual_mapped_counts": {
+      "metal": 790,
+      "organic": 847,
+      "paper": 500,
+      "plastic": 921
+    },
+    "actual_selected_total": 3058,
+    "unexpected_folders": [],
+    "missing_expected_source_folders": [],
+    "discrepancies": [],
+    "policy": "Counts reflect files actually inspected on disk. Discrepancies are reported, never edited to force a match."
+  },
+  "image_validation": {
+    "valid_image_count": 4752,
+    "invalid_image_count": 0,
+    "invalid_images": [],
+    "mode_distribution": {
+      "RGB": 4752
+    },
+    "size_distribution": {
+      "524x524": 4752
+    },
+    "note": "Invalid files are reported only. Nothing is deleted or silently skipped."
+  },
+  "excluded_category_report": [
+    {
+      "folder_name": "Cardboard",
+      "source_category": "Cardboard",
+      "image_count": 461,
+      "training_status": "excluded_from_initial_training"
+    },
+    {
+      "folder_name": "Glass",
+      "source_category": "Glass",
+      "image_count": 420,
+      "training_status": "excluded_from_initial_training"
+    },
+    {
+      "folder_name": "Miscellaneous Trash",
+      "source_category": "Miscellaneous Trash",
+      "image_count": 495,
+      "training_status": "excluded_from_initial_training"
+    },
+    {
+      "folder_name": "Textile Trash",
+      "source_category": "Textile Trash",
+      "image_count": 318,
+      "training_status": "excluded_from_initial_training"
+    }
+  ],
+  "expected_selected_total": 3058,
+  "actual_selected_total": 3058,
+  "chart_path": "data/metadata/class_distribution.png",
+  "sample_grid": {
+    "created": true,
+    "path": "data/inspection/sample_grid.png",
+    "seed": 42,
+    "samples_per_class_limit": 4,
+    "git_policy": "This PNG contains dataset photographs. It stays under data/inspection/ and is ignored by Git because dataset licensing is unresolved.",
+    "samples": [
+      {
+        "target_class": "metal",
+        "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_689.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "metal",
+        "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_201.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "metal",
+        "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_121.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "metal",
+        "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_783.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "organic",
+        "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_352.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "organic",
+        "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_324.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "organic",
+        "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_304.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "organic",
+        "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_227.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "paper",
+        "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_439.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "paper",
+        "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_146.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "paper",
+        "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_410.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "paper",
+        "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_440.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "plastic",
+        "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_921.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "plastic",
+        "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_601.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "plastic",
+        "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_18.jpg",
+        "status": "shown"
+      },
+      {
+        "target_class": "plastic",
+        "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_643.jpg",
+        "status": "shown"
+      }
+    ]
+  },
+  "timestamp_note": "generated_at_utc records when inspection ran on this machine. It is not evidence that the dataset content changed."
+}

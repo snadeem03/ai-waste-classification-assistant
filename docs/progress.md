@@ -117,4 +117,120 @@ Working TF stack note: TensorFlow 2.15.1 reports `keras 2.15.0`. Access via `imp
 
 ---
 
+## Milestone 3 — Reproducible dataset download and inspection
+
+**Date:** 2026-10-02  
+**Status:** Complete (download + inspection only; **no cleaning, splitting, augmentation, or training**)
+
+### What was done
+
+1. Preserved `.venv/`, `requirements.txt`, and `requirements.lock.txt` (unchanged).
+2. Verified official UCI download URL:
+   - Page: https://archive.ics.uci.edu/dataset/908/realwaste
+   - Archive: https://archive.ics.uci.edu/static/public/908/realwaste.zip
+   - Method: ranged GET returned HTTP 200 + ZIP magic bytes `PK\x03\x04`
+3. Created `src/download_data.py`:
+   - Streams to `data/raw/realwaste.zip.part`, then renames (partial files discarded on error)
+   - Computes **locally computed** SHA-256; `publisher_checksum` remains `null` with an explicit note (UCI does not publish one)
+   - Safe zip extraction (rejects path escape / zip-slip); 0 rejected paths on this run
+   - Reuses valid archive + extraction unless `--force`
+   - Writes `data/metadata/download_metadata.json`
+4. Created `src/inspect_data.py`:
+   - Reads `configs/class_mapping.json` as source of truth
+   - Discovers category folders on disk (does not assume names; actual root: `data/raw/realwaste-main/RealWaste`)
+   - Counts original vs mapped classes; reports excluded categories explicitly
+   - Validates every image with Pillow (readability, size, mode)
+   - Writes aggregate chart + JSON reports; sample grid is local-only (Git-ignored)
+5. Updated `.gitignore`:
+   - Still ignores archives, `data/raw/`, `data/processed/`, `data/inspection/`, `**/sample_grid*`
+   - Still tracks `data/README.md` and `data/metadata/**`
+6. Updated `data/README.md` with exact Windows commands using `.venv\Scripts\python.exe`.
+
+### Actual results (files inspected on disk)
+
+**Download**
+
+| Field | Value |
+|---|---|
+| Archive path | `data/raw/realwaste.zip` |
+| Archive size | 688,545,323 bytes |
+| Locally computed SHA-256 | `1ede08b32358ee62065bcc1c8cb47a2ece04e8dff5b1fb53342bb8750895b2f3` |
+| Publisher checksum | `null` (not published by UCI — not invented) |
+| Extracted files | 4,753 (4,752 images + directory entries) |
+| Unsafe paths rejected | 0 |
+| Dataset root discovered | `data/raw/realwaste-main/RealWaste` |
+
+**Category counts (actual = UCI card — no discrepancies)**
+
+| Source folder | Actual images | UCI card | Mapped class |
+|---|---:|---:|---|
+| Plastic | 921 | 921 | plastic |
+| Paper | 500 | 500 | paper |
+| Metal | 790 | 790 | metal |
+| Food Organics | 411 | 411 | organic |
+| Vegetation | 436 | 436 | organic |
+| **Selected total** | **3,058** | **3,058** | — |
+| Cardboard (excluded) | 461 | 461 | — |
+| Glass (excluded) | 420 | 420 | — |
+| Miscellaneous Trash (excluded) | 495 | 495 | — |
+| Textile Trash (excluded) | 318 | 318 | — |
+| **Full dataset total** | **4,752** | **4,752** | — |
+
+Mapped counts: metal=790, organic=847 (411+436), paper=500, plastic=921.
+
+**Image validation**
+
+| Check | Result |
+|---|---|
+| Valid images | 4,752 / 4,752 |
+| Invalid / unreadable | **0** |
+| Modes | all `RGB` |
+| Dimensions | all `524x524` |
+
+**Invalid-image findings:** none. Report still written to `data/metadata/invalid_images.json` (empty list) so the check is auditable.
+
+### Verification
+
+| Check | Result |
+|---|---|
+| Official URL verified before download | Yes (HTTP 200 + ZIP magic) |
+| `src/download_data.py` run | Success |
+| `src/inspect_data.py` run | Success |
+| Re-run without `--force` | Reuses archive; does not re-download |
+| Re-run extraction logic | Reuses existing extraction when dataset root already present |
+| `git check-ignore` `data/raw/realwaste.zip` | Ignored |
+| `git check-ignore` extracted image path | Ignored |
+| `git check-ignore` `data/inspection/sample_grid.png` | Ignored |
+| `git check-ignore` `data/metadata/*.json` / chart | **Not ignored** (trackable) |
+| Counts vs UCI card | Match exactly (0 discrepancies) |
+| Requirements files | Unchanged |
+| Dataset cleaning / split / train | **Not done** (out of scope for this milestone) |
+
+### Trackable artifacts committed
+
+- `src/download_data.py`
+- `src/inspect_data.py`
+- `data/README.md`
+- `data/metadata/download_metadata.json`
+- `data/metadata/inspection_summary.json`
+- `data/metadata/invalid_images.json`
+- `data/metadata/class_distribution.png`
+- `.gitignore` update
+- this progress entry
+
+### Not committed (ignored on purpose)
+
+- `data/raw/realwaste.zip` and extracted images
+- `data/inspection/sample_grid.png` (contains dataset photographs; licensing unresolved)
+
+### Blockers
+
+- None for this milestone. License discrepancy (UCI CC BY 4.0 vs authors’ CC BY-NC-SA 4.0) remains a documentation caution, not a download blocker.
+
+### Next milestone (not started)
+
+- **Milestone 4 — Data cleaning and stratified splitting:** optional quarantine of any future invalid files, build `data/metadata/split_manifest.json` (paths/labels only) with stratified train/val/test split, **no augmentation yet**, stop before training if the milestone says so.
+
+---
+
 *Append new milestones below this line.*
