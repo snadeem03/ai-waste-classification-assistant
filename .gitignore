@@ -22,8 +22,13 @@ secrets/
 .env.*
 !.env.example
 
-# Datasets (raw and processed) stay local; only small split manifests belong in Git
-data/
+# Datasets: large/raw/processed images and archives stay local.
+# Small documentation and reproducibility metadata ARE tracked:
+#   data/README.md, data/metadata/** (split manifests, class maps, counts)
+data/*
+!data/README.md
+!data/metadata/
+!data/metadata/**
 datasets/
 data/raw/
 data/processed/
@@ -32,7 +37,9 @@ data/processed/
 *.tar.gz
 *.tgz
 
-# Trained model binaries and checkpoints stay local
+# Trained model binaries and checkpoints stay local.
+# Small documentation and evaluation metadata ARE tracked:
+#   models/README.md, models/metadata/**
 *.keras
 *.h5
 *.hdf5
@@ -41,7 +48,10 @@ data/processed/
 *.onnx
 saved_models/
 checkpoints/
-models/
+models/*
+!models/README.md
+!models/metadata/
+!models/metadata/**
 logs/
 
 # Streamlit / Jupyter runtime

@@ -1,0 +1,23 @@
+{
+  "dataset": "RealWaste",
+  "source_url": "https://archive.ics.uci.edu/dataset/908/realwaste",
+  "source_to_target": {
+    "Plastic": "plastic",
+    "Paper": "paper",
+    "Metal": "metal",
+    "Food Organics": "organic",
+    "Vegetation": "organic"
+  },
+  "excluded_source_categories": [
+    "Cardboard",
+    "Glass",
+    "Miscellaneous Trash",
+    "Textile Trash"
+  ],
+  "class_order": ["metal", "organic", "paper", "plastic"],
+  "notes": [
+    "class_order is the fixed label order used for training, evaluation, and the Streamlit UI.",
+    "excluded_source_categories must never be added to class_order by accident; training code should assert that every mapped target is in class_order.",
+    "Food Organics and Vegetation are merged into the single target class organic."
+  ]
+}
