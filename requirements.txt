@@ -1,0 +1,14 @@
+# Direct project dependencies for AI Waste Classification Assistant
+# Python 3.11 on Windows
+# Install: .venv\Scripts\python.exe -m pip install -r requirements.txt
+#
+# tensorflow 2.15.x is pinned because it ships Keras 2 and works cleanly with
+# MobileNetV2 transfer learning tutorials and NumPy 1.x.
+tensorflow==2.15.1
+numpy<2
+streamlit==1.60.0
+pandas==3.0.6
+matplotlib==3.11.2
+scikit-learn==1.9.1
+pillow==12.3.0
+pytest==9.1.1

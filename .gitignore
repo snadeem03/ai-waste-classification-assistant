@@ -1,0 +1,48 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python caches and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Secrets and local credentials (never commit)
+secrets/
+*.env
+.env.*
+!.env.example
+
+# Datasets (raw and processed) stay local; only small split manifests belong in Git
+data/
+datasets/
+data/raw/
+data/processed/
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# Trained model binaries and checkpoints stay local
+*.keras
+*.h5
+*.hdf5
+*.pb
+*.tflite
+*.onnx
+saved_models/
+checkpoints/
+models/
+logs/
+
+# Streamlit / Jupyter runtime
+.streamlit/secrets.toml
