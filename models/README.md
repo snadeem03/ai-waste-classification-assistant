@@ -6,7 +6,9 @@
 |---|---|---|
 | `models/README.md` | **Yes** | This file — explains layout and rules |
 | `models/metadata/` | **Yes** (small files only) | Training run notes, label order copy, evaluation summary (JSON/CSV/MD) — **no weight binaries** |
-| `models/mobilenetv2_waste.keras` (or similar) | **No** | Saved Keras model for Streamlit inference |
+| `models/metadata/runs/<run_id>/` | **Yes** | Small per-run reports exported by `src/train.py --export-reports`: `run_metadata.json`, `class_order.json`, `history.csv`, `environment_freeze.txt`, `plots/*.png` |
+| `models/runs/baseline_<timestamp>/` | **No** | Full local run directory (default `--output-dir`): `best_model.keras`, logs, everything — ignored by `models/*` |
+| `models/best_model.keras` (or similar) | **No** | Saved Keras model restored from a Colab run zip |
 | Checkpoints / SavedModel folders | **No** | Intermediate training artifacts |
 | TensorBoard logs | **No** | Training curves (local only) |
 
@@ -18,11 +20,18 @@
 
 ## Current status
 
-**No trained model exists yet.** There are no weights, no accuracy numbers, and no Streamlit demo that loads a real classifier. Training is a later milestone per [`docs/progress.md`](../../docs/progress.md).
+**No trained model exists yet.** The baseline training workflow
+(`src/train.py` + `notebooks/train_colab.ipynb`) was prepared in milestone 6
+and verified with synthetic images and structural tests, but it has **not**
+been executed in Google Colab — there are no weights and no accuracy numbers.
+See [`docs/progress.md`](../../docs/progress.md).
 
 ## When a model is trained later
 
-1. Save the binary under `models/` (ignored by Git).
-2. Record honest metrics under `models/metadata/` (tracked).
+1. Run the Colab notebook (or `src/train.py` locally) and keep the run
+   directory (`best_model.keras` lives there, ignored by Git).
+2. Export the small reports into `models/metadata/runs/<run_id>/` (tracked)
+   and record honest metrics there — copied from that run's own
+   `run_metadata.json`, never invented.
 3. Document class order identical to [`configs/class_mapping.json`](../../configs/class_mapping.json): `["metal", "organic", "paper", "plastic"]`.
 4. Never invent or copy accuracy figures from other projects.

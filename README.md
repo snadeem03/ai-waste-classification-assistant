@@ -1,6 +1,6 @@
 # AI Waste Classification Assistant
 
-College AIML Project-Based Learning (PBL) — **status: dataset downloaded, splits created, preprocessing + MobileNetV2 model built; model not trained yet.**
+College AIML Project-Based Learning (PBL) — **status: dataset downloaded, splits created, preprocessing + MobileNetV2 model built, Colab baseline training workflow prepared; model not trained yet.**
 
 ## What this project will do
 
@@ -22,7 +22,7 @@ The planned approach:
 
 ## Important honesty note
 
-**This repository has not trained a model yet.** Milestones 1–4 defined scope, downloaded RealWaste, and wrote duplicate-checked 70/15/15 split manifests. Milestone 5 added the image input pipeline and the MobileNetV2 model *construction* (verified with a forward pass only). Accuracy figures, a trained model, and a working demo app will be added in later milestones — they are not claimed here.
+**This repository has not trained a model yet.** Milestones 1–4 defined scope, downloaded RealWaste, and wrote duplicate-checked 70/15/15 split manifests. Milestone 5 added the image input pipeline and the MobileNetV2 model *construction* (verified with a forward pass only). Milestone 6 added the frozen-base training workflow (`src/train.py`) and a Google Colab notebook (`notebooks/train_colab.ipynb`) — the workflow is verified with synthetic images and syntax/structure checks, but the notebook has **not** been executed in Colab. Accuracy figures, a trained model, and a working demo app will be added in later milestones — they are not claimed here.
 
 ## Project documentation
 
@@ -73,9 +73,11 @@ ai-waste-classification-assistant/
 │   ├── inspect_data.py        # counts, mapping check, image validation
 │   ├── prepare_data.py        # duplicate checks + stratified split manifests
 │   ├── data_pipeline.py       # manifest loading + tf.data input pipeline
-│   └── model.py               # MobileNetV2 model construction
+│   ├── model.py               # MobileNetV2 model construction
+│   └── train.py               # frozen-base baseline training CLI (Colab)
 ├── app/                       # Streamlit UI (future)
-├── notebooks/                 # optional exploration (future)
+├── notebooks/
+│   └── train_colab.ipynb      # Colab baseline training (not yet executed in Colab)
 └── tests/                     # pytest checks (synthetic images; no download)
 ```
 
@@ -113,6 +115,9 @@ Verify imports:
 
 # Only the milestone-5 preprocessing/model tests
 .venv\Scripts\python.exe -m pytest tests\test_data_pipeline.py tests\test_model.py -v
+
+# Milestone-6 training workflow + Colab notebook structure
+.venv\Scripts\python.exe -m pytest tests\test_train.py tests\test_notebook.py -v
 
 # Real-data smoke check with printed batch/model shapes (needs data\raw\ + manifests)
 .venv\Scripts\python.exe -m pytest tests\test_smoke_real_data.py -v -s
@@ -155,6 +160,69 @@ Five things worth understanding:
   graph runs: shapes line up, probabilities sum to 1, weights load. The
   classification head still has random weights, so its predictions are
   meaningless until `model.fit` runs in the next milestone.
+
+## Baseline training on Google Colab (milestone 6)
+
+| File | Purpose |
+|---|---|
+| [`src/train.py`](src/train.py) | Frozen-base baseline training CLI (reuses `data_pipeline` + `model`; never opens `test.csv`) |
+| [`notebooks/train_colab.ipynb`](notebooks/train_colab.ipynb) | Step-by-step Colab run: environment → clone → data → validate manifests → train → package |
+| [`tests/test_train.py`](tests/test_train.py) | Synthetic workflow tests (tiny images, `weights=None` — **not** accuracy tests) |
+| [`tests/test_notebook.py`](tests/test_notebook.py) | Notebook JSON + cell syntax + required-topic checks |
+
+### How to run it (Google Colab)
+
+1. Upload `notebooks/train_colab.ipynb` to Colab (GitHub tab also works).
+2. `Runtime → Change runtime type → T4 GPU`.
+3. Run the cells in order. They inspect the runtime first and install
+   TensorFlow **only if needed** (never `requirements.lock.txt` — that file has
+   Windows-only pins); if anything was installed, the guarded cell restarts
+   the runtime for you, after which you re-run Step 1–2 (they then say
+   "nothing to install") and continue.
+4. The notebook mounts Drive, clones this repo (pin `REVISION` to a commit SHA
+   for a reproducible run), downloads/inspects RealWaste with the existing
+   scripts, and **validates** the committed manifests against
+   `split_summary.json` (it never regenerates them).
+5. Training runs `src/train.py` with the `configs/training.json` settings
+   (seed 42, batch 16, lr 0.001, max 15 epochs, early stopping on
+   `val_loss`) and writes everything to
+   **`Drive/MyDrive/ai-waste-classification-assistant-outputs/runs/baseline_<timestamp>/`**
+   (`best_model.keras`, `history.csv`, `run_metadata.json`, `plots/`, logs).
+6. The notebook exports the small reports into the clone, then zips both
+   bundles into the same Drive folder: `reports_<run>.zip` (Git-trackable)
+   and `model_<run>.zip` (stays out of Git).
+
+### Bringing results back to this machine
+
+Download both zips from Drive, then in PowerShell:
+
+```powershell
+# restore Git-trackable reports
+Expand-Archive .\reports_baseline_<stamp>.zip -DestinationPath .\models\metadata\runs\baseline_<stamp>
+
+# keep the weights next to the other ignored binaries (stays out of Git)
+Expand-Archive .\model_baseline_<stamp>.zip -DestinationPath .\models
+```
+
+**Pending verification — run before claiming the model loads locally** (not
+yet run: no `.keras` file exists in this repo until a real Colab run):
+
+```powershell
+.venv\Scripts\python.exe -c "import tensorflow as tf; m = tf.keras.models.load_model(r'models\best_model.keras'); print(m.output_shape)"
+```
+
+### What the workflow guarantees (and does not)
+
+- **No test-set access:** training opens only `train.csv` + `validation.csv`;
+  `run_metadata.json` records `data.test_manifest_used: false`.
+- **Honest artifacts:** metrics, environment (`pip freeze`), git commit, seed
+  settings, and manifest checksums are written by the run itself — nothing is
+  typed by hand, and an interrupted run is marked as such.
+- **Reports ≠ model:** the exported `models/metadata/runs/<run_id>/` folder
+  never contains weights; `.gitignore` blocks `*.keras` and `*.zip`.
+- **Not yet executed in Colab:** the notebook is validated locally (JSON,
+  cell syntax, topic tests) but no training has been run in this milestone,
+  so **no accuracy numbers exist yet**.
 
 ## Git workflow
 

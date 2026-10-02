@@ -411,4 +411,67 @@ Honest notes on the smoke output: the validation batch shows `1..1` because vali
 
 ---
 
+## Milestone 6 — Reproducible baseline training workflow (Colab)
+
+**Date:** 2026-10-02  
+**Status:** Complete as a *workflow* — prepared and verified locally; **no training executed in Colab and no accuracy numbers** (the notebook has not been run in Google Colab)
+
+### What was done
+
+1. Preserved `.venv/`, `requirements.txt`, `requirements.lock.txt`, all dataset images, and all earlier milestone files (only the untracked `src/train.py` / `tests/test_train.py` from before were rewritten as this milestone's deliverable).
+2. Refactored `src/train.py` into the baseline training CLI:
+   - **Reuses** `src/data_pipeline.py` (config/class-order/manifest loading, `make_dataset`) and `src/model.py` (`build_waste_classifier`) instead of duplicating their logic — proven by tests with call-count spies.
+   - Opens **only** `train.csv` + `validation.csv` (`splits=("train", "validation")`); `test.csv` is never opened (tests: spy on `load_splits`, and a deliberately broken/absent `test.csv` case).
+   - Per-run output directory `models/runs/baseline_<timestamp>/` (overridable with `--output-dir`, which Colab points at Drive).
+   - Callbacks: `HistoryCsvCallback` (appends + fsyncs each epoch so completed epochs survive interruption), `EarlyStopping(monitor="val_loss", patience=3, restore_best_weights=True)`, `ModelCheckpoint(save_best_only=True)` → `best_model.keras`.
+   - Writes honest per-run artifacts: `run_metadata.json` (git commit + dirty flag, environment incl. `pip freeze`, seed/determinism record with explicit limits, manifest SHA-256s, parameter counts, `data.test_manifest_used: false`, honesty notes), `class_order.json`, `history.csv`, `plots/*.png`, `environment_freeze.txt`.
+   - `--export-reports RUN_DIR` copies only the small report files to `models/metadata/runs/<run_id>/` — never a model binary.
+   - Clear failure modes: missing config keys → `ValueError` listing them; missing manifest → `FileNotFoundError` naming the path; ImageNet weight failure → `RuntimeError` (no silent random-weight fallback).
+   - CLI flags: `--config --epochs --batch-size --learning-rate --image-size --dropout --seed --class-weights {off,balanced} --weights {imagenet,none} --output-dir --no-early-stopping --no-export-reports --export-reports`.
+3. Created `notebooks/train_colab.ipynb` (29 cells): environment inspection **before** any install (never installs `requirements.lock.txt` — Windows-only pins; repo-tested `tensorflow==2.15.1` pin on Python 3.11, otherwise newest TF with the difference recorded), guarded runtime restart, Drive mount, pinned `REVISION`, idempotent clone, dataset download/inspection via the existing scripts, **manifest validation** against `split_summary.json` (checksums + row counts; regeneration explicitly refused), accelerator check, training subprocess with `PYTHONHASHSEED`, curve/best-metric display read from the run's own files, report+model zips to Drive, restore/verify commands, reproducibility limits, and explicit honesty statements.
+4. Tests: rewrote `tests/test_train.py` (14 synthetic tests, `weights=None`, tiny images) and created `tests/test_notebook.py` (5 structural tests: JSON validity, `ast.parse` of every code cell, required topics, no lock-file install in code, no accuracy claims).
+5. **Bug found and fixed during verification:** `main()`'s final summary read `metadata['training']['epochs_completed']`, but that key lives under `metadata['configuration']` — a *successful* training run would have crashed after saving everything. Fixed to read `configuration.*` and guarded by the new regression test `test_main_prints_run_summary_without_training` (mocked run, asserts exit 0 + summary lines).
+6. Updated `README.md` (status, layout, test commands, step-by-step Colab section, restore + pending verification commands), `models/README.md` (runs/ vs metadata/runs/ layout), and this file.
+
+### Verification (actual runs)
+
+| Check | Result |
+|---|---|
+| `.venv\Scripts\python.exe -m pytest -v` (full suite) | **51 passed**, 0 failed (164.6 s) |
+| `tests/test_train.py` | **14 passed** (synthetic workflow, `weights=None` — not accuracy tests) |
+| `tests/test_notebook.py` | **5 passed** (valid JSON, all code cells parse, required topics, no lock install, no accuracy claims) |
+| Prior suites unchanged | data_pipeline 14, model 10, prepare_data 7, smoke_real_data 1 — all pass |
+| `src/train.py --help` | exit 0 |
+| Broken config (missing keys) | `ValueError: training.json is missing required keys: [...]` |
+| Missing manifest | `FileNotFoundError: Manifest not found: ...train.csv` |
+| `main()` run summary (mocked run) | exit 0; prints epochs/best/git lines (regression test for the fixed bug) |
+| Notebook executed in Google Colab | **No — not done in this milestone** |
+| Model trained / accuracy numbers | **None — deliberately not claimed** |
+
+Note on test noise: the synthetic `model.fit` loops emit `DeprecationWarning: non-integer arguments to randrange()` from Python's `random` module via TensorFlow 2.15 internals — pre-existing TF/Python 3.11 behaviour, not caused by this milestone's code.
+
+### Trackable artifacts committed
+
+- `src/train.py` (refactored baseline training CLI)
+- `tests/test_train.py` (rewritten), `tests/test_notebook.py` (new)
+- `notebooks/train_colab.ipynb` (new)
+- `README.md`, `models/README.md`, `docs/progress.md` (this entry)
+
+### Limitations / honest limits
+
+- The Colab notebook has **not** been executed in Google Colab; local verification covers JSON validity, Python syntax of every cell, and topic presence — not real execution.
+- No `model.fit` on real data was run in this milestone; the synthetic runs (tiny images, `weights=None`) verify the *workflow*, never model quality.
+- Reproducibility across machines is bounded by hardware/library differences; each run records its own environment and explicit determinism limits instead of promising bit-identical results.
+- Class weights default to `off` (config not changed); `--class-weights balanced` is available and tested.
+
+### Blockers
+
+- None locally. The first real Colab run requires the student's Google account and a GPU runtime — that is the next step, not a blocker for this milestone.
+
+### Next milestone (not started)
+
+- **Milestone 7 — First real baseline run and honest metrics:** execute `notebooks/train_colab.ipynb` in Colab (or `src/train.py` locally), bring back `reports_*.zip` + `model_*.zip`, run the pending local load verification (`.venv\Scripts\python.exe -c "import tensorflow as tf; m = tf.keras.models.load_model(r'models\best_model.keras'); print(m.output_shape)"`), record the run's real validation metrics under `models/metadata/runs/<run_id>/`, and only then consider test-set evaluation / the Streamlit app as separate milestones.
+
+---
+
 *Append new milestones below this line.*
