@@ -90,9 +90,14 @@ Useful flags:
 # Explicit seed (default is already 42)
 .venv\Scripts\python.exe src\prepare_data.py --seed 42
 
-# Optional known-related-photo groups (keeps each group inside one split)
-.venv\Scripts\python.exe src\prepare_data.py --groups data\metadata\groups.example.json
+# Optional known-related-photo groups (keeps each group inside one split).
+# The groups file is supplied by you; no example file is committed because
+# group identities must come from real known relationships, never invented.
+.venv\Scripts\python.exe src\prepare_data.py --groups path\to\my_groups.json
 ```
+
+The groups file may be either `{"path_to_group": {"data/raw/.../a.jpg": "pair_1", ...}}`
+or a list of `{"path": ..., "group_id": ...}` entries. Paths use forward slashes.
 
 What this writes under `data/metadata/` (tracked, small text only):
 
