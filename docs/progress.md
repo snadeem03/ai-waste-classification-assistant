@@ -327,4 +327,88 @@ Split totals: train=2141 (70.0%), validation=458 (15.0%), test=459 (15.0%) — r
 
 ---
 
+## Milestone 5 — Preprocessing, input pipeline, and MobileNetV2 construction
+
+**Date:** 2026-10-02  
+**Status:** Complete (preprocessing + model construction + forward-pass verification only; **no `model.fit`, no fine-tuning, no test-set evaluation, no Streamlit**)
+
+### What was done
+
+1. Preserved `.venv/`, `requirements.txt`, `requirements.lock.txt`, all dataset images, and the milestone-4 split manifests (unchanged).
+2. Created `configs/training.json`: seed `42`, image size `224`, batch size `16`, learning rate `0.001`, planned maximum baseline epochs `15`, dropout `0.2`. It stores only the **path** to `configs/class_mapping.json` — the class order is not copied, so the two files can never disagree.
+3. Created `src/data_pipeline.py`:
+   - Loads `train.csv` / `validation.csv` with explicit `path_root` resolution (repo root on Windows, wherever `data/` sits on Colab); relative forward-slash paths stay portable.
+   - Validates required columns, nonempty splits, unknown targets, `class_index` ↔ `class_order` consistency, and file existence (clear errors, no silent skips).
+   - Decodes to RGB, resizes to 224×224, emits float32 on the **0–255** scale and integer labels for sparse cross-entropy.
+   - Training data shuffled with seed 42; validation order fixed (manifest order); final partial batch kept (`drop_remainder=False`); bounded `prefetch(2)`; no dataset-wide RAM cache unless `cache=True` is passed explicitly.
+   - Defaults open only train + validation — **test images stay unopened this milestone** (covered by a test using a deliberately broken `test.csv`).
+4. Created `src/model.py`:
+   - Input `(224, 224, 3)`; built-in `RandomFlip` + `RandomRotation(0.05)` inside the model, active only when `training=True`.
+   - MobileNetV2 preprocessing applied **exactly once** inside the graph (0–255 → [-1, 1]); exposed as `preprocess_mobilenet_v2()` so tests can prove 0 → -1 and 255 → 1.
+   - `MobileNetV2(include_top=False, weights="imagenet")`, whole base frozen, called with `training=False` to keep frozen BatchNorm in inference mode; GAP → dropout → 4-class softmax.
+   - Compiled with Adam + `SparseCategoricalCrossentropy` + accuracy.
+   - `weights=None` is allowed only as an explicit argument; an ImageNet load failure raises `RuntimeError` and is never silently replaced with random weights (tested with a simulated failure).
+5. Created 25 new tests: `tests/test_data_pipeline.py` (14), `tests/test_model.py` (10), `tests/test_smoke_real_data.py` (1, skips without the dataset).
+6. Updated `README.md` (status, layout, test commands, milestone-5 explanations) and this file.
+
+### Test results (actual run, `.venv\Scripts\python.exe -m pytest -v`)
+
+| Suite | Result |
+|---|---|
+| `tests/test_data_pipeline.py` | **14 passed** |
+| `tests/test_model.py` | **10 passed** |
+| `tests/test_smoke_real_data.py` | **1 passed** (real data + ImageNet weights) |
+| `tests/test_prepare_data.py` (milestone 4) | **7 passed** |
+| `tests/test_train.py` (pre-existing, untracked) | **6 passed** |
+| **Total** | **38 passed**, 0 failed (80.7 s) |
+
+Covered: input shape/RGB/float32/label indices, invalid labels and missing files failing clearly, repeatable validation order, seed-deterministic training shuffle, partial-batch retention, `(batch, 4)` output, finite softmax rows summing to 1, preprocessing applied exactly once (0 → -1, 255 → 1), frozen base, stable repeated inference with `training=False`, plain `load_model` round trip with no custom objects, and explicit-weights policy.
+
+### Real-data smoke check (actual output, no fitting)
+
+Command: `.venv\Scripts\python.exe -m pytest tests\test_smoke_real_data.py -v -s`
+
+| Check | Result |
+|---|---|
+| Train batch | `(16, 224, 224, 3)` float32, pixels `0.0 .. 255.0` |
+| Train labels | `[0, 3, 2, 1, 1, 2, 0, 0, 0, 3, 0, 0, 1, 1, 2, 0]` — range `0..3` |
+| Validation batch | `(16, 224, 224, 3)` float32, labels range `1..1` |
+| ImageNet weights | **Loaded** from the local Keras cache (`~/.keras/models/mobilenet_v2_weights_tf_dim_ordering_tf_kernels_1.0_224_no_top.h5`) |
+| Model output shape | `(16, 4)` |
+| Output row sums | `min=1.000000 max=1.000000` |
+| Parameters | trainable `5,124` / non-trainable `2,257,984` / total `2,263,108` |
+| Base frozen | `True` |
+| `model.fit` called | **No** |
+
+Honest notes on the smoke output: the validation batch shows `1..1` because validation runs in deterministic manifest order (path-sorted, so the first rows are all `organic`) — full-epoch evaluation is unaffected, and only training is shuffled. The head still has random weights: a successful forward pass proves the graph works, **not** that anything is trained.
+
+### Key concepts documented (README + code comments)
+
+- Resizing (shape 224×224) vs normalization (0–255 → [-1, 1] once, inside the model).
+- Augmentation is training-only so validation/inference stay deterministic.
+- The base is frozen to protect pretrained ImageNet features from a small dataset.
+- Class order lives only in `configs/class_mapping.json` to prevent silent label renames.
+- A forward pass only proves the graph runs; training happens next milestone.
+
+### Previously untracked files (status)
+
+- `src/train.py` and `tests/test_train.py` — **left untracked and unchanged**. Their content is the *training loop* (`model.fit`, early stopping, validation/test evaluation, model saving), which milestone 5 explicitly excludes ("stop before `model.fit`"). Their useful ideas (manifest checks, RGB decode, frozen base) were re-implemented within this milestone's scope in `src/data_pipeline.py` and `src/model.py`. The 6 local tests in `tests/test_train.py` pass, but the file duplicates logic now split across the new modules; it should be refactored to import them when the training milestone lands.
+
+### Limitations
+
+- No training, no metrics, no evaluation claims in this milestone — by design.
+- Unit tests build the model with `weights=None` (offline). The pretrained check ran locally because ImageNet weights were already cached; on a machine with no cache and no network the smoke test **skips and reports pending** rather than passing with random weights.
+- Data loading keeps paths in host memory and prefetches 2 batches; it does not cache decoded images in RAM (by design).
+- Augmentation randomness is drawn per call from TensorFlow's RNGs; the training milestone should call `tf.keras.utils.set_random_seed(seed)` before `model.fit` for end-to-end reproducibility.
+
+### Blockers
+
+- None.
+
+### Next milestone (not started)
+
+- **Milestone 6 — Colab baseline training:** refactor `src/train.py` to reuse `src/data_pipeline.py` + `src/model.py`, run `model.fit` on the train split with validation monitoring (frozen base, batch 16, lr 0.001, max 15 epochs, seed 42), save the `.keras` model (Git-ignored) and write honest metrics under `models/metadata/`. Stop before fine-tuning, test-set evaluation, or the Streamlit app if those are separate milestones.
+
+---
+
 *Append new milestones below this line.*

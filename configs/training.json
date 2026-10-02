@@ -1,0 +1,17 @@
+{
+  "seed": 42,
+  "image_size": 224,
+  "batch_size": 16,
+  "learning_rate": 0.001,
+  "baseline_max_epochs": 15,
+  "dropout": 0.2,
+  "class_mapping_path": "configs/class_mapping.json",
+  "notes": [
+    "class_order is intentionally NOT stored here: it is loaded at runtime from class_mapping_path so a stale duplicate copy can never disagree with configs/class_mapping.json.",
+    "image_size 224 matches MobileNetV2's native input resolution.",
+    "batch_size 16 is small enough for CPU training; raise it if a GPU is available.",
+    "learning_rate 0.001 is the Adam default used for the frozen-base baseline.",
+    "baseline_max_epochs is the planned maximum for the baseline run; early stopping may end sooner.",
+    "dropout 0.2 regularizes the four-class head."
+  ]
+}
