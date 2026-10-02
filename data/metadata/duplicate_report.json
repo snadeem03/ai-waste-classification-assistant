@@ -1,0 +1,40 @@
+{
+  "generated_at_utc": "2026-10-02T09:52:17+00:00",
+  "dataset_root": "data/raw/realwaste-main/RealWaste",
+  "class_mapping_path": "configs/class_mapping.json",
+  "class_order": [
+    "metal",
+    "organic",
+    "paper",
+    "plastic"
+  ],
+  "selected_source_counts": {
+    "Food Organics": 411,
+    "Metal": 790,
+    "Paper": 500,
+    "Plastic": 921,
+    "Vegetation": 436
+  },
+  "selected_record_count": 3058,
+  "invalid_image_count": 0,
+  "invalid_images": [],
+  "duplicate_summary": {
+    "has_conflicts": false,
+    "same_label_duplicate_group_count": 0,
+    "duplicate_excluded_count": 0,
+    "unique_decoded_hashes": 3058,
+    "unique_file_hashes": 3058
+  },
+  "same_label_duplicate_groups": [],
+  "excluded_duplicate_paths": [],
+  "conflicts": [],
+  "limitations": [
+    "Exact SHA-256 file hashes only catch byte-identical files.",
+    "Decoded RGB hashes catch identical pixel content even if JPEG metadata differs.",
+    "Neither check finds near-duplicates, rephotographs of the same object, or heavily edited copies.",
+    "Optional group metadata can keep known related photos in one split; groups are never invented."
+  ],
+  "group_metadata_path": null,
+  "grouped_record_count": 0,
+  "policy": "Source images are never deleted or relabeled. Same-label exact duplicates keep one deterministic representative. Conflicting labels block split generation."
+}

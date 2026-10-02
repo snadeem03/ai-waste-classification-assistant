@@ -1,0 +1,93 @@
+{
+  "generated_at_utc": "2026-10-02T09:52:17+00:00",
+  "status": "ok",
+  "seed": 42,
+  "split_method": "stratified_two_stage_70_15_15",
+  "target_fractions": {
+    "train": 0.7,
+    "validation": 0.15,
+    "test": 0.15
+  },
+  "class_order": [
+    "metal",
+    "organic",
+    "paper",
+    "plastic"
+  ],
+  "class_index": {
+    "metal": 0,
+    "organic": 1,
+    "paper": 2,
+    "plastic": 3
+  },
+  "original_selected_counts": {
+    "Food Organics": 411,
+    "Metal": 790,
+    "Paper": 500,
+    "Plastic": 921,
+    "Vegetation": 436
+  },
+  "original_selected_total": 3058,
+  "invalid_excluded_count": 0,
+  "duplicate_excluded_count": 0,
+  "retained_count": 3058,
+  "retained_per_class": {
+    "metal": 790,
+    "organic": 847,
+    "paper": 500,
+    "plastic": 921
+  },
+  "split_counts": {
+    "train": {
+      "metal": 553,
+      "organic": 593,
+      "paper": 350,
+      "plastic": 645
+    },
+    "validation": {
+      "metal": 118,
+      "organic": 127,
+      "paper": 75,
+      "plastic": 138
+    },
+    "test": {
+      "metal": 119,
+      "organic": 127,
+      "paper": 75,
+      "plastic": 138
+    }
+  },
+  "split_totals": {
+    "train": 2141,
+    "validation": 458,
+    "test": 459
+  },
+  "group_proportion_deviations": [],
+  "leakage_check": {
+    "ok": true,
+    "errors": [],
+    "path_count": 3058,
+    "unique_path_count": 3058,
+    "unique_file_hashes": 3058,
+    "unique_decoded_hashes": 3058,
+    "grouped_path_count": 0
+  },
+  "label_config_check": {
+    "ok": true,
+    "errors": [],
+    "records_checked": 3058
+  },
+  "manifest_checksums_sha256": {
+    "train.csv": "f76d789b7bc6a1ac8fa168ee824ab975e44bfa29df19df8327aa9f7f9fa3abbc",
+    "validation.csv": "77423bfc11f37df0bb836210f4866543857b56bfe73572054438902ecae6997d",
+    "test.csv": "74494c13f6d9be7f1fc3a00124a7138035c96d866abe96cfa2eefc84d7530c2d"
+  },
+  "manifest_paths": {
+    "train": "data/metadata/train.csv",
+    "validation": "data/metadata/validation.csv",
+    "test": "data/metadata/test.csv"
+  },
+  "duplicate_report": "data/metadata/duplicate_report.json",
+  "why_split_before_augmentation": "Augmentation must run only on training images. If augmented copies of a test photo were created before splitting, the model could see test content during training (leakage) and report inflated accuracy.",
+  "timestamp_note": "generated_at_utc records when this script ran. CSV manifests are deterministic and contain no timestamps so re-runs can be compared byte-for-byte."
+}

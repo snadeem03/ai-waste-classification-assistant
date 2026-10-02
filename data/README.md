@@ -5,7 +5,7 @@
 | Path | Tracked in Git? | Purpose |
 |---|---|---|
 | `data/README.md` | **Yes** | This file — explains layout and rules |
-| `data/metadata/` | **Yes** (small files only) | Download checksum, inspection summary, invalid-image report, class-distribution chart (no photos) |
+| `data/metadata/` | **Yes** (small files only) | Download/inspection/duplicate/split reports and CSV manifests (no photos) |
 | `data/raw/realwaste.zip` | **No** | Official UCI archive (~656 MB) |
 | `data/raw/<extracted folders>/` | **No** | Extracted RealWaste category images |
 | `data/inspection/sample_grid.png` | **No** | Labeled sample grid (contains dataset photos; licensing unresolved) |
@@ -78,15 +78,61 @@ What this writes:
 - `data/metadata/class_distribution.png` (tracked) — aggregate bar chart, no photographs
 - `data/inspection/sample_grid.png` (**ignored**) — labeled photos for local viewing only
 
-### 3. Confirm Git ignore behavior (optional)
+### 3. Duplicate checks + stratified train/val/test splits
+
+```powershell
+.venv\Scripts\python.exe src\prepare_data.py
+```
+
+Useful flags:
+
+```powershell
+# Explicit seed (default is already 42)
+.venv\Scripts\python.exe src\prepare_data.py --seed 42
+
+# Optional known-related-photo groups (keeps each group inside one split)
+.venv\Scripts\python.exe src\prepare_data.py --groups data\metadata\groups.example.json
+```
+
+What this writes under `data/metadata/` (tracked, small text only):
+
+| File | Purpose |
+|---|---|
+| `train.csv` | Training manifest (paths + labels + hashes) |
+| `validation.csv` | Validation manifest |
+| `test.csv` | Test manifest |
+| `duplicate_report.json` | Duplicate groups, exclusions, any label conflicts |
+| `split_summary.json` | Counts, seed, method, per-class split sizes, manifest SHA-256s |
+
+Manifest columns: `path`, `target`, `class_index`, `file_sha256`, `decoded_sha256`, `group_id`.
+
+**Why split before augmentation**
+
+Augmentation (flips, crops, color jitter) must run **only on training images**. If augmented copies of a test photo were created *before* splitting, the model could see near-identical test content during training. That is **data leakage** — validation/test accuracy looks better than it really is. So this milestone writes path manifests first; a later training milestone will augment train rows only.
+
+**What this script does not do**
+
+- Does not copy images into `train/` / `val/` / `test/` folders
+- Does not delete or relabel source photos
+- Does not augment or train
+- Exact-duplicate checks do **not** catch every near-duplicate or rephoto of the same object
+
+### 4. Run the unit tests (synthetic images only — no RealWaste download)
+
+```powershell
+.venv\Scripts\python.exe -m pytest tests\test_prepare_data.py -v
+```
+
+### 5. Confirm Git ignore behavior (optional)
 
 ```powershell
 git check-ignore -v data/raw/realwaste.zip
 git check-ignore -v data/inspection/sample_grid.png
-git check-ignore -v data/metadata/inspection_summary.json
+git check-ignore -v data/metadata/train.csv
+git check-ignore -v data/metadata/split_summary.json
 ```
 
-Expected: the first two paths are ignored; `data/metadata/*` small reports are **not** ignored.
+Expected: the first two paths are ignored; small files under `data/metadata/` are **not** ignored.
 
 ## Expected vs actual counts (four-class subset)
 
@@ -104,10 +150,12 @@ From the UCI card (not invented):
 
 ## Current status
 
-- Scripts: `src/download_data.py`, `src/inspect_data.py`
-- Dataset download: see `data/metadata/download_metadata.json` after a successful run
-- Inspection: see `data/metadata/inspection_summary.json` after a successful run
-- **No training, no splitting, and no augmentation in this milestone**
+- Scripts: `src/download_data.py`, `src/inspect_data.py`, `src/prepare_data.py`
+- Dataset download: see `data/metadata/download_metadata.json`
+- Inspection: see `data/metadata/inspection_summary.json`
+- Duplicates + splits: see `data/metadata/duplicate_report.json` and `data/metadata/split_summary.json`
+- Unit tests: `tests/test_prepare_data.py` (synthetic images; no download required)
+- **No augmentation and no training in this milestone**
 
 ## Expected class mapping
 

@@ -233,4 +233,98 @@ Mapped counts: metal=790, organic=847 (411+436), paper=500, plastic=921.
 
 ---
 
+## Milestone 4 — Duplicate checks and reproducible dataset splitting
+
+**Date:** 2026-10-02  
+**Status:** Complete (duplicates + split manifests only; **no augmentation, no training**)
+
+### What was done
+
+1. Preserved `.venv/`, `requirements.txt`, `requirements.lock.txt`, and all raw dataset images.
+2. Created `src/prepare_data.py`:
+   - Discovers dataset root with the same conventions as `inspect_data.py`
+   - Reads labels + `class_order` from `configs/class_mapping.json`
+   - Includes only the four selected target classes
+   - Revalidates image readability (Pillow); invalid files reported, never deleted
+   - Hashes file bytes (SHA-256) and decoded RGB pixels (size + pixel bytes)
+   - Same-label exact duplicates → keep one deterministic representative (lowest path)
+   - Conflicting labels on identical content → write conflict report and **block** split generation
+   - Optional group metadata (`--groups`) keeps known related photos in one split; groups never invented
+   - Stratified two-stage 70/15/15 split, seed **42**, records sorted by path before shuffle
+   - Writes `train.csv`, `validation.csv`, `test.csv`, `duplicate_report.json`, `split_summary.json`
+   - Manifests use forward-slash relative paths; **no image copies** into split folders
+   - Verifies no path/hash/group leakage; re-runs produce byte-identical CSVs
+3. Created `tests/test_prepare_data.py` (7 tests, synthetic images in temp dirs — no RealWaste download).
+4. Updated `data/README.md` with Windows preparation commands and why splitting happens before augmentation.
+
+### Actual duplicate / conflict findings (real dataset)
+
+| Check | Result |
+|---|---|
+| Selected records scanned | 3,058 |
+| Invalid / unreadable images | **0** |
+| Unique file SHA-256 hashes | 3,058 |
+| Unique decoded RGB hashes | 3,058 |
+| Same-label duplicate groups | **0** |
+| Duplicate copies excluded | **0** |
+| Label conflicts | **0** |
+| Group metadata used | None (all images ungrouped) |
+
+**Honest note:** these exact-hash checks found **no** byte-identical or pixel-identical duplicates among the four selected classes. That does **not** prove the dataset has zero near-duplicates or rephotos of the same object — those are out of scope for exact hashing (documented in `duplicate_report.json` limitations).
+
+### Retained counts and split sizes
+
+| Class | Retained | Train (~70%) | Validation (~15%) | Test (~15%) |
+|---|---:|---:|---:|---:|
+| metal | 790 | 553 | 118 | 119 |
+| organic | 847 | 593 | 127 | 127 |
+| paper | 500 | 350 | 75 | 75 |
+| plastic | 921 | 645 | 138 | 138 |
+| **Total** | **3,058** | **2,141** | **458** | **459** |
+
+Method: `stratified_two_stage_70_15_15`, seed `42`.  
+Split totals: train=2141 (70.0%), validation=458 (15.0%), test=459 (15.0%) — rounding absorbed in test by 1 image.
+
+### Manifest checksums (SHA-256 of CSV files)
+
+| Manifest | SHA-256 |
+|---|---|
+| `train.csv` | `f76d789b7bc6a1ac8fa168ee824ab975e44bfa29df19df8327aa9f7f9fa3abbc` |
+| `validation.csv` | `77423bfc11f37df0bb836210f4866543857b56bfe73572054438902ecae6997d` |
+| `test.csv` | `74494c13f6d9be7f1fc3a00124a7138035c96d866abe96cfa2eefc84d7530c2d` |
+
+### Verification
+
+| Check | Result |
+|---|---|
+| `pytest tests/test_prepare_data.py -v` | **7 passed** |
+| Coverage | same-label duplicates, conflicting-label block, deterministic split, group integrity, leakage detection, manifest checksums, count allocation |
+| Real-data `prepare_data.py` | Success, status `ok` |
+| Leakage check (paths / file hashes / decoded hashes / groups) | **ok=True**, 3,058 unique paths |
+| Label config vs `class_order` | **ok=True**, 3,058 records checked |
+| Paths use forward slashes | Yes (0 backslashes in CSVs) |
+| Determinism re-run (seed 42) | **Byte-identical** CSVs for train/validation/test |
+| `git check-ignore` raw images / sample grid | Ignored |
+| `git check-ignore` split CSVs + JSON reports | **Not ignored** (trackable) |
+| Images copied into split folders? | **No** (manifests only) |
+| Source images deleted/relabelled? | **No** |
+| Augmentation / training | **Not done** |
+
+### Limitations
+
+- Exact file + decoded-pixel hashes do not detect near-duplicates or multiple photos of the same physical item.
+- Optional group metadata was not supplied for RealWaste; if known related photos are identified later, re-run with `--groups` so each group stays in one split.
+- Small per-class rounding differences vs a perfect 70/15/15 split are expected and reported in `split_summary.json`.
+- Stratified split does not balance lighting, viewpoint, or hardness — only class proportions.
+
+### Blockers
+
+- None. No label conflicts were found; split manifests were written.
+
+### Next milestone (not started)
+
+- **Milestone 5 — Training pipeline (MobileNetV2 transfer learning):** load split CSVs, augment **train only**, freeze MobileNetV2 base, train classification head, save model under `models/` (Git-ignored), write real evaluation metrics under `models/metadata/`. Stop before the Streamlit app if that is a separate milestone.
+
+---
+
 *Append new milestones below this line.*
