@@ -474,4 +474,55 @@ Note on test noise: the synthetic `model.fit` loops emit `DeprecationWarning: no
 
 ---
 
+## Follow-up fix — Colab repository path normalization
+
+**Date:** 2026-10-03  
+**Status:** Fix committed and verified locally; **the notebook was NOT re-executed in Google Colab** (no Colab run was performed in this session)
+
+### Reported error (from a Colab run)
+
+```text
+TypeError: unsupported operand type(s) for /: 'str' and 'str'
+at: if not (REPO_DIR / ".git").exists():     # Step 6 clone cell
+```
+
+### Diagnosis
+
+- Inspected **every** assignment to `REPO_DIR` in `notebooks/train_colab.ipynb`: only the Step 5 configuration cell assigns it (`REPO_DIR = Path("/content") / REPO_NAME` — already a `Path`), and no later cell overwrites it.
+- The Step 6 clone cell was the **first** place `REPO_DIR` was used in a path operation (`REPO_DIR / ".git"`) but performed no conversion itself, so if `REPO_DIR` reached that cell as a plain `str` (different runtime state, re-ordered or edited cell), it raised exactly the reported `TypeError`.
+- `REPO_URL` is a string constant and must stay one (it is a `git clone` argument).
+
+### What changed
+
+1. `notebooks/train_colab.ipynb`, Step 6 clone cell (id `c15`):
+   - imports `pathlib.Path` in the cell itself and runs `REPO_DIR = Path(REPO_DIR)` **before any path operation**, with a comment naming the exact error it prevents;
+   - the `git()` helper now passes `cwd=str(cwd or REPO_DIR)` — external commands receive strings.
+2. Other external-command sites now pass strings explicitly: `cwd=str(REPO_DIR)` in the download/inspect cell (`c18`), the training cell (`c24`), and the export/zip cell (`c28`).
+3. `REPO_URL` unchanged (plain string); the Step 5 cell unchanged (already constructs a `Path`).
+4. `tests/test_notebook.py` — three focused regression checks:
+   - `test_repo_dir_is_always_built_with_path` (AST: every `REPO_DIR` assignment must be rooted in a `Path(...)` call),
+   - `test_repo_dir_string_input_is_normalized_before_path_ops` (extracts the notebook's actual `REPO_DIR = Path(REPO_DIR)` statement, executes it with `REPO_DIR` supplied as a **string**, and asserts `REPO_DIR / ".git"` then works),
+   - `test_repo_url_stays_string_and_cwd_is_passed_as_str`.
+
+### Verification
+
+| Check | Result |
+|---|---|
+| `pytest tests\test_notebook.py -v` | **8 passed** (5 existing + 3 new regression checks) |
+| Regression check vs the **pre-fix** notebook (`git show HEAD:...`) | Fails as intended: no `Path(REPO_DIR)` normalization found |
+| Reported error reproduced locally (`"/content/..." / ".git"`) | `TypeError: unsupported operand type(s) for /: 'str' and 'str'` — exact match |
+| Notebook JSON + Python syntax of all code cells | Valid (existing syntax test passes) |
+| Full suite `.venv\Scripts\python.exe -m pytest -q` | **54 passed** (51 prior + 3 new), 0 failed |
+| Notebook executed in Google Colab after the fix | **No — not performed; not claimed** |
+
+### Blockers
+
+- None locally. Confirming the fix end-to-end requires re-running the notebook in Colab (student action).
+
+### Next steps
+
+- In Colab, re-run **Step 5 (configuration)** and then **Step 6 (clone)** — the cell that failed — before continuing; the rest of the notebook is unchanged. Then continue with the pending first training run (milestone 7).
+
+---
+
 *Append new milestones below this line.*
