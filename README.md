@@ -1,6 +1,6 @@
 # AI Waste Classification Assistant
 
-College AIML Project-Based Learning (PBL) — **status: dataset downloaded, splits created, preprocessing + MobileNetV2 model built, Colab baseline training workflow prepared; model not trained yet.**
+College AIML Project-Based Learning (PBL) — **status: dataset downloaded, splits created, model built, first Colab baseline run completed (validation metrics recorded); local model loading pending a Keras-3-compatible environment.**
 
 ## What this project will do
 
@@ -22,7 +22,7 @@ The planned approach:
 
 ## Important honesty note
 
-**This repository has not trained a model yet.** Milestones 1–4 defined scope, downloaded RealWaste, and wrote duplicate-checked 70/15/15 split manifests. Milestone 5 added the image input pipeline and the MobileNetV2 model *construction* (verified with a forward pass only). Milestone 6 added the frozen-base training workflow (`src/train.py`) and a Google Colab notebook (`notebooks/train_colab.ipynb`) — the workflow is verified with synthetic images and syntax/structure checks, but the notebook has **not** been executed in Colab. Accuracy figures, a trained model, and a working demo app will be added in later milestones — they are not claimed here.
+**Honest status.** Milestones 1–4 defined scope, downloaded RealWaste, and wrote duplicate-checked 70/15/15 split manifests. Milestone 5 added the input pipeline and model *construction*. Milestone 6 added the training workflow (`src/train.py`) and the Colab notebook. **The first real baseline run has now executed in Google Colab** (run `baseline_20261003_172906`, recorded below and in `docs/progress.md`): its **validation** metrics are real, read from that run's own `run_metadata.json`/`history.csv`, and verified against the extracted artifacts. The saved model has **not** yet been loaded successfully on this machine (Keras 3 vs Keras 2 — see *Local compatibility status*). No test-set evaluation, no fine-tuning, and no demo app exist yet.
 
 ## Project documentation
 
@@ -77,7 +77,7 @@ ai-waste-classification-assistant/
 │   └── train.py               # frozen-base baseline training CLI (Colab)
 ├── app/                       # Streamlit UI (future)
 ├── notebooks/
-│   └── train_colab.ipynb      # Colab baseline training (not yet executed in Colab)
+│   └── train_colab.ipynb      # Colab baseline training (first run 2026-10-03)
 └── tests/                     # pytest checks (synthetic images; no download)
 ```
 
@@ -182,7 +182,9 @@ Five things worth understanding:
 4. The notebook mounts Drive, clones this repo (pin `REVISION` to a commit SHA
    for a reproducible run), downloads/inspects RealWaste with the existing
    scripts, and **validates** the committed manifests against
-   `split_summary.json` (it never regenerates them).
+   `split_summary.json` (it never regenerates them). Download/inspection
+   reports are written to a runtime directory on Drive via `--metadata-dir`
+   so regenerated timestamps never dirty the checkout.
 5. Training runs `src/train.py` with the `configs/training.json` settings
    (seed 42, batch 16, lr 0.001, max 15 epochs, early stopping on
    `val_loss`) and writes everything to
@@ -204,12 +206,55 @@ Expand-Archive .\reports_baseline_<stamp>.zip -DestinationPath .\models\metadata
 Expand-Archive .\model_baseline_<stamp>.zip -DestinationPath .\models
 ```
 
-**Pending verification — run before claiming the model loads locally** (not
-yet run: no `.keras` file exists in this repo until a real Colab run):
+### First baseline run (actual, Google Colab)
 
-```powershell
-.venv\Scripts\python.exe -c "import tensorflow as tf; m = tf.keras.models.load_model(r'models\best_model.keras'); print(m.output_shape)"
+| Field | Value |
+|---|---|
+| Run ID | `baseline_20261003_172906` |
+| Date | 2026-10-03 |
+| Code commit | `199f2539c821ee1b70d673cec8050ed86cf62e2e` |
+| Runtime | Google Colab — Python 3.13.15, TensorFlow 2.20.0, Keras 3.13.2, Tesla T4 |
+| Epochs | 15 completed (max 15; early stopping on `val_loss`, patience 3) |
+| Best epoch | 14 (lowest `val_loss`) |
+| **Validation** loss | **0.2097** (full value `0.20965705811977386`) |
+| **Validation** accuracy | **0.9323** (full value `0.932314395904541`) |
+| Test set | **not used** (`data.test_manifest_used: false`) |
+| Class order | `["metal", "organic", "paper", "plastic"]` |
+| Model SHA-256 | `c25f275cba8b5520…` (verified against the extracted file) |
+| Checkout at training time | dirty (`uncommitted_changes: true` — cause investigated, unconfirmed) |
+
+Every row was verified against `models/metadata/runs/baseline_20261003_172906/`
+(`run_metadata.json` + `history.csv`): **37/37 checks passed** — details in
+[`docs/progress.md`](docs/progress.md). These are **validation** metrics from
+this one run; no test-set evaluation has been performed.
+
+### Local compatibility status (Windows `.venv`: TF 2.15.1 / Keras 2.15)
+
+**Not portable yet — loading the model locally was attempted (2026-10-03,
+`compile=False`) and FAILED:**
+
+```text
+TypeError: Could not deserialize class 'Functional' because its parent
+module keras.src.models.functional cannot be imported.
 ```
+
+Cause: the artifact was saved by **Keras 3.13.2** (Keras-3 module paths such
+as `keras.src.models.functional` and `DTypePolicy`); the local environment is
+**Keras 2.15**, whose module layout differs. This is a serialization-format
+mismatch, not a corrupt file (the file's SHA-256 matches the run metadata).
+
+Options (neither verified yet — do not assume either works):
+
+1. **Separate inference environment** (recommended): a second venv such as
+   `.venv-infer` with Python 3.11 + `tensorflow==2.20.0`. PyPI ships
+   `tensorflow-2.20.0-cp311-cp311-win_amd64.whl`, so it can be installed
+   alongside without touching the existing `.venv`.
+2. **Conversion in a Keras 3 environment**: re-export the model (SavedModel
+   or legacy `.h5`) from a Keras 3 runtime, then verify a load + inference
+   test in TF 2.15 before claiming compatibility.
+
+The existing `.venv` was **not** modified. Portability will be claimed only
+after an actual load + inference check succeeds.
 
 ### What the workflow guarantees (and does not)
 
@@ -220,9 +265,10 @@ yet run: no `.keras` file exists in this repo until a real Colab run):
   typed by hand, and an interrupted run is marked as such.
 - **Reports ≠ model:** the exported `models/metadata/runs/<run_id>/` folder
   never contains weights; `.gitignore` blocks `*.keras` and `*.zip`.
-- **Not yet executed in Colab:** the notebook is validated locally (JSON,
-  cell syntax, topic tests) but no training has been run in this milestone,
-  so **no accuracy numbers exist yet**.
+- **Validation only, for now:** the recorded numbers are validation metrics
+  from the actual Colab run. The test split has not been evaluated, the
+  model has not been fine-tuned, and local loading is pending a
+  Keras-3-compatible environment (see *Local compatibility status*).
 
 ## Git workflow
 

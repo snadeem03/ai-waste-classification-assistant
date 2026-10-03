@@ -1,0 +1,52 @@
+# Local model-load failure - run baseline_20261003_172906
+# Captured: 2026-10-03 on Windows .venv (Python 3.11.9, TensorFlow 2.15.1, Keras 2.15.0)
+# Command: tf.keras.models.load_model(path, compile=False)
+#   path = models\baseline_20261003_172906\best_model.keras
+#
+# Tracebacks and error text below are unmodified from the captured run.
+# The TypeError message embeds the full Keras 3 model architecture JSON
+# (about 155 KB of layer definitions); it is abbreviated with an explicit
+# marker. The raw capture showed that payload starting with module
+# "keras.src.models.functional", class_name "Functional", and Keras-3-only
+# fields such as "DTypePolicy".
+# ---------------------------------------------------------------------------
+python: 3.11.9
+tensorflow: 2.15.1
+=== FULL LOAD ERROR (compile=False) ===
+Traceback (most recent call last):
+  File "D:\-_-\ai-waste-classification-assistant\.venv\Lib\site-packages\keras\src\saving\serialization_lib.py", line 800, in _retrieve_class_or_fn
+    mod = importlib.import_module(module)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\importlib\__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1140, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'keras.src.models.functional'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ns479\AppData\Local\Temp\opencode\load_model_check.py", line 38, in <module>
+    model = tf.keras.models.load_model(str(MODEL_PATH), compile=False)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\-_-\ai-waste-classification-assistant\.venv\Lib\site-packages\keras\src\saving\saving_api.py", line 254, in load_model
+    return saving_lib.load_model(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\-_-\ai-waste-classification-assistant\.venv\Lib\site-packages\keras\src\saving\saving_lib.py", line 281, in load_model
+    raise e
+  File "D:\-_-\ai-waste-classification-assistant\.venv\Lib\site-packages\keras\src\saving\saving_lib.py", line 246, in load_model
+    model = deserialize_keras_object(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\-_-\ai-waste-classification-assistant\.venv\Lib\site-packages\keras\src\saving\serialization_lib.py", line 705, in deserialize_keras_object
+    cls = _retrieve_class_or_fn(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\-_-\ai-waste-classification-assistant\.venv\Lib\site-packages\keras\src\saving\serialization_lib.py", line 802, in _retrieve_class_or_fn
+    raise TypeError(
+TypeError: Could not deserialize class 'Functional' because its parent module keras.src.models.functional cannot be imported. Full object config:
+[... Keras 3 object-config payload abbreviated: total 161274 chars of layer definitions; first 600 chars follow ...]
+ {'module': 'keras.src.models.functional', 'class_name': 'Functional', 'config': {'name': 'waste_classifier_mobilenetv2', 'trainable': True, 'layers': [{'module': 'keras.layers', 'class_name': 'InputLayer', 'config': {'batch_shape': [None, 224, 224, 3], 'dtype': 'float32', 'sparse': False, 'ragged': False, 'name': 'image', 'optional': False}, 'registered_name': None, 'name': 'image', 'inbound_nodes': []}, {'module': 'keras', 'class_name': 'Sequential', 'config': {'name': 'augmentation', 'trainable': True, 'dtype': {'module': 'keras', 'class_name': 'DTypePolicy', 'config': {'name': 'float32'}, 
+[... end abbreviation ...]
+
+RESULT: LOAD_FAILED (exit code 1)

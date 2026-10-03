@@ -45,6 +45,9 @@ SUMMARY_PATH = METADATA_DIR / "inspection_summary.json"
 INVALID_PATH = METADATA_DIR / "invalid_images.json"
 CHART_PATH = METADATA_DIR / "class_distribution.png"
 SAMPLE_GRID_PATH = INSPECTION_DIR / "sample_grid.png"
+# NOTE: SUMMARY_PATH/INVALID_PATH/CHART_PATH are the tracked defaults.
+# output_paths() below lets a run redirect all three elsewhere (e.g. a
+# Colab runtime directory) without touching the committed reports.
 
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 
@@ -132,6 +135,20 @@ def rel_posix(path: Path) -> str:
         return path.resolve().relative_to(REPO_ROOT.resolve()).as_posix()
     except ValueError:
         return path.as_posix()
+
+
+def output_paths(metadata_dir: Path) -> dict[str, Path]:
+    """Where the three inspection reports are written for a given directory.
+
+    The default (data/metadata) is tracked in Git. Colab runs should pass a
+    runtime directory via --metadata-dir so regenerated timestamps never
+    overwrite the committed reports.
+    """
+    return {
+        "summary": metadata_dir / "inspection_summary.json",
+        "invalid": metadata_dir / "invalid_images.json",
+        "chart": metadata_dir / "class_distribution.png",
+    }
 
 
 def match_source_folder(folder_name: str, mapping: dict) -> str | None:
@@ -506,11 +523,23 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=SAMPLE_SEED,
         help=f"Random seed for the sample grid (default: {SAMPLE_SEED}).",
     )
+    parser.add_argument(
+        "--metadata-dir",
+        type=Path,
+        default=METADATA_DIR,
+        help=(
+            "Where inspection_summary.json, invalid_images.json and "
+            "class_distribution.png are written (default: data/metadata, "
+            "tracked in Git). Pass a runtime directory outside the clone "
+            "(e.g. on Drive in Colab) to avoid overwriting tracked reports."
+        ),
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    outputs = output_paths(args.metadata_dir)
     print("=== RealWaste inspection (milestone 3) ===")
 
     mapping = load_class_mapping(CLASS_MAPPING_PATH)
@@ -602,7 +631,7 @@ def main(argv: list[str] | None = None) -> int:
         print("  (none discovered on disk)")
 
     plot_class_distribution(
-        counts["actual_mapped_counts"], mapping["class_order"], CHART_PATH
+        counts["actual_mapped_counts"], mapping["class_order"], outputs["chart"]
     )
     grid_info = build_sample_grid(discovery, mapping, SAMPLE_GRID_PATH, seed=args.seed)
     if grid_info["created"]:
@@ -622,16 +651,16 @@ def main(argv: list[str] | None = None) -> int:
         "excluded_category_report": excluded_report,
         "expected_selected_total": EXPECTED_SELECTED_TOTAL,
         "actual_selected_total": counts["actual_selected_total"],
-        "chart_path": rel_posix(CHART_PATH),
+        "chart_path": rel_posix(outputs["chart"]),
         "sample_grid": grid_info,
         "timestamp_note": (
             "generated_at_utc records when inspection ran on this machine. "
             "It is not evidence that the dataset content changed."
         ),
     }
-    write_json(SUMMARY_PATH, summary)
+    write_json(outputs["summary"], summary)
     write_json(
-        INVALID_PATH,
+        outputs["invalid"],
         {
             "generated_at_utc": utc_now_iso(),
             "invalid_image_count": validation["invalid_image_count"],
@@ -642,9 +671,9 @@ def main(argv: list[str] | None = None) -> int:
 
     print("\n=== Inspection finished ===")
     print("Reports:")
-    print(f"  - {rel_posix(SUMMARY_PATH)}")
-    print(f"  - {rel_posix(INVALID_PATH)}")
-    print(f"  - {rel_posix(CHART_PATH)}")
+    print(f"  - {rel_posix(outputs['summary'])}")
+    print(f"  - {rel_posix(outputs['invalid'])}")
+    print(f"  - {rel_posix(outputs['chart'])}")
     if grid_info["created"]:
         print(f"  - {grid_info['path']} (local only)")
     print("Next milestone (not started here): cleaning / splitting / training.")

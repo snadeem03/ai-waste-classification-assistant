@@ -365,7 +365,13 @@ def write_download_metadata(
         ),
     }
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    print(f"[metadata] Wrote {path.relative_to(REPO_ROOT).as_posix()}")
+    try:
+        shown = path.relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        # --metadata-dir may point outside the repo (e.g. a Colab Drive
+        # runtime directory); show the full path instead of crashing.
+        shown = path.as_posix()
+    print(f"[metadata] Wrote {shown}")
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -381,6 +387,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--skip-extract",
         action="store_true",
         help="Download/reuse archive only; do not extract (advanced/debug).",
+    )
+    parser.add_argument(
+        "--metadata-dir",
+        type=Path,
+        default=METADATA_DIR,
+        help=(
+            "Where download_metadata.json is written (default: data/metadata, "
+            "tracked in Git). Pass a runtime directory outside the clone "
+            "(e.g. on Drive in Colab) to avoid overwriting tracked metadata."
+        ),
     )
     return parser.parse_args(argv)
 
@@ -451,7 +467,7 @@ def main(argv: list[str] | None = None) -> int:
                     print(f"[extract] Could not list folders: {exc}", file=sys.stderr)
 
         write_download_metadata(
-            path=DOWNLOAD_META_PATH,
+            path=args.metadata_dir / DOWNLOAD_META_PATH.name,
             url=OFFICIAL_DOWNLOAD_URL,
             verification=verification,
             download_result=download_result,

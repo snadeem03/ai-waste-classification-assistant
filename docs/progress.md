@@ -525,4 +525,157 @@ at: if not (REPO_DIR / ".git").exists():     # Step 6 clone cell
 
 ---
 
+## Milestone 7 — Baseline artifact import and local compatibility verification
+
+**Date:** 2026-10-03  
+**Status:** Artifact import + verification complete; **local model loading FAILED** (Keras 3 vs Keras 2) — a separate inference environment is proposed but **not yet built or verified**. No retraining, no fine-tuning, no test-set evaluation, no Streamlit.
+
+### Actual Colab execution (reported, then verified from the extracted artifacts)
+
+| Field | Value |
+|---|---|
+| Run ID | `baseline_20261003_172906` |
+| Code commit | `199f2539c821ee1b70d673cec8050ed86cf62e2e` |
+| Environment | Google Colab — Python 3.13.15, TensorFlow 2.20.0, Keras 3.13.2, Tesla T4 |
+| Epochs | 15 completed (max 15) |
+| Best epoch | 14 (lowest `val_loss`) |
+| **Validation** loss | **0.2097** (actual `0.20965705811977386`) |
+| **Validation** accuracy | **0.9323** (actual `0.932314395904541`) |
+| Test manifest used | `False` |
+| Checkout at training time | `uncommitted_changes: true` (investigated below) |
+
+All values are **validation metrics** from that run's own `run_metadata.json` /
+`history.csv`. No test-set metrics exist.
+
+### What was done
+
+1. **Located** `reports_baseline_20261003_172906.zip` and
+   `model_baseline_20261003_172906.zip` in the repo root (both present).
+   Integrity: `ZipFile.testzip()` OK; members checked for absolute paths /
+   `..` traversal — none found.
+2. **Extracted** without overwriting anything:
+   - reports → `models/metadata/runs/baseline_20261003_172906/`
+     (`run_metadata.json`, `class_order.json`, `history.csv`,
+     `environment_freeze.txt`, `plots/*.png` — 7 members);
+   - model bundle → `models/baseline_20261003_172906/`
+     (`best_model.keras`, `class_order.json`, `run_metadata.json` — 3 members;
+     directory is Git-ignored).
+   Both targets were empty/absent beforehand; no other run directories exist
+   or were touched. **Originals preserved byte-for-byte — never modified.**
+3. **Verified the reported facts against the actual files — 37/37 checks
+   passed** (read-only script): run id, commit + dirty flag, Python/TF/Keras
+   versions, GPU count, 15 epochs, best epoch 14, both metric values rounded
+   as reported (and matching `history.csv` argmin exactly), class order equal
+   across metadata / `class_order.json` / committed `configs/class_mapping.json`,
+   `test_manifest_used: false`, model SHA-256 equal to the hash of the
+   extracted `best_model.keras` (`c25f275cba8b5520…`, 9,691,268 bytes),
+   recorded manifest checksums equal to the local committed `train.csv` /
+   `validation.csv`, and train/validation image counts (2141/458).
+4. **Attempted local model load** with the existing `.venv`
+   (Python 3.11.9, TF 2.15.1, Keras 2.15) using `compile=False` —
+   **FAILED** (full captured log:
+   [`docs/load_failure_baseline_20261003_172906.txt`](load_failure_baseline_20261003_172906.txt)).
+   The `.venv` environment was **not changed**; no packages installed.
+5. **Investigated the dirty Colab checkout** (see below): mechanism identified
+   from code, cause documented as **unconfirmed**, recorded flag left untouched.
+6. **Prevention for future runs:** added an explicit runtime output directory
+   option to both scripts (below) and wired the notebook to use it; committed
+   manifests untouched.
+7. Updated `README.md`, `models/README.md`, and this entry.
+
+### Verification (actual local runs)
+
+| Check | Result |
+|---|---|
+| ZIP integrity + safe members | OK / none unsafe |
+| Artifact verification script | **37/37 passed** |
+| `tf.keras.models.load_model(..., compile=False)` in `.venv` | **FAILED** — `TypeError: Could not deserialize class 'Functional' because its parent module keras.src.models.functional cannot be imported` |
+| Inference on synthetic 0–255 RGB batch | **Not reached** (load failed first) |
+| `pytest tests\test_inspection_cli.py -v` | **5 passed** (new) |
+| `pytest` full suite | **59 passed** (54 prior + 5 new), 0 failed |
+| `inspect_data.py --help` / `download_data.py --help` | exit 0, `--metadata-dir` listed |
+| Colab re-execution after these changes | **Not performed; not claimed** |
+
+### Local compatibility status: **INCOMPATIBLE (as saved)**
+
+- The artifact is a **Keras 3.13.2** `.keras` file (Keras-3 module paths such
+  as `keras.src.models.functional`, `DTypePolicy`). The project `.venv` is
+  **Keras 2.15**, whose module layout differs → deserialization fails even
+  with `compile=False`. The file itself is intact (SHA-256 matches metadata).
+- **Portability is NOT claimed.** Proposals (neither built nor verified yet):
+  1. **Separate inference environment** (recommended): a second venv, e.g.
+     `.venv-infer`, with Python 3.11 + `tensorflow==2.20.0`. Checked on
+     2026-10-03: PyPI publishes `tensorflow-2.20.0-cp311-cp311-win_amd64.whl`,
+     so it can coexist with `.venv` without modifying it. Must be created and
+     verified with a real load + inference test before any portability claim.
+  2. **Conversion in a Keras 3 environment**: re-export (SavedModel or legacy
+     `.h5`) from a Keras 3 runtime, then verify a load + inference test in
+     TF 2.15. Unverified — do not assume it works.
+
+### Dirty-checkout investigation (unconfirmed)
+
+If the Colab runtime is still available, run inside the clone to confirm:
+
+```bash
+cd /content/ai-waste-classification-assistant
+git status --short
+git diff --stat
+git diff -- data/metadata/          # inspect affected tracked files
+```
+
+Mechanism found by code inspection (**likely cause; not confirmed without the
+runtime output above**):
+
+- `src/download_data.py` rewrites tracked `data/metadata/download_metadata.json`
+  on **every** run with a fresh `retrieved_at_utc` (even when the archive is
+  reused) — Step 7 runs it before training.
+- `src/inspect_data.py` rewrites tracked `data/metadata/inspection_summary.json`
+  (fresh `generated_at_utc`), `invalid_images.json`, and
+  `class_distribution.png` on every run — also Step 7, before training.
+- Training then collects `git status --porcelain` → non-empty → records
+  `uncommitted_changes: true`.
+
+Other candidate paths (`data/raw/`, `data/inspection/`, `__pycache__`,
+notebook checkpoints) are Git-ignored, and the report export into
+`models/metadata/runs/` happens *after* git info is collected — neither can
+explain the flag. **The recorded dirty flag was not altered and no unexplained
+changes were discarded.**
+
+**Prevention added:** both scripts now accept `--metadata-dir` (default:
+tracked `data/metadata`, so local workflows are unchanged) and the notebook
+passes a Drive runtime directory (`<outputs>/runtime_metadata`), so future
+Colab inspection runs no longer overwrite tracked metadata. The committed
+manifests (`train.csv`, `validation.csv`, `test.csv`, `split_summary.json`)
+are never written by these scripts and were preserved.
+
+### Trackable artifacts committed
+
+- `models/metadata/runs/baseline_20261003_172906/` — the 7 extracted small
+  reports (originals, unmodified)
+- `src/download_data.py`, `src/inspect_data.py` — `--metadata-dir` support
+- `notebooks/train_colab.ipynb` — Step 5/7 wired to the runtime directory
+- `tests/test_inspection_cli.py` — 5 regression tests
+- `docs/load_failure_baseline_20261003_172906.txt` — captured load error
+- `README.md`, `models/README.md`, `docs/progress.md`
+
+**Not committed (ignored):** both ZIPs (`*.zip`), the model bundle under
+`models/baseline_20261003_172906/` (`models/*` rule).
+
+### Blockers
+
+- Local inference is blocked until a Keras-3-compatible environment is built
+  (proposal 1) or a conversion path is verified (proposal 2). Both require an
+  explicit decision to add a *separate* environment — the existing `.venv`
+  stays untouched.
+
+### Next steps (not started)
+
+1. Build + verify the separate inference environment (or a verified
+   conversion), then run the synthetic-batch inference check (shape, finite,
+   softmax sums) and only then claim local compatibility.
+2. Later milestones: fine-tuning, test-set evaluation, Streamlit app — each
+   scoped separately.
+
+---
+
 *Append new milestones below this line.*

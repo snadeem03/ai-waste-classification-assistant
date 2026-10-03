@@ -20,11 +20,25 @@
 
 ## Current status
 
-**No trained model exists yet.** The baseline training workflow
-(`src/train.py` + `notebooks/train_colab.ipynb`) was prepared in milestone 6
-and verified with synthetic images and structural tests, but it has **not**
-been executed in Google Colab — there are no weights and no accuracy numbers.
-See [`docs/progress.md`](../../docs/progress.md).
+**First baseline run exists** — `baseline_20261003_172906` (Google Colab,
+2026-10-03, commit `199f253`):
+
+| Artifact | Location | Tracked? |
+|---|---|---|
+| Small run reports | `models/metadata/runs/baseline_20261003_172906/` | **Yes** |
+| `best_model.keras` (9.7 MB, SHA-256 `c25f275cba8b5520…`) | `models/baseline_20261003_172906/best_model.keras` | **No** (ignored) |
+
+Measured **validation** results (from that run's own `run_metadata.json`,
+verified locally): best epoch 14 of 15, `val_loss` 0.2097, `val_accuracy`
+0.9323, class order `["metal", "organic", "paper", "plastic"]`, test set
+never used. No test-set metrics exist yet.
+
+**Local loading status:** the model was **not** loadable in the project
+`.venv` (TF 2.15.1 / Keras 2.15) — it was saved by Keras 3.13.2 and fails
+deserialization with `TypeError: Could not deserialize class 'Functional'…`.
+See [`docs/progress.md`](../../docs/progress.md) for the full error and the
+proposed separate inference environment. Do not claim portability until a
+load + inference check passes.
 
 ## When a model is trained later
 

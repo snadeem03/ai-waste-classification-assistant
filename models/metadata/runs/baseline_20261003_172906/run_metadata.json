@@ -1,0 +1,240 @@
+{
+  "run_id": "baseline_20261003_172906",
+  "profile": "baseline",
+  "status": "ok",
+  "started_at_utc": "2026-10-03T17:29:06+00:00",
+  "finished_at_utc": "2026-10-03T17:31:33+00:00",
+  "wall_time_seconds": 144.51,
+  "git": {
+    "commit": "199f2539c821ee1b70d673cec8050ed86cf62e2e",
+    "branch": "main",
+    "uncommitted_changes": true,
+    "status": "ok"
+  },
+  "configuration": {
+    "config_path": "/content/ai-waste-classification-assistant/configs/training.json",
+    "epochs_requested": 15,
+    "epochs_completed": 15,
+    "batch_size": 16,
+    "learning_rate": 0.001,
+    "image_size": 224,
+    "dropout": 0.2,
+    "seed": 42,
+    "backbone": "MobileNetV2",
+    "backbone_weights": "imagenet",
+    "backbone_frozen": true,
+    "optimizer": "Adam",
+    "loss": "SparseCategoricalCrossentropy",
+    "early_stopping": {
+      "enabled": true,
+      "monitor": "val_loss",
+      "patience": 3,
+      "restore_best_weights": true
+    }
+  },
+  "seed_and_determinism": {
+    "seed": 42,
+    "seeded_rngs": [
+      "python.random",
+      "numpy",
+      "tensorflow"
+    ],
+    "pythonhashseed": "42",
+    "enable_op_determinism": "enabled",
+    "limits": [
+      "Bitwise-identical results are expected only on the same hardware, OS, and library versions.",
+      "Different GPU/CPU models, drivers, or oneDNN/cuDNN builds can change floating-point results slightly.",
+      "PYTHONHASHSEED only affects hash randomization when set before the interpreter starts; the CLI sets it for child processes it launches, but a manually started Python needs it in the environment.",
+      "Augmentation draws from TensorFlow's RNGs each epoch by design, so augmented pixel values differ per epoch."
+    ]
+  },
+  "class_order": [
+    "metal",
+    "organic",
+    "paper",
+    "plastic"
+  ],
+  "class_index": {
+    "metal": 0,
+    "organic": 1,
+    "paper": 2,
+    "plastic": 3
+  },
+  "class_weights": {
+    "enabled": false,
+    "mode": "off",
+    "method": "none",
+    "computed_from": "train.csv labels only (validation labels never used)",
+    "passed_to_model_fit": false,
+    "values": null
+  },
+  "data": {
+    "train_images": 2141,
+    "validation_images": 458,
+    "manifests": {
+      "train.csv": {
+        "path": "data/metadata/train.csv",
+        "sha256": "f76d789b7bc6a1ac8fa168ee824ab975e44bfa29df19df8327aa9f7f9fa3abbc"
+      },
+      "validation.csv": {
+        "path": "data/metadata/validation.csv",
+        "sha256": "77423bfc11f37df0bb836210f4866543857b56bfe73572054438902ecae6997d"
+      }
+    },
+    "validation_pass": "full pass over every validation image including the final partial batch (validation_steps not set)",
+    "test_manifest_used": false
+  },
+  "environment": {
+    "python": "3.13.15",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "tensorflow": "2.20.0",
+    "keras": "3.13.2",
+    "numpy": "2.1.3",
+    "physical_devices": [
+      "CPU:/physical_device:CPU:0",
+      "GPU:/physical_device:GPU:0"
+    ],
+    "gpu_count": 1
+  },
+  "training": {
+    "history": [
+      {
+        "epoch": 1,
+        "accuracy": 0.743577778339386,
+        "loss": 0.6440511345863342,
+        "val_accuracy": 0.8908296823501587,
+        "val_loss": 0.32859259843826294
+      },
+      {
+        "epoch": 2,
+        "accuracy": 0.8724895119667053,
+        "loss": 0.3306628167629242,
+        "val_accuracy": 0.9104803204536438,
+        "val_loss": 0.2682127356529236
+      },
+      {
+        "epoch": 3,
+        "accuracy": 0.8907052874565125,
+        "loss": 0.28195539116859436,
+        "val_accuracy": 0.8864628672599792,
+        "val_loss": 0.290597140789032
+      },
+      {
+        "epoch": 4,
+        "accuracy": 0.9014478921890259,
+        "loss": 0.25533655285835266,
+        "val_accuracy": 0.9082969427108765,
+        "val_loss": 0.24611793458461761
+      },
+      {
+        "epoch": 5,
+        "accuracy": 0.9140588641166687,
+        "loss": 0.22376815974712372,
+        "val_accuracy": 0.9061135649681091,
+        "val_loss": 0.2423844337463379
+      },
+      {
+        "epoch": 6,
+        "accuracy": 0.9219990372657776,
+        "loss": 0.2045479416847229,
+        "val_accuracy": 0.9126637578010559,
+        "val_loss": 0.2220892459154129
+      },
+      {
+        "epoch": 7,
+        "accuracy": 0.9262027144432068,
+        "loss": 0.1873553842306137,
+        "val_accuracy": 0.9192139506340027,
+        "val_loss": 0.2305583506822586
+      },
+      {
+        "epoch": 8,
+        "accuracy": 0.9318075776100159,
+        "loss": 0.17931365966796875,
+        "val_accuracy": 0.9148471355438232,
+        "val_loss": 0.2239578515291214
+      },
+      {
+        "epoch": 9,
+        "accuracy": 0.9364782571792603,
+        "loss": 0.15953980386257172,
+        "val_accuracy": 0.9170305728912354,
+        "val_loss": 0.21960100531578064
+      },
+      {
+        "epoch": 10,
+        "accuracy": 0.9378795027732849,
+        "loss": 0.1638854593038559,
+        "val_accuracy": 0.9257642030715942,
+        "val_loss": 0.22261762619018555
+      },
+      {
+        "epoch": 11,
+        "accuracy": 0.9383465647697449,
+        "loss": 0.16232284903526306,
+        "val_accuracy": 0.9235807657241821,
+        "val_loss": 0.21847882866859436
+      },
+      {
+        "epoch": 12,
+        "accuracy": 0.9476879835128784,
+        "loss": 0.1483912616968155,
+        "val_accuracy": 0.9235807657241821,
+        "val_loss": 0.21757808327674866
+      },
+      {
+        "epoch": 13,
+        "accuracy": 0.950023353099823,
+        "loss": 0.14315488934516907,
+        "val_accuracy": 0.9126637578010559,
+        "val_loss": 0.24081368744373322
+      },
+      {
+        "epoch": 14,
+        "accuracy": 0.9420831203460693,
+        "loss": 0.1419820487499237,
+        "val_accuracy": 0.932314395904541,
+        "val_loss": 0.20965705811977386
+      },
+      {
+        "epoch": 15,
+        "accuracy": 0.9486221671104431,
+        "loss": 0.13880741596221924,
+        "val_accuracy": 0.9257642030715942,
+        "val_loss": 0.2171011120080948
+      }
+    ],
+    "best": {
+      "epoch": 14,
+      "loss": 0.1419820487499237,
+      "accuracy": 0.9420831203460693,
+      "val_loss": 0.20965705811977386,
+      "val_accuracy": 0.932314395904541
+    }
+  },
+  "model": {
+    "file": "best_model.keras",
+    "sha256": "c25f275cba8b5520c65af78716c844889fb0e8ff1a407b3215170674332b524f",
+    "reload_ok_in_this_environment": true,
+    "parameter_counts": {
+      "trainable": 5124,
+      "non_trainable": 2257984,
+      "total": 2263108
+    }
+  },
+  "artifacts": {
+    "plots": [
+      "plots/loss_curve.png",
+      "plots/accuracy_curve.png"
+    ],
+    "history_csv": "history.csv",
+    "environment_freeze": "environment_freeze.txt",
+    "class_order": "class_order.json"
+  },
+  "honesty_notes": [
+    "All numbers in this file come from this actual training run only.",
+    "No test-set metrics are computed by the baseline workflow.",
+    "If this run used weights='none', it was a synthetic/offline check, not ImageNet training."
+  ]
+}
