@@ -1,0 +1,20 @@
+# Inference-only dependencies for loading the Keras 3 baseline model.
+# Python 3.11 on Windows — SEPARATE from requirements.txt.
+#
+# Environment roles:
+#   .venv        -> tests + development (TensorFlow 2.15 / Keras 2; cannot
+#                   load the Keras 3 baseline artifact)
+#   .venv-infer  -> loading + inference on the baseline model (TensorFlow 2.20 /
+#                   Keras 3, matching the Colab training run)
+#
+# Exact resolved versions for this Windows environment:
+#   requirements-infer.lock.txt
+#
+# Create/reproduce:
+#   py -3.11 -m venv .venv-infer
+#   .venv-infer\Scripts\python.exe -m pip install -r requirements-infer.txt
+#
+# Pinned to the exact versions of the Colab run (run_metadata.json
+# environment block: tensorflow 2.20.0, keras 3.13.2).
+tensorflow==2.20.0
+keras==3.13.2

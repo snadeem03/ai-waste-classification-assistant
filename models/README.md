@@ -7,6 +7,7 @@
 | `models/README.md` | **Yes** | This file — explains layout and rules |
 | `models/metadata/` | **Yes** (small files only) | Training run notes, label order copy, evaluation summary (JSON/CSV/MD) — **no weight binaries** |
 | `models/metadata/runs/<run_id>/` | **Yes** | Small per-run reports exported by `src/train.py --export-reports`: `run_metadata.json`, `class_order.json`, `history.csv`, `environment_freeze.txt`, `plots/*.png` |
+| `models/metadata/verification/` | **Yes** | Post-training compatibility verification reports (JSON) produced by `src/verify_baseline_inference.py` |
 | `models/runs/baseline_<timestamp>/` | **No** | Full local run directory (default `--output-dir`): `best_model.keras`, logs, everything — ignored by `models/*` |
 | `models/best_model.keras` (or similar) | **No** | Saved Keras model restored from a Colab run zip |
 | Checkpoints / SavedModel folders | **No** | Intermediate training artifacts |
@@ -33,12 +34,26 @@ verified locally): best epoch 14 of 15, `val_loss` 0.2097, `val_accuracy`
 0.9323, class order `["metal", "organic", "paper", "plastic"]`, test set
 never used. No test-set metrics exist yet.
 
-**Local loading status:** the model was **not** loadable in the project
-`.venv` (TF 2.15.1 / Keras 2.15) — it was saved by Keras 3.13.2 and fails
-deserialization with `TypeError: Could not deserialize class 'Functional'…`.
-See [`docs/progress.md`](../../docs/progress.md) for the full error and the
-proposed separate inference environment. Do not claim portability until a
-load + inference check passes.
+**Local loading status: VERIFIED (2026-10-04).** The model does **not** load
+in the project `.venv` (TF 2.15.1 / Keras 2.15 — it was saved by Keras 3.13.2
+and fails with `TypeError: Could not deserialize class 'Functional'…`; full
+log in [`docs/load_failure_baseline_20261003_172906.txt`](../../docs/load_failure_baseline_20261003_172906.txt)).
+It **does** load and execute in the separate inference environment
+`.venv-infer` (TF 2.20.0 / Keras 3.13.2, matching the Colab run), loaded with
+`compile=False, safe_mode=True` (no unsafe deserialization).
+
+Post-training compatibility verification — **19/19 checks passed**:
+[`models/metadata/verification/post_training_compatibility_baseline_20261003_172906.json`](metadata/verification/post_training_compatibility_baseline_20261003_172906.json)
+(SHA-256 match, shapes, class order, synthetic numerical checks, embedded
+MobileNetV2 preprocessing, real-image sample execution). Reproduce with:
+
+```powershell
+.venv-infer\Scripts\python.exe src\verify_baseline_inference.py
+```
+
+The report contains **execution checks only — not accuracy**. Test-set
+evaluation has not been run, and numerical parity with Colab is not claimed
+(no Colab output file exists).
 
 ## When a model is trained later
 

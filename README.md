@@ -1,6 +1,6 @@
 # AI Waste Classification Assistant
 
-College AIML Project-Based Learning (PBL) — **status: dataset downloaded, splits created, model built, first Colab baseline run completed (validation metrics recorded); local model loading pending a Keras-3-compatible environment.**
+College AIML Project-Based Learning (PBL) — **status: dataset downloaded, splits created, model built, first Colab baseline run completed (validation metrics recorded); baseline model verified to load + execute locally in the isolated `.venv-infer` environment (TensorFlow 2.20 / Keras 3).**
 
 ## What this project will do
 
@@ -22,7 +22,7 @@ The planned approach:
 
 ## Important honesty note
 
-**Honest status.** Milestones 1–4 defined scope, downloaded RealWaste, and wrote duplicate-checked 70/15/15 split manifests. Milestone 5 added the input pipeline and model *construction*. Milestone 6 added the training workflow (`src/train.py`) and the Colab notebook. **The first real baseline run has now executed in Google Colab** (run `baseline_20261003_172906`, recorded below and in `docs/progress.md`): its **validation** metrics are real, read from that run's own `run_metadata.json`/`history.csv`, and verified against the extracted artifacts. The saved model has **not** yet been loaded successfully on this machine (Keras 3 vs Keras 2 — see *Local compatibility status*). No test-set evaluation, no fine-tuning, and no demo app exist yet.
+**Honest status.** Milestones 1–4 defined scope, downloaded RealWaste, and wrote duplicate-checked 70/15/15 split manifests. Milestone 5 added the input pipeline and model *construction*. Milestone 6 added the training workflow (`src/train.py`) and the Colab notebook. **The first real baseline run has now executed in Google Colab** (run `baseline_20261003_172906`, recorded below and in `docs/progress.md`): its **validation** metrics are real, read from that run's own `run_metadata.json`/`history.csv`, and verified against the extracted artifacts. **The saved model now loads and executes locally** in a separate inference environment (`.venv-infer`, TensorFlow 2.20 / Keras 3 — post-training compatibility verification passed, see *Local compatibility status*). No test-set evaluation, no fine-tuning, and no demo app exist yet.
 
 ## Project documentation
 
@@ -48,17 +48,20 @@ The planned approach:
 
 ```
 ai-waste-classification-assistant/
-├── .gitignore                 # ignores venv, data images, model binaries, secrets
+├── .gitignore                 # ignores venvs, data images, model binaries, secrets
 ├── README.md                  # this file
 ├── AGENTS.md                  # rules for future work on this repo
-├── requirements.txt           # direct dependencies
-├── requirements.lock.txt      # exact working local versions
+├── requirements.txt           # direct dependencies (main .venv)
+├── requirements.lock.txt      # exact working local versions (main .venv)
+├── requirements-infer.txt     # inference env direct deps (.venv-infer)
+├── requirements-infer.lock.txt# exact Windows versions (.venv-infer)
 ├── configs/
 │   ├── class_mapping.json     # source→target map + class order (single source of truth)
 │   └── training.json          # seed, image/batch size, lr, epochs, dropout
 ├── docs/
 │   ├── project_scope.md       # scope and acceptance criteria
 │   ├── dataset.md             # RealWaste mapping and license notes
+│   ├── load_failure_baseline_20261003_172906.txt  # Keras 2 load error (captured)
 │   └── progress.md            # milestone log
 ├── data/
 │   ├── README.md              # tracked
@@ -66,15 +69,17 @@ ai-waste-classification-assistant/
 │   └── raw|processed/         # ignored images
 ├── models/
 │   ├── README.md              # tracked
-│   ├── metadata/              # tracked small eval notes (future)
-│   └── *.keras etc.           # ignored weights (not created yet)
+│   ├── metadata/              # tracked: run reports + compatibility verification
+│   └── *.keras etc.           # ignored weights
 ├── src/
 │   ├── download_data.py       # UCI download + safe extraction
 │   ├── inspect_data.py        # counts, mapping check, image validation
 │   ├── prepare_data.py        # duplicate checks + stratified split manifests
 │   ├── data_pipeline.py       # manifest loading + tf.data input pipeline
 │   ├── model.py               # MobileNetV2 model construction
-│   └── train.py               # frozen-base baseline training CLI (Colab)
+│   ├── train.py               # frozen-base baseline training CLI (Colab)
+│   └── verify_baseline_inference.py  # post-training compatibility verification
+│                              #   (run with .venv-infer, NOT .venv)
 ├── app/                       # Streamlit UI (future)
 ├── notebooks/
 │   └── train_colab.ipynb      # Colab baseline training (first run 2026-10-03)
@@ -82,6 +87,21 @@ ai-waste-classification-assistant/
 ```
 
 ## Environment setup (Windows, Python 3.11)
+
+**Two environments, two jobs — keep them separate:**
+
+| Environment | Versions | Used for |
+|---|---|---|
+| `.venv` | TensorFlow 2.15.1 / Keras 2.15 | Tests, development (`pytest`, pipeline, training code) |
+| `.venv-infer` | TensorFlow 2.20.0 / Keras 3.13.2 | Loading + running the baseline model (matches the Colab training run) |
+
+The baseline artifact is a **Keras 3** file; the main `.venv` (Keras 2) cannot
+deserialize it — that failure is captured in
+[`docs/load_failure_baseline_20261003_172906.txt`](docs/load_failure_baseline_20261003_172906.txt).
+`.venv-infer` exists purely so the model can be loaded without touching the
+original environment. Both are Git-ignored.
+
+### Main environment (`.venv`) — tests and development
 
 A virtual environment was already created in this repo:
 
@@ -106,6 +126,51 @@ Verify imports:
 ```powershell
 .venv\Scripts\python.exe -c "import tensorflow, streamlit, numpy, pandas, matplotlib, sklearn, PIL, pytest; print(tensorflow.__version__)"
 ```
+
+### Inference environment (`.venv-infer`) — loading the baseline model
+
+```powershell
+# create (Git-ignored; .gitignore lists .venv-infer/)
+py -3.11 -m venv .venv-infer
+
+# install the exact Colab-run versions; pip resolves the rest
+.venv-infer\Scripts\python.exe -m pip install -r requirements-infer.txt
+
+# exact Windows versions captured here:
+.venv-infer\Scripts\python.exe -m pip install -r requirements-infer.lock.txt
+
+# dependency + import check
+.venv-infer\Scripts\python.exe -m pip check
+.venv-infer\Scripts\python.exe -c "import tensorflow as tf, keras, numpy; print(tf.__version__, keras.__version__, numpy.__version__)"
+# -> 2.20.0 3.13.2 2.4.6   (verified 2026-10-04; pip check: no broken requirements)
+
+# post-training compatibility verification of the baseline artifact
+.venv-infer\Scripts\python.exe src\verify_baseline_inference.py
+```
+
+Use `.venv-infer\Scripts\python.exe` for anything that loads
+`models/*/best_model.keras`. Use `.venv\Scripts\python.exe` for `pytest` and
+the data/training scripts — they do not load the artifact.
+
+### Optional: cross-machine synthetic comparison (Colab vs Windows)
+
+The verification script can export its fixed synthetic batch outputs and
+compare them against a file produced on another machine. **Only claim
+numerical parity when both files exist and the comparison passes:**
+
+```powershell
+# Windows (or Colab): write this machine's outputs for the fixed batch
+.venv-infer\Scripts\python.exe src\verify_baseline_inference.py --save-predictions synthetic_windows.json
+
+# Colab (TF 2.20 runtime, repo cloned): same command with a different flag
+#   !python src/verify_baseline_inference.py --save-predictions synthetic_colab.json
+
+# Windows: compare against the Colab file (max abs diff must be <= tolerance)
+.venv-infer\Scripts\python.exe src\verify_baseline_inference.py --compare-predictions synthetic_colab.json
+```
+
+No Colab output file has been produced yet — **parity with Colab is not
+claimed.**
 
 ## Running tests
 
@@ -228,33 +293,47 @@ Every row was verified against `models/metadata/runs/baseline_20261003_172906/`
 [`docs/progress.md`](docs/progress.md). These are **validation** metrics from
 this one run; no test-set evaluation has been performed.
 
-### Local compatibility status (Windows `.venv`: TF 2.15.1 / Keras 2.15)
+### Local compatibility status (verified 2026-10-04, `.venv-infer`: TF 2.20.0 / Keras 3.13.2)
 
-**Not portable yet — loading the model locally was attempted (2026-10-03,
-`compile=False`) and FAILED:**
+**The baseline model now loads and executes on this machine.** The first
+attempt in the main `.venv` (Keras 2.15) failed with:
 
 ```text
 TypeError: Could not deserialize class 'Functional' because its parent
 module keras.src.models.functional cannot be imported.
 ```
 
-Cause: the artifact was saved by **Keras 3.13.2** (Keras-3 module paths such
-as `keras.src.models.functional` and `DTypePolicy`); the local environment is
-**Keras 2.15**, whose module layout differs. This is a serialization-format
-mismatch, not a corrupt file (the file's SHA-256 matches the run metadata).
+(full log: [`docs/load_failure_baseline_20261003_172906.txt`](docs/load_failure_baseline_20261003_172906.txt)).
+Cause: the artifact was saved by **Keras 3.13.2**; the main environment is
+**Keras 2.15**, whose module layout differs — a serialization-format mismatch,
+not a corrupt file (the file's SHA-256 matches the run metadata).
 
-Options (neither verified yet — do not assume either works):
+Resolution: a **separate** environment, not a conversion — `.venv-infer`
+(Python 3.11, TensorFlow 2.20.0, Keras 3.13.2, matching the Colab run).
+The original `.venv`, `requirements.txt`, and `requirements.lock.txt` were
+left untouched.
 
-1. **Separate inference environment** (recommended): a second venv such as
-   `.venv-infer` with Python 3.11 + `tensorflow==2.20.0`. PyPI ships
-   `tensorflow-2.20.0-cp311-cp311-win_amd64.whl`, so it can be installed
-   alongside without touching the existing `.venv`.
-2. **Conversion in a Keras 3 environment**: re-export the model (SavedModel
-   or legacy `.h5`) from a Keras 3 runtime, then verify a load + inference
-   test in TF 2.15 before claiming compatibility.
+**Verification** (`.venv-infer\Scripts\python.exe src\verify_baseline_inference.py`)
+— **19/19 checks passed**, report:
+[`models/metadata/verification/post_training_compatibility_baseline_20261003_172906.json`](models/metadata/verification/post_training_compatibility_baseline_20261003_172906.json)
 
-The existing `.venv` was **not** modified. Portability will be claimed only
-after an actual load + inference check succeeds.
+| Check | Result |
+|---|---|
+| Model SHA-256 vs original `run_metadata.json` | match (`c25f275cba8b5520…`) |
+| Load with `compile=False, safe_mode=True` | success, no warnings, unsafe deserialization **not** used |
+| Input / output shape | `(None, 224, 224, 3)` → `(None, 4)` |
+| Class order (3 sources: config / run metadata / bundle) | identical: metal, organic, paper, plastic |
+| Synthetic batch `(2, 224, 224, 3)` float32 0–255 | finite, 4 scores/image, softmax sums 1.0 (dev ≤ 6e-8) |
+| Repeated inference, `training=False` | stable: max abs diff **0.0** over 3 runs |
+| MobileNetV2 preprocessing probe (0→−1, 127.5→0, 255→+1) | embedded in graph, applied exactly once; no normalization outside the frozen backbone |
+| Real-image sample (6 training images, shared pipeline) | executes; index→label mapping consistent (test set never opened) |
+
+**These numbers are execution checks, not accuracy.** Synthetic predictions
+prove only that the graph runs; the real-image sample is recorded to show
+label-order handling, and no accuracy metric is computed from it.
+**Numerical parity with Colab is not claimed** — no Colab output file exists
+(use the optional `--save-predictions` / `--compare-predictions` flow above to
+produce one).
 
 ### What the workflow guarantees (and does not)
 
@@ -266,9 +345,10 @@ after an actual load + inference check succeeds.
 - **Reports ≠ model:** the exported `models/metadata/runs/<run_id>/` folder
   never contains weights; `.gitignore` blocks `*.keras` and `*.zip`.
 - **Validation only, for now:** the recorded numbers are validation metrics
-  from the actual Colab run. The test split has not been evaluated, the
-  model has not been fine-tuned, and local loading is pending a
-  Keras-3-compatible environment (see *Local compatibility status*).
+  from the actual Colab run. The test split has not been evaluated and the
+  model has not been fine-tuned. Local loading now works — in `.venv-infer`
+  only (see *Local compatibility status*) — and the verification report
+  deliberately contains execution checks, not accuracy claims.
 
 ## Git workflow
 

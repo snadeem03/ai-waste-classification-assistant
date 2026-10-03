@@ -678,4 +678,128 @@ are never written by these scripts and were preserved.
 
 ---
 
+## Milestone 8 — Compatible baseline inference environment and inference verification
+
+**Date:** 2026-10-04  
+**Status:** `.venv-infer` created and verified; baseline model **loads and executes** locally — post-training compatibility verification **19/19 passed**. No model conversion, no retraining, no fine-tuning, no test-image access, no Streamlit. `.venv`, `requirements.txt`, `requirements.lock.txt` left unchanged.
+
+### Environment roles (which interpreter for which task)
+
+| Task | Interpreter | Versions |
+|---|---|---|
+| Tests, development, data/training scripts | `.venv\Scripts\python.exe` | TF 2.15.1 / Keras 2.15 (unchanged) |
+| Loading + running the baseline model | `.venv-infer\Scripts\python.exe` | TF 2.20.0 / Keras 3.13.2 (matches Colab run) |
+
+The Keras 2 main environment still cannot deserialize the artifact (that
+failure stays documented in
+[`docs/load_failure_baseline_20261003_172906.txt`](load_failure_baseline_20261003_172906.txt));
+this milestone resolved compatibility by **adding a separate environment**,
+never by converting the model or touching the original one.
+
+### What was done
+
+1. **Confirmed `.venv-infer/` was Git-ignored *before* creating it** — added
+   `.venv-infer/` to `.gitignore` (line 3), then
+   `git check-ignore -v .venv-infer/` matched `.gitignore:3`. Verified again
+   after creation (`.venv-infer/pyvenv.cfg` → ignored).
+2. **Created the environment** (preserving existing work):
+   ```powershell
+   py -3.11 -m venv .venv-infer
+   .venv-infer\Scripts\python.exe -m pip install tensorflow==2.20.0 keras==3.13.2
+   ```
+   pip resolved the rest; **both target versions installed together, no
+   substitution needed**. Resulting key versions: Python 3.11.9,
+   TensorFlow 2.20.0, Keras 3.13.2, NumPy 2.4.6 (Colab ran NumPy 2.1.3 —
+   recorded as-is, not forced down).
+3. **Dependency checks:** `.venv-infer\Scripts\python.exe -m pip check` →
+   `No broken requirements found.` (exit 0); import check printed
+   `2.20.0 3.13.2 2.4.6`. CPU-only device visible
+   (`/physical_device:CPU:0`) — no GPU on this machine.
+4. **Wrote the inference dependency files** (separate from the main ones):
+   - `requirements-infer.txt` — direct pins (`tensorflow==2.20.0`,
+     `keras==3.13.2`) + environment-role notes;
+   - `requirements-infer.lock.txt` — full `pip freeze` for this Windows
+     environment (36 packages, header records date/platform and that NumPy
+     resolved to 2.4.6).
+5. **Wrote `src/verify_baseline_inference.py`** — the post-training
+   compatibility verification CLI (run with `.venv-infer` only). It checks,
+   in order: model SHA-256 against the original `run_metadata.json`; safe
+   load (`compile=False`, `safe_mode=True`, unsafe deserialization never
+   enabled); input/output shapes; class order across all three sources;
+   synthetic batch numerics; embedded-preprocessing probe; and a real-image
+   sample through the shared pipeline. Report:
+   `models/metadata/verification/post_training_compatibility_baseline_20261003_172906.json`
+   (`report_type: post_training_compatibility_verification`).
+6. **Fixed two weaknesses found during the first runs** (both re-verified):
+   - the initial synthetic `arange % 256` batch made both images *identical*
+     (150528 = 588×256), so the batch now applies a per-image offset → the
+     two images produce genuinely different outputs;
+   - the first real-image sample was all one class (`train.csv` is
+     folder-sorted), so the sample is now chosen round-robin across the four
+     classes — which is exactly what the label-order check needs.
+7. Updated `README.md`, `models/README.md`, and this entry.
+
+### Verification (actual runs)
+
+Command used for rows 1–6:
+
+```powershell
+.venv-infer\Scripts\python.exe src\verify_baseline_inference.py
+```
+
+| Check | Result |
+|---|---|
+| `pip check` in `.venv-infer` | `No broken requirements found.` (exit 0) |
+| Import check | `tensorflow 2.20.0, keras 3.13.2, numpy 2.4.6` |
+| Model SHA-256 vs original `run_metadata.json` | **match** — `c25f275cba8b5520…32b524f` |
+| Load `compile=False, safe_mode=True` | **success**, 0 warnings, `unsafe_deserialization_used: false` |
+| Input / output shape | `(None, 224, 224, 3)` → `(None, 4)` |
+| Class order (config / run metadata / model bundle) | identical: `metal, organic, paper, plastic` |
+| Synthetic batch `(2, 224, 224, 3)` float32 0–255 | shape/dtype/range OK; two **distinct** images |
+| Predictions | shape `(2, 4)`; all finite; scores in [0, 1] |
+| Softmax sums | `[1.0, 1.0]`, max abs deviation `6.0e-08` |
+| Repeated inference (`training=False`, 3 runs) | max abs diff **0.0** (stable) |
+| Preprocessing probe (0→−1, 127.5→0, 255→+1) | **exact**; embedded in graph, applied once |
+| Normalization outside frozen backbone | none (stray layers: `[]`) |
+| Real-image sample (6 training images, shared `data_pipeline`) | executed; `(6, 4)` finite, sums within 1.2e-07; round-robin over all 4 classes; `test_manifest_opened: false` |
+| **Overall verification status** | **`pass` — 19/19 checks, 0 errors, exit 0** |
+| Optional `--save-predictions` / `--compare-predictions` round-trip | works (self-comparison `max_abs_diff: 0.0`, 20/20 with that check) |
+| Full test suite in `.venv` (unchanged env) | **59 passed**, 0 failed |
+| Model conversion / retraining / fine-tuning | **not performed** (out of scope) |
+| Test images opened | **no** (only `train.csv`; recorded in the report) |
+| Numerical parity with Colab | **not claimed** — no Colab output file exists |
+
+### What the report does and does not say
+
+- **Does:** environment versions; model checksum (expected vs actual); load
+  options; input/output shapes; numerical checks (finite, 4 scores/image,
+  softmax sums, stability); the preprocessing probe evidence; the explicitly
+  recorded real-image sample rows (path, target, predicted label, scores);
+  warnings/errors (none occurred); `verification_status: pass`.
+- **Does not:** claim accuracy of any kind (synthetic outputs are labeled
+  execution-only; no metric is computed from the 6-image training sample);
+  claim Colab parity; imply the model is good — only that it loads, runs,
+  and behaves consistently with how it was trained.
+
+### Blockers
+
+- **None for local inference.** Remaining limitations (not blockers, just
+  recorded honestly):
+  - NumPy differs from the Colab run (2.4.6 local vs 2.1.3 recorded) — TF/Keras
+    match; not pinned down because pip resolved it and no check failed.
+  - No GPU on this machine (CPU-only device); inference speed differs from
+    Colab's T4 — irrelevant to correctness.
+  - Numerical parity with Colab unverified until someone runs the optional
+    `--save-predictions` flow in a live Colab runtime.
+
+### Next steps (not started; each a separate milestone)
+
+1. Optional: run `--save-predictions` in Colab + `--compare-predictions`
+   locally to establish cross-machine parity (commands in `README.md`).
+2. Later milestones: test-set evaluation, fine-tuning, Streamlit app — each
+   scoped separately; the compatibility verification above does **not**
+   unlock them automatically.
+
+---
+
 *Append new milestones below this line.*
