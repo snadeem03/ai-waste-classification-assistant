@@ -1,0 +1,16 @@
+# Test/workflow dependencies for the Keras 3 inference environment
+# (.venv-infer). Python 3.11 on Windows — SEPARATE from requirements.txt.
+#
+# Purpose: run the Keras 3 verification tests (tests/test_finetune_keras3.py)
+# and produce training plots in the fine-tuning workflow (matplotlib is used
+# by src/train.py's plotting helper). These are NOT needed for plain
+# baseline inference — see requirements-infer.txt for that.
+#
+# Install on top of requirements-infer.txt:
+#   .venv-infer\Scripts\python.exe -m pip install -r requirements-infer.txt
+#   .venv-infer\Scripts\python.exe -m pip install -r requirements-infer-test.txt
+#
+# Exact resolved versions for this Windows environment:
+#   requirements-infer.lock.txt
+pytest==9.1.1
+matplotlib==3.11.2

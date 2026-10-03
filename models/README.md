@@ -6,9 +6,11 @@
 |---|---|---|
 | `models/README.md` | **Yes** | This file — explains layout and rules |
 | `models/metadata/` | **Yes** (small files only) | Training run notes, label order copy, evaluation summary (JSON/CSV/MD) — **no weight binaries** |
-| `models/metadata/runs/<run_id>/` | **Yes** | Small per-run reports exported by `src/train.py --export-reports`: `run_metadata.json`, `class_order.json`, `history.csv`, `environment_freeze.txt`, `plots/*.png` |
+| `models/metadata/runs/<run_id>/` | **Yes** | Small per-run reports exported by `src/train.py --export-reports` (and `src/finetune.py`): `run_metadata.json`, `class_order.json`, `history.csv`, `environment_freeze.txt`, `plots/*.png` |
 | `models/metadata/verification/` | **Yes** | Post-training compatibility verification reports (JSON) produced by `src/verify_baseline_inference.py` |
+| `models/metadata/comparison/` | **Yes** | Model-selection report from `src/compare_validation.py` (`validation_comparison.json`; may be `status: pending` with no metrics until a fine-tuned model exists) |
 | `models/runs/baseline_<timestamp>/` | **No** | Full local run directory (default `--output-dir`): `best_model.keras`, logs, everything — ignored by `models/*` |
+| `models/runs/finetune_<timestamp>/` | **No** | Full fine-tuning run directory from `src/finetune.py` (parent checksum + policy recorded in its `run_metadata.json`) |
 | `models/best_model.keras` (or similar) | **No** | Saved Keras model restored from a Colab run zip |
 | Checkpoints / SavedModel folders | **No** | Intermediate training artifacts |
 | TensorBoard logs | **No** | Training curves (local only) |
@@ -54,6 +56,19 @@ MobileNetV2 preprocessing, real-image sample execution). Reproduce with:
 The report contains **execution checks only — not accuracy**. Test-set
 evaluation has not been run, and numerical parity with Colab is not claimed
 (no Colab output file exists).
+
+## Fine-tuning and model selection (milestone 9)
+
+`src/finetune.py` fine-tunes the baseline into a **separate**
+`models/runs/finetune_<timestamp>/` directory — the baseline bundle above is
+never modified (its SHA-256 is checked before and after training, recorded as
+`parent.unchanged_after_training`). `src/compare_validation.py` then writes
+the selection report to `models/metadata/comparison/validation_comparison.json`.
+
+**Status: prepared, not executed.** The Colab notebook
+(`notebooks/finetune_colab.ipynb`) has not been run, so no fine-tuned bundle
+and no comparison decision exist yet. When they do, record them here from the
+runs' own reports — never invent numbers.
 
 ## When a model is trained later
 

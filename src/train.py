@@ -355,12 +355,12 @@ def export_run_reports(
 # Training
 # ---------------------------------------------------------------------------
 
-def _resolve_config_path(path_root: Path, configured: str) -> Path:
+def resolve_config_path(path_root: Path, configured: str) -> Path:
     candidate = Path(configured)
     return candidate if candidate.is_absolute() else path_root / candidate
 
 
-def _new_run_dir(output_dir: Path, profile: str) -> Path:
+def new_run_dir(output_dir: Path, profile: str) -> Path:
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     base = output_dir / f"{profile}_{stamp}"
     run_dir = base
@@ -372,7 +372,7 @@ def _new_run_dir(output_dir: Path, profile: str) -> Path:
     return run_dir
 
 
-def _history_rows(history: dict[str, list[float]]) -> list[dict[str, float]]:
+def history_to_rows(history: dict[str, list[float]]) -> list[dict[str, float]]:
     keys = sorted(history.keys())
     length = max((len(history[key]) for key in keys), default=0)
     return [
@@ -418,7 +418,7 @@ def run_baseline_training(
         raise ValueError(f"epochs must be positive, got {epochs}")
 
     class_order = data_pipeline.load_class_order(
-        _resolve_config_path(path_root, config["class_mapping_path"])
+        resolve_config_path(path_root, config["class_mapping_path"])
     )
 
     # ONLY train + validation. The test manifest is never opened here.
@@ -475,7 +475,7 @@ def run_baseline_training(
 
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    run_dir = _new_run_dir(output_dir, RUN_PROFILE)
+    run_dir = new_run_dir(output_dir, RUN_PROFILE)
     started_at = utc_now_iso()
     started_monotonic = time.perf_counter()
 
@@ -506,7 +506,7 @@ def run_baseline_training(
         raise
 
     train_seconds = time.perf_counter() - started_monotonic
-    history_rows = _history_rows(history.history)
+    history_rows = history_to_rows(history.history)
     if not history_rows:
         raise RuntimeError("Training finished without recording any epoch history")
 

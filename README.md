@@ -1,6 +1,6 @@
 # AI Waste Classification Assistant
 
-College AIML Project-Based Learning (PBL) — **status: dataset downloaded, splits created, model built, first Colab baseline run completed (validation metrics recorded); baseline model verified to load + execute locally in the isolated `.venv-infer` environment (TensorFlow 2.20 / Keras 3).**
+College AIML Project-Based Learning (PBL) — **status: dataset downloaded, splits created, model built, first Colab baseline run completed (validation metrics recorded); baseline model verified to load + execute locally in the isolated `.venv-infer` environment (TensorFlow 2.20 / Keras 3); controlled fine-tuning + validation comparison code, tests, and Colab notebook prepared — no fine-tuning run has executed yet.**
 
 ## What this project will do
 
@@ -22,7 +22,7 @@ The planned approach:
 
 ## Important honesty note
 
-**Honest status.** Milestones 1–4 defined scope, downloaded RealWaste, and wrote duplicate-checked 70/15/15 split manifests. Milestone 5 added the input pipeline and model *construction*. Milestone 6 added the training workflow (`src/train.py`) and the Colab notebook. **The first real baseline run has now executed in Google Colab** (run `baseline_20261003_172906`, recorded below and in `docs/progress.md`): its **validation** metrics are real, read from that run's own `run_metadata.json`/`history.csv`, and verified against the extracted artifacts. **The saved model now loads and executes locally** in a separate inference environment (`.venv-infer`, TensorFlow 2.20 / Keras 3 — post-training compatibility verification passed, see *Local compatibility status*). No test-set evaluation, no fine-tuning, and no demo app exist yet.
+**Honest status.** Milestones 1–4 defined scope, downloaded RealWaste, and wrote duplicate-checked 70/15/15 split manifests. Milestone 5 added the input pipeline and model *construction*. Milestone 6 added the training workflow (`src/train.py`) and the Colab notebook. **The first real baseline run has now executed in Google Colab** (run `baseline_20261003_172906`, recorded below and in `docs/progress.md`): its **validation** metrics are real, read from that run's own `run_metadata.json`/`history.csv`, and verified against the extracted artifacts. **The saved model now loads and executes locally** in a separate inference environment (`.venv-infer`, TensorFlow 2.20 / Keras 3 — post-training compatibility verification passed, see *Local compatibility status*). Milestone 9 added controlled fine-tuning (`src/finetune.py`), validation-only comparison/model selection (`src/compare_validation.py`), their tests, and `notebooks/finetune_colab.ipynb` — **the notebook has not been executed, so no fine-tuning metrics or selection decision exist yet.** No test-set evaluation and no demo app exist.
 
 ## Project documentation
 
@@ -55,6 +55,7 @@ ai-waste-classification-assistant/
 ├── requirements.lock.txt      # exact working local versions (main .venv)
 ├── requirements-infer.txt     # inference env direct deps (.venv-infer)
 ├── requirements-infer.lock.txt# exact Windows versions (.venv-infer)
+├── requirements-infer-test.txt# pytest + matplotlib for .venv-infer's test suite
 ├── configs/
 │   ├── class_mapping.json     # source→target map + class order (single source of truth)
 │   └── training.json          # seed, image/batch size, lr, epochs, dropout
@@ -78,11 +79,14 @@ ai-waste-classification-assistant/
 │   ├── data_pipeline.py       # manifest loading + tf.data input pipeline
 │   ├── model.py               # MobileNetV2 model construction
 │   ├── train.py               # frozen-base baseline training CLI (Colab)
+│   ├── finetune.py            # controlled fine-tuning CLI (block_13+, no test set)
+│   ├── compare_validation.py  # baseline vs fine-tuned validation comparison
 │   └── verify_baseline_inference.py  # post-training compatibility verification
 │                              #   (run with .venv-infer, NOT .venv)
 ├── app/                       # Streamlit UI (future)
 ├── notebooks/
-│   └── train_colab.ipynb      # Colab baseline training (first run 2026-10-03)
+│   ├── train_colab.ipynb      # Colab baseline training (first run 2026-10-03)
+│   └── finetune_colab.ipynb   # Colab fine-tune + compare (prepared; not run yet)
 └── tests/                     # pytest checks (synthetic images; no download)
 ```
 
@@ -93,7 +97,7 @@ ai-waste-classification-assistant/
 | Environment | Versions | Used for |
 |---|---|---|
 | `.venv` | TensorFlow 2.15.1 / Keras 2.15 | Tests, development (`pytest`, pipeline, training code) |
-| `.venv-infer` | TensorFlow 2.20.0 / Keras 3.13.2 | Loading + running the baseline model (matches the Colab training run) |
+| `.venv-infer` | TensorFlow 2.20.0 / Keras 3.13.2 | Loading + running the baseline model; Keras 3 test suite; fine-tune/compare CLIs (matches the Colab training run) |
 
 The baseline artifact is a **Keras 3** file; the main `.venv` (Keras 2) cannot
 deserialize it — that failure is captured in
@@ -139,6 +143,9 @@ py -3.11 -m venv .venv-infer
 # exact Windows versions captured here:
 .venv-infer\Scripts\python.exe -m pip install -r requirements-infer.lock.txt
 
+# test/workflow extras (pytest + matplotlib) for this env's test suite
+.venv-infer\Scripts\python.exe -m pip install -r requirements-infer-test.txt
+
 # dependency + import check
 .venv-infer\Scripts\python.exe -m pip check
 .venv-infer\Scripts\python.exe -c "import tensorflow as tf, keras, numpy; print(tf.__version__, keras.__version__, numpy.__version__)"
@@ -149,8 +156,10 @@ py -3.11 -m venv .venv-infer
 ```
 
 Use `.venv-infer\Scripts\python.exe` for anything that loads
-`models/*/best_model.keras`. Use `.venv\Scripts\python.exe` for `pytest` and
-the data/training scripts — they do not load the artifact.
+`models/*/best_model.keras` (including `src/finetune.py` and
+`src/compare_validation.py` when they touch the real Keras 3 baseline).
+Use `.venv\Scripts\python.exe` for `pytest` and the data/training scripts —
+they do not load the artifact.
 
 ### Optional: cross-machine synthetic comparison (Colab vs Windows)
 
@@ -183,6 +192,12 @@ claimed.**
 
 # Milestone-6 training workflow + Colab notebook structure
 .venv\Scripts\python.exe -m pytest tests\test_train.py tests\test_notebook.py -v
+
+# Milestone-9 fine-tuning + comparison (+ its Colab notebook structure)
+.venv\Scripts\python.exe -m pytest tests\test_finetune.py tests\test_compare_validation.py tests\test_finetune_notebook.py -v
+
+# Keras 3-only tests (real baseline policy/training checks) — run in .venv-infer
+.venv-infer\Scripts\python.exe -m pytest tests\test_finetune_keras3.py -v
 
 # Real-data smoke check with printed batch/model shapes (needs data\raw\ + manifests)
 .venv\Scripts\python.exe -m pytest tests\test_smoke_real_data.py -v -s
@@ -349,6 +364,49 @@ produce one).
   model has not been fine-tuned. Local loading now works — in `.venv-infer`
   only (see *Local compatibility status*) — and the verification report
   deliberately contains execution checks, not accuracy claims.
+
+## Controlled fine-tuning and model selection (milestone 9)
+
+**Honest status: the code, tests, and notebook exist; no fine-tuning run has
+been executed, so no fine-tuning metrics and no model-selection decision
+exist yet.** Everything below is prepared and test-covered, not measured.
+
+| File | Purpose |
+|---|---|
+| [`src/finetune.py`](src/finetune.py) | Controlled fine-tuning CLI: unfreezes MobileNetV2 `block_13+` (BatchNorm always frozen, `training=False` graph verified before starting), fresh Adam at lr 0.00001, max 10 epochs, early stopping on `val_loss`, train+validation manifests only, separate `finetune_<timestamp>` run dir, parent checksum verified before **and** after |
+| [`src/compare_validation.py`](src/compare_validation.py) | Evaluates baseline + fine-tuned model on the **identical** validation pass (pure-NumPy loss/accuracy/macro-F1/per-class/confusion) and applies the selection rule below; writes `models/metadata/comparison/validation_comparison.json` |
+| [`notebooks/finetune_colab.ipynb`](notebooks/finetune_colab.ipynb) | Colab workflow: environment → clone → baseline SHA check → data → `finetune.py` → `compare_validation.py` → zip reports back to Drive |
+| [`tests/test_finetune.py`](tests/test_finetune.py), [`tests/test_compare_validation.py`](tests/test_compare_validation.py), [`tests/test_finetune_notebook.py`](tests/test_finetune_notebook.py) | Synthetic/manifest-level tests (run in `.venv`) |
+| [`tests/test_finetune_keras3.py`](tests/test_finetune_keras3.py) | Real-baseline checks (policy, recompile, save/load, validation alignment) — run in `.venv-infer` |
+
+### Selection rule (fixed in code before any run)
+
+1. Fine-tuned model is selected **iff** its macro F1 on the validation set is
+   **strictly higher** than the baseline's.
+2. If macro F1 ties, the fine-tuned model is selected **iff** its validation
+   accuracy is strictly higher.
+3. Otherwise the **baseline** stays.
+
+The rule travels inside the report (`selection_rule`) and is never changed
+after seeing results. The test set is not consulted (`test_manifest_used:
+false`). If the fine-tuned model does not exist, the report is written with
+`status: pending` and **no metrics** — nothing is guessed.
+
+### How to run it
+
+```powershell
+# Locally: help / dry checks only (no GPU here; real runs happen on Colab)
+.venv\Scripts\python.exe src\finetune.py --help
+.venv\Scripts\python.exe src\compare_validation.py --help
+
+# Real fine-tuning: upload notebooks/finetune_colab.ipynb to Colab,
+# Runtime → Change runtime type → T4 GPU, run all cells in order.
+```
+
+Fine-tuned artifacts land in a separate `models/runs/finetune_<timestamp>/`
+bundle (same layout as a baseline run) and the comparison report in
+`models/metadata/comparison/`; both are documented in
+[`models/README.md`](models/README.md).
 
 ## Git workflow
 

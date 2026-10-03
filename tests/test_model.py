@@ -50,17 +50,20 @@ def test_preprocessing_maps_0_to_minus1_and_255_to_1_exactly_once() -> None:
     """Probe the tensor that actually feeds MobileNetV2 inside the model.
 
     If preprocessing were applied twice, 0 would map to -1.0078..., not -1.
+    The probe ends at the base's inbound-node input, which is the
+    preprocessed tensor on both Keras 2 (preprocess listed as a layer) and
+    Keras 3 (preprocess only recorded in the operation graph).
     """
     net = waste_model.build_waste_classifier(weights=None, image_size=224)
-    layers = net.layers
-    # The augmentation block is a Sequential (also a Model subclass), so find
-    # the MobileNetV2 base by name; its input comes from the last preprocess op.
-    base_index = next(
-        index for index, layer in enumerate(layers)
+    base = next(
+        layer
+        for layer in net.layers
         if isinstance(layer, tf.keras.Model) and "mobilenet" in layer.name.lower()
     )
-    last_preprocess_layer = layers[base_index - 1]
-    probe = tf.keras.Model(net.input, last_preprocess_layer.output)
+    feed = base._inbound_nodes[0].input_tensors
+    if isinstance(feed, (list, tuple)):  # Keras 3 wraps it in a list
+        feed = feed[0]
+    probe = tf.keras.Model(net.input, feed)
 
     zeros = np.zeros((1, 224, 224, 3), dtype="float32")
     full = np.full((1, 224, 224, 3), 255.0, dtype="float32")
@@ -72,8 +75,19 @@ def test_pretrained_base_is_frozen_and_head_is_trainable() -> None:
     net = waste_model.build_waste_classifier(weights=None, image_size=224)
     assert waste_model.base_model_is_frozen(net)
 
+    # The head's weights must be the ONLY trainable weights. Names differ by
+    # Keras major version (Keras 2 prefixes the layer and adds ':0').
+    head = net.get_layer("predictions")
+    assert len(net.trainable_weights) == len(head.weights) == 2
+    assert all(
+        any(weight is head_weight for head_weight in head.weights)
+        for weight in net.trainable_weights
+    )
     trainable_names = sorted(weight.name for weight in net.trainable_weights)
-    assert trainable_names == ["predictions/bias:0", "predictions/kernel:0"]
+    assert trainable_names in (
+        ["predictions/bias:0", "predictions/kernel:0"],  # Keras 2
+        ["bias", "kernel"],  # Keras 3
+    )
 
     counts = waste_model.parameter_counts(net)
     assert counts["trainable"] > 0

@@ -803,3 +803,73 @@ Command used for rows 1–6:
 ---
 
 *Append new milestones below this line.*
+
+---
+
+## Milestone 9 — Controlled fine-tuning and validation comparison
+
+**Date:** 2026-10-04  
+**Status:** Code + tests + Colab notebook prepared and verified locally. **No real fine-tuning run exists yet** — the notebook has not been executed in Google Colab, so there are **no fine-tuning metrics and no comparison decision** in this milestone. No test-set evaluation, no Streamlit.
+
+### What was done
+
+1. **`src/finetune.py`** (818 lines, 10 functions) — controlled fine-tuning CLI/workflow that starts from the **verified baseline artifact** (`models/baseline_20261003_172906/best_model.keras`):
+   - **Selective unfreeze** (`apply_finetune_policy`): `backbone.trainable = True` first, then per-layer flags — only non-BatchNorm layers from `block_13` onward train (index-based start, because MobileNetV2's first block is `expanded_conv`); every BatchNorm layer stays frozen; the `predictions` head stays trainable. Self-checks refuse to continue if a BN layer became trainable or a block-13+ layer stayed frozen.
+   - **`training=False` guard:** the backbone call's recorded `training` kwarg is read from the graph (Keras 3: `node.arguments.kwargs`, Keras 2: `node.call_kwargs`). If it is `True` or cannot be verified, fine-tuning **refuses to start** (`RuntimeError`) — BN running statistics must never be updated from small batches.
+   - **Fresh optimizer** (`compile_finetune`): new `Adam(learning_rate=0.00001)` + `SparseCategoricalCrossentropy`, because reusing baseline optimizer state at a lower LR would make the first steps wrong.
+   - **Parent integrity:** parent SHA-256 recorded *before* training; sidecar `run_metadata.json`/`class_order.json` are cross-checked (checksum mismatch or class-order mismatch → refuse); SHA-256 re-checked *after* training and the run fails if the baseline bytes changed (`parent.unchanged_after_training: true`).
+   - **Data:** only `train.csv` + `validation.csv` are opened (`test_manifest_used: false` recorded); same manifests, seed 42, and class-weight policy as the baseline.
+   - **Run directory:** separate `models/runs/finetune_<timestamp>/` (`RUN_PROFILE = "finetune"`) — never overwrites the baseline run; `best_model.keras`, `history.csv`, `run_metadata.json` (policy, configuration, honesty notes), `plots/`, `environment_freeze.txt`; optional export of small reports to `models/metadata/runs/finetune_<timestamp>/`.
+   - Defaults: max 10 epochs, lr 0.00001, start block 13 (overridable via an optional `"finetune"` block in `configs/training.json`; unknown keys fail loudly). EarlyStopping + ModelCheckpoint on `val_loss`, patience 3 (shared `train.build_callbacks`).
+   - Helpers reused from `src/train.py` — its three private helpers were made public for this: `_resolve_config_path` → `resolve_config_path`, `_new_run_dir` → `new_run_dir`, `_history_rows` → `history_to_rows` (rename-only diff; tests green).
+2. **`src/compare_validation.py`** (503 lines, 8 functions) — validation-only comparison and model selection:
+   - Evaluates baseline and fine-tuned model on the **identical** deterministic validation pass (manifest order, `training=False`, no shuffle, no augmentation, full split including the final partial batch); test manifest never opened.
+   - Metrics in **pure NumPy** (no scikit-learn): loss, accuracy, macro F1, per-class precision/recall/F1/support, confusion matrix. Zero-division → `0.0`; `argmax` ties → lowest class index.
+   - **Alignment and output guards:** row alignment is checked against the manifest (mismatch → `RuntimeError`, never a silently wrong report); non-finite outputs and rows that don't sum to 1 also raise.
+   - **Selection rule fixed in code before any run** (`SELECTION_RULE`, travels inside the report): (1) fine-tuned wins iff macro F1 strictly higher; (2) F1 tie → fine-tuned only if accuracy strictly higher; (3) otherwise keep the baseline. Within one run the best checkpoint is still lowest `val_loss` — this rule never compares checkpoints inside a run.
+   - **Honest pending state:** if `--finetune-model` is missing/omitted, the report is written with `status: "pending"` and **no metrics** — nothing is invented. Default output: `models/metadata/comparison/validation_comparison.json`.
+3. **`notebooks/finetune_colab.ipynb`** (33 cells: 17 code, 16 markdown) — the real fine-tuning workflow for Google Colab: verifies/installs TF 2.20.0 + Keras 3.13.2 (restart guard), Drive mount, repo clone at a pinned `REVISION`, baseline zip download with **double SHA-256 check** (against the zip's own `run_metadata.json` *and* the committed run metadata), dataset download via `--metadata-dir` (checkout stays clean), manifest checksum validation, `nvidia-smi`, subprocess runs of `src/finetune.py` then `src/compare_validation.py` (`PYTHONHASHSEED`, `cwd=` the repo), and zips of reports/model/comparison back to Drive. States honestly that it "has not been executed in Google Colab" and reports **validation** metrics only.
+4. **Tests** — 4 new files + 1 compatibility fix (all synthetic or manifest-level; no RealWaste download):
+   - `tests/test_finetune.py` — **23 tests**: layer policy (block_13+, BN frozen, head trainable), fresh optimizer, parent checksum/class-order refusal, config validation, `run_tiny_finetune` smoke (1 epoch, 32 px, batch 2), CLI help/errors.
+   - `tests/test_compare_validation.py` — **17 tests**: metric math, zero-division and tie policies, alignment/softmax guards, all three selection-rule branches, pending report (no metrics, exit 0, checksum recorded), CLI.
+   - `tests/test_finetune_notebook.py` — **9 tests**: cell structure/syntax, required topics, selection-rule text appears *before* the compare cell, no lock-file install in code, no accuracy claims, `REPO_DIR` normalized to a `Path`.
+   - `tests/test_finetune_keras3.py` — **4 tests, Keras 3 only** (`pytest.mark.skipif` on `keras.__version__`): real baseline policy + recompile (1,668,484 trainable / 594,624 non-trainable params, `trainable > 0`), tiny-fine-tune save/load round trip with **parent SHA unchanged**, `run_tiny_finetune` smoke, 4-image real-validation alignment through `collect_predictions` (no metrics).
+   - `tests/test_model.py` — made Keras 2/3 tolerant (preprocessing probe via `_inbound_nodes[0].input_tensors`; head-weight assertion accepts both naming schemes). Existing tests otherwise untouched.
+5. **Inference env test deps** — new `requirements-infer-test.txt` (`pytest==9.1.1`, `matplotlib==3.11.2`); `requirements-infer.lock.txt` regenerated (47 packages; 3 header lines + 11 new test deps; LF + UTF-8 BOM preserved); `pip check` → no broken requirements. `requirements-infer.txt` points to the new file.
+6. Updated `README.md`, `models/README.md`, and this entry.
+
+### Verification (actual runs)
+
+| Check | Result |
+|---|---|
+| `.venv` full suite (`pytest -q`) | **108 passed, 4 skipped** (the 4 Keras 3-only tests skip on Keras 2), 0 failed |
+| `.venv-infer` full suite (`pytest -q`) | **112 passed**, 0 failed |
+| New test counts | `test_finetune.py` 23, `test_compare_validation.py` 17, `test_finetune_notebook.py` 9, `test_finetune_keras3.py` 4 |
+| `test_finetune_keras3.py` in `.venv-infer` | 4 passed (real baseline: policy, recompile, training round trip, validation alignment) |
+| `test_model.py` in both envs | 10 passed each (Keras 2 **and** Keras 3) |
+| Baseline artifact SHA-256 vs `run_metadata.json` | still matches (`c25f275cba8b5520…`); parent file never modified by tests |
+| `.venv-infer` `pip check` | `No broken requirements found.` (exit 0) |
+| `src/finetune.py --help`, `src/compare_validation.py --help` | exit 0 in `.venv` |
+| Comparison without a fine-tuned model | writes `status: pending`, **no metrics**, exit 0 |
+| **Real fine-tuning run** | **not performed** (Colab notebook prepared but not executed) |
+| **Comparison decision (baseline vs fine-tuned)** | **not performed** — no fine-tuned model exists; only the pending path was exercised |
+| Test-set access | **none** (`test_manifest_used: false` in both workflows) |
+
+### What this milestone does and does not say
+
+- **Does:** reusable, test-covered code for controlled fine-tuning and for a fair validation-only comparison with a rule fixed *before* results; a Colab notebook ready to run; honest `pending` state when the fine-tuned model does not exist.
+- **Does not:** claim any fine-tuning metric, improvement, or model-selection decision — no run has happened; claim test-set results (still untouched); start Streamlit work.
+
+### Blockers
+
+- **None for the code.** The remaining work is execution, not development: run `notebooks/finetune_colab.ipynb` in Google Colab (T4 GPU) to produce the fine-tuned model and the comparison report, then bring the zips back as in milestone 6.
+
+### Next steps (not started; each a separate milestone)
+
+1. Execute `notebooks/finetune_colab.ipynb` on Colab; record the real fine-tune run + comparison decision in `docs/progress.md` (never invent numbers).
+2. Test-set evaluation of whichever model the selection rule picked (held out until now).
+3. Streamlit app serving the selected model.
+
+---
+
+*Append new milestones below this line.*

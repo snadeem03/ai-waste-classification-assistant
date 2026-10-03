@@ -10,9 +10,14 @@
 # Exact resolved versions for this Windows environment:
 #   requirements-infer.lock.txt
 #
+# Test/workflow extras (pytest + matplotlib, for the Keras 3 test suite and
+# the fine-tuning plots) are listed separately:
+#   requirements-infer-test.txt
+#
 # Create/reproduce:
 #   py -3.11 -m venv .venv-infer
 #   .venv-infer\Scripts\python.exe -m pip install -r requirements-infer.txt
+#   .venv-infer\Scripts\python.exe -m pip install -r requirements-infer-test.txt
 #
 # Pinned to the exact versions of the Colab run (run_metadata.json
 # environment block: tensorflow 2.20.0, keras 3.13.2).
