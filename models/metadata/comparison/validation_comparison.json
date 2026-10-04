@@ -1,0 +1,230 @@
+{
+  "report_type": "validation_model_selection",
+  "status": "complete",
+  "created_at_utc": "2026-10-04T13:42:01+00:00",
+  "git": {
+    "commit": "7a7fdd99041b5a912f0ad867dc260fa7fd25afed",
+    "branch": "main",
+    "uncommitted_changes": true,
+    "status": "ok"
+  },
+  "environment": {
+    "python": "3.13.15",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "tensorflow": "2.20.0",
+    "keras": "3.13.2",
+    "numpy": "2.1.3",
+    "physical_devices": [
+      "CPU:/physical_device:CPU:0",
+      "GPU:/physical_device:GPU:0"
+    ],
+    "gpu_count": 1
+  },
+  "selection_rule": {
+    "id": "validation_macro_f1_then_accuracy",
+    "steps": [
+      "1. If the fine-tuned model's macro F1 is strictly higher than the baseline's, select the fine-tuned model.",
+      "2. If macro F1 is equal, select the fine-tuned model only when its validation accuracy is strictly higher.",
+      "3. Otherwise (macro F1 lower, or both metrics equal), keep the baseline."
+    ],
+    "within_a_run": "best checkpoint = lowest val_loss (unchanged; this rule never compares checkpoints inside one run)",
+    "test_set_used": false,
+    "fixed_before_running": "This rule lives in src/compare_validation.py and was written before any comparison ran; measured metrics can never change it."
+  },
+  "evaluation": {
+    "split": "validation",
+    "manifest": {
+      "path": "data/metadata/validation.csv",
+      "sha256": "77423bfc11f37df0bb836210f4866543857b56bfe73572054438902ecae6997d",
+      "rows": 458
+    },
+    "image_size": 224,
+    "batch_size": 16,
+    "seed": 42,
+    "pipeline": "identical deterministic pass for both models: manifest order, training=False, no augmentation, full split including the final partial batch",
+    "test_manifest_used": false,
+    "class_order": [
+      "metal",
+      "organic",
+      "paper",
+      "plastic"
+    ],
+    "baseline": {
+      "model": {
+        "path": "/content/baseline_model/best_model.keras",
+        "sha256": "c25f275cba8b5520c65af78716c844889fb0e8ff1a407b3215170674332b524f",
+        "size_bytes": 9691268
+      },
+      "images_evaluated": 458,
+      "metrics": {
+        "images": 458,
+        "loss": 0.2096569815522252,
+        "accuracy": 0.9323144104803494,
+        "macro_f1": 0.9322544605989562,
+        "per_class": {
+          "metal": {
+            "precision": 0.8842975206611571,
+            "recall": 0.9067796610169492,
+            "f1": 0.895397489539749,
+            "support": 118,
+            "predicted_count": 121
+          },
+          "organic": {
+            "precision": 0.9921875,
+            "recall": 1.0,
+            "f1": 0.996078431372549,
+            "support": 127,
+            "predicted_count": 128
+          },
+          "paper": {
+            "precision": 0.9452054794520548,
+            "recall": 0.92,
+            "f1": 0.9324324324324323,
+            "support": 75,
+            "predicted_count": 73
+          },
+          "plastic": {
+            "precision": 0.9117647058823529,
+            "recall": 0.8985507246376812,
+            "f1": 0.9051094890510949,
+            "support": 138,
+            "predicted_count": 136
+          }
+        },
+        "confusion_matrix": {
+          "order": [
+            "metal",
+            "organic",
+            "paper",
+            "plastic"
+          ],
+          "rows_true_columns_predicted": [
+            [
+              107,
+              0,
+              2,
+              9
+            ],
+            [
+              0,
+              127,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              69,
+              3
+            ],
+            [
+              11,
+              1,
+              2,
+              124
+            ]
+          ]
+        }
+      }
+    },
+    "finetuned": {
+      "model": {
+        "path": "/content/drive/MyDrive/ai-waste-classification-assistant-outputs/runs/finetune_20261004_133620/best_model.keras",
+        "sha256": "39f7b78befd182c6a65cc94db3a2f3a09d15018ab5ae34145ed4a48f28e1cb4a",
+        "size_bytes": 23001516
+      },
+      "images_evaluated": 458,
+      "metrics": {
+        "images": 458,
+        "loss": 0.18806081650868203,
+        "accuracy": 0.9366812227074236,
+        "macro_f1": 0.9372495337333778,
+        "per_class": {
+          "metal": {
+            "precision": 0.8943089430894309,
+            "recall": 0.9322033898305084,
+            "f1": 0.9128630705394191,
+            "support": 118,
+            "predicted_count": 123
+          },
+          "organic": {
+            "precision": 0.9921259842519685,
+            "recall": 0.9921259842519685,
+            "f1": 0.9921259842519685,
+            "support": 127,
+            "predicted_count": 127
+          },
+          "paper": {
+            "precision": 0.9459459459459459,
+            "recall": 0.9333333333333333,
+            "f1": 0.9395973154362416,
+            "support": 75,
+            "predicted_count": 74
+          },
+          "plastic": {
+            "precision": 0.917910447761194,
+            "recall": 0.8913043478260869,
+            "f1": 0.9044117647058824,
+            "support": 138,
+            "predicted_count": 134
+          }
+        },
+        "confusion_matrix": {
+          "order": [
+            "metal",
+            "organic",
+            "paper",
+            "plastic"
+          ],
+          "rows_true_columns_predicted": [
+            [
+              110,
+              0,
+              1,
+              7
+            ],
+            [
+              0,
+              126,
+              0,
+              1
+            ],
+            [
+              2,
+              0,
+              70,
+              3
+            ],
+            [
+              11,
+              1,
+              3,
+              123
+            ]
+          ]
+        }
+      }
+    },
+    "images_evaluated": 458
+  },
+  "decision": {
+    "selected": "finetuned",
+    "reason": "rule step 1: macro F1 improved 0.932254 -> 0.937250",
+    "measured": {
+      "baseline": {
+        "macro_f1": 0.9322544605989562,
+        "accuracy": 0.9323144104803494
+      },
+      "finetuned": {
+        "macro_f1": 0.9372495337333778,
+        "accuracy": 0.9366812227074236
+      }
+    }
+  },
+  "honesty_notes": [
+    "Every metric comes from evaluating the two saved models on the identical validation manifest in this single run; no test image was opened.",
+    "The selection rule was fixed in code before this comparison ran; it is never tuned after seeing results.",
+    "Both model checksums are recorded so a later reader can prove which files were compared."
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "report_type": "selected_model_record",
+  "created_at_utc": "2026-10-04T14:15:46+00:00",
+  "created_before_test_evaluation": true,
+  "selected": "finetuned",
+  "selection_reason": "rule step 1: macro F1 improved 0.932254 -> 0.937250",
+  "selection_rule": {
+    "id": "validation_macro_f1_then_accuracy",
+    "steps": [
+      "1. If the fine-tuned model's macro F1 is strictly higher than the baseline's, select the fine-tuned model.",
+      "2. If macro F1 is equal, select the fine-tuned model only when its validation accuracy is strictly higher.",
+      "3. Otherwise (macro F1 lower, or both metrics equal), keep the baseline."
+    ],
+    "within_a_run": "best checkpoint = lowest val_loss (unchanged; this rule never compares checkpoints inside one run)",
+    "test_set_used": false,
+    "fixed_before_running": "This rule lives in src/compare_validation.py and was written before any comparison ran; measured metrics can never change it."
+  },
+  "selected_model": {
+    "path": "models/finetune_20261004_133620/best_model.keras",
+    "sha256": "39f7b78befd182c6a65cc94db3a2f3a09d15018ab5ae34145ed4a48f28e1cb4a",
+    "size_bytes": 23001516,
+    "tracked_in_git": false,
+    "note": "model binary stays ignored; only this record is committed"
+  },
+  "run": {
+    "run_id": "finetune_20261004_133620",
+    "profile": "finetune",
+    "status": "ok",
+    "started_at_utc": "2026-10-04T13:36:20+00:00",
+    "finished_at_utc": "2026-10-04T13:38:42+00:00",
+    "reports": "models/metadata/runs/finetune_20261004_133620",
+    "run_metadata": "models/metadata/runs/finetune_20261004_133620/run_metadata.json",
+    "code_commit": "7a7fdd99041b5a912f0ad867dc260fa7fd25afed",
+    "parent_run": "baseline_20261003_172906",
+    "parent_sha256": "c25f275cba8b5520c65af78716c844889fb0e8ff1a407b3215170674332b524f",
+    "best_epoch": 6,
+    "epochs_completed": 9
+  },
+  "class_order": [
+    "metal",
+    "organic",
+    "paper",
+    "plastic"
+  ],
+  "class_index": {
+    "metal": 0,
+    "organic": 1,
+    "paper": 2,
+    "plastic": 3
+  },
+  "comparison_report": {
+    "path": "models/metadata/comparison/validation_comparison.json",
+    "sha256": "e39642d94ae9cfc736773162d48cfd6297e87a98dbe2ebc6d8eb448cfd9ba422",
+    "status": "complete",
+    "split_used": "validation",
+    "images": 458,
+    "test_manifest_used": false,
+    "created_at_utc": "2026-10-04T13:42:01+00:00"
+  },
+  "measured_on_validation": {
+    "baseline": {
+      "macro_f1": 0.9322544605989562,
+      "accuracy": 0.9323144104803494
+    },
+    "finetuned": {
+      "macro_f1": 0.9372495337333778,
+      "accuracy": 0.9366812227074236
+    }
+  },
+  "not_selected": {
+    "model": "baseline",
+    "path": "/content/baseline_model/best_model.keras",
+    "sha256": "c25f275cba8b5520c65af78716c844889fb0e8ff1a407b3215170674332b524f",
+    "local_path": "models/baseline_20261003_172906/best_model.keras",
+    "path_note": "'path' is verbatim from the Colab comparison run; the same checksummed artifact lives at 'local_path' in this repo.",
+    "reason": "rule step 1 lost: its macro F1 was lower on validation"
+  },
+  "git_checkout_flags": {
+    "fine_tune_run_metadata": {
+      "commit": "7a7fdd99041b5a912f0ad867dc260fa7fd25afed",
+      "branch": "main",
+      "uncommitted_changes": false,
+      "status": "ok"
+    },
+    "validation_comparison": {
+      "commit": "7a7fdd99041b5a912f0ad867dc260fa7fd25afed",
+      "branch": "main",
+      "uncommitted_changes": true,
+      "status": "ok"
+    },
+    "what_true_means": "src/train.py collect_git_info() records uncommitted_changes = bool(git status --porcelain), i.e. any modified OR untracked entry in the checkout.",
+    "observed": "The fine-tune run (finished 2026-10-04T13:38:42+00:00) recorded false; the comparison (created 2026-10-04T13:42:01+00:00, 199 seconds later) recorded true. Both record the same commit, 7a7fdd99041b5a912f0ad867dc260fa7fd25afed.",
+    "evidence_consistent_with": "notebooks/finetune_colab.ipynb runs src/finetune.py with report export enabled by default, which copies the run's small reports into REPO_DIR/models/metadata/runs/finetune_20261004_133620/ INSIDE the clone; src/finetune.py writes run_metadata.json (collecting the clean flag) BEFORE that export, and notebook cell 14/Step 14 zips exactly that in-clone directory, so those files were present as untracked entries before the comparison ran. The comparison output itself was written to Drive (BASE_DIR/validation_comparison.json), outside the clone.",
+    "confirmation_status": "NOT CONFIRMED: no 'git status --porcelain' output was captured by the notebook, so the exact dirty paths are unknown.",
+    "action_taken": "The flag is recorded verbatim from the imported report. It was NOT rewritten, and no cause is asserted as proven."
+  },
+  "verification_evidence": [
+    "models/metadata/verification/import_finetune_20261004_133620.json",
+    "models/metadata/verification/post_training_compatibility_finetune_20261004_133620.json"
+  ],
+  "honesty_notes": [
+    "This record was written BEFORE any test image was opened; the test split has never been evaluated at this point.",
+    "Every value here is copied from validation_comparison.json, run_metadata.json or the model file itself - none is typed by hand or invented.",
+    "Selection used validation macro F1 (then accuracy) under the rule fixed in src/compare_validation.py before any run; the rule is reproduced above so a later reader sees what decided.",
+    "The dirty-checkout flags above are documented as found; the cause of the comparison's true flag is not proven.",
+    "Test-set results, when measured later, must be reported separately from these validation numbers."
+  ]
+}

@@ -1,12 +1,21 @@
-"""Post-training compatibility verification for the baseline model.
+"""Post-training compatibility verification for a saved Keras artifact.
 
 Run this with the **inference** environment only:
 
-    .venv-infer\\Scripts\\python.exe src\\verify_baseline_inference.py
+    .venv-infer\\Scripts\\python.exe src\\verify_baseline_inference.py          # baseline
+    .venv-infer\\Scripts\\python.exe src\\verify_baseline_inference.py ^
+        --model models\\finetune_<id>\\best_model.keras ^
+        --run-metadata models\\metadata\\runs\\finetune_<id>\\run_metadata.json ^
+        --model-bundle-dir models\\finetune_<id> ^
+        --report models\\metadata\\verification\\post_training_compatibility_finetune_<id>.json
 
-Why a separate environment: the baseline artifact was saved by Keras 3.13.2
+The same checks serve the original baseline artifact and a fine-tuned child
+run; the report names which subject it verified (from that run's own
+metadata), so the two can never be confused.
+
+Why a separate environment: both artifacts were saved by Keras 3.13.2
 (TensorFlow 2.20, the Colab run). The project's main ``.venv`` ships Keras 2.15
-and cannot deserialize it (see docs/load_failure_baseline_20261003_172906.txt).
+and cannot deserialize them (see docs/load_failure_baseline_20261003_172906.txt).
 ``.venv-infer`` mirrors the training versions; ``.venv`` stays untouched.
 
 What this script does (in order):
@@ -546,11 +555,18 @@ def main(argv: list[str] | None = None) -> int:
     errors: list[str] = []
     load_warnings: list[str] = []
 
-    print("=== Baseline model post-training compatibility verification ===")
+    print("=== Post-training compatibility verification ===")
     print(f"environment: tensorflow {tf.__version__}, keras {tf.keras.__version__}")
 
     # --- 1. model checksum against the ORIGINAL run metadata ---------------
     run_metadata = read_json(args.run_metadata)
+    # Same checks for baseline and fine-tuned runs; name the subject from its
+    # own metadata so the report can never be mistaken for the other artifact.
+    if run_metadata.get("profile") == "finetune":
+        subject = f"fine-tuned artifact (run {run_metadata.get('run_id')})"
+    else:
+        subject = f"baseline artifact (run {run_metadata.get('run_id')})"
+    print(f"subject: {subject}")
     expected_sha = run_metadata["model"]["sha256"]
     model_exists = args.model.exists()
     actual_sha = sha256_of(args.model) if model_exists else None
@@ -653,9 +669,9 @@ def main(argv: list[str] | None = None) -> int:
         "report_type": "post_training_compatibility_verification",
         "run_id": run_metadata.get("run_id"),
         "purpose": (
-            "Verify the original baseline artifact loads and executes in the "
-            "separate inference environment (.venv-infer). No retraining, no "
-            "model conversion, no test-set access."
+            f"Verify the {subject} loads and executes in the separate "
+            "inference environment (.venv-infer). No retraining, no model "
+            "conversion, no test-set access."
         ),
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "environment": environment_versions(),

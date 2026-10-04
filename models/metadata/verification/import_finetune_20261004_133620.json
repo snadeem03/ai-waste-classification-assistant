@@ -1,0 +1,344 @@
+{
+  "report_type": "fine_tune_artifact_import_verification",
+  "run_id": "finetune_20261004_133620",
+  "created_at_utc": "2026-10-04T14:09:54+00:00",
+  "performed_with": "python python.exe (no model loaded)",
+  "zip_files": {
+    "reports_finetune_20261004_133620.zip": {
+      "sha256": "6053abfb31d00d82958dac32b420fd9f1bbf4f027c4e9922a7ed5ca9061977e1",
+      "size_bytes": 80651
+    },
+    "model_finetune_20261004_133620.zip": {
+      "sha256": "5c8df428958a82d4d0a0ac9dba13ba0d3a541a7360bef0d38d8200ee7bd1116c",
+      "size_bytes": 20850547
+    },
+    "validation_comparison.zip": {
+      "sha256": "23b3cef2b6fbeb827f896ddaa0d5deb877b56ec97b520defbd6c57dc9bb726c2",
+      "size_bytes": 2191
+    }
+  },
+  "import_targets": {
+    "reports": "models\\metadata\\runs\\finetune_20261004_133620",
+    "model": "models\\finetune_20261004_133620",
+    "comparison": "models\\metadata\\comparison\\validation_comparison.json"
+  },
+  "git_flags_as_recorded": {
+    "finetune_run_metadata": {
+      "commit": "7a7fdd99041b5a912f0ad867dc260fa7fd25afed",
+      "branch": "main",
+      "uncommitted_changes": false,
+      "status": "ok"
+    },
+    "validation_comparison": {
+      "commit": "7a7fdd99041b5a912f0ad867dc260fa7fd25afed",
+      "branch": "main",
+      "uncommitted_changes": true,
+      "status": "ok"
+    },
+    "documentation": "Both flags are copied verbatim from the imported reports. The comparison ran ~3 minutes after the fine-tune run at the same commit (7a7fdd9...) but reports uncommitted_changes=true. See docs/progress.md / docs/model_card.md for the evidence review; the cause was not proven and the flag was not rewritten."
+  },
+  "checks": [
+    {
+      "name": "all_three_zips_present",
+      "passed": true,
+      "details": {
+        "missing": []
+      }
+    },
+    {
+      "name": "import_targets_do_not_exist_yet",
+      "passed": true,
+      "details": {
+        "existing": [],
+        "policy": "refuse to overwrite"
+      }
+    },
+    {
+      "name": "reports_entries_safe_relative_paths",
+      "passed": true,
+      "details": {
+        "entries": 7,
+        "unsafe": []
+      }
+    },
+    {
+      "name": "reports_zip_crc_integrity",
+      "passed": true,
+      "details": {
+        "first_bad_entry": null,
+        "entries": 7,
+        "zip_sha256": "6053abfb31d00d82958dac32b420fd9f1bbf4f027c4e9922a7ed5ca9061977e1",
+        "zip_size_bytes": 80651
+      }
+    },
+    {
+      "name": "model_entries_safe_relative_paths",
+      "passed": true,
+      "details": {
+        "entries": 3,
+        "unsafe": []
+      }
+    },
+    {
+      "name": "model_zip_crc_integrity",
+      "passed": true,
+      "details": {
+        "first_bad_entry": null,
+        "entries": 3,
+        "zip_sha256": "5c8df428958a82d4d0a0ac9dba13ba0d3a541a7360bef0d38d8200ee7bd1116c",
+        "zip_size_bytes": 20850547
+      }
+    },
+    {
+      "name": "comparison_entries_safe_relative_paths",
+      "passed": true,
+      "details": {
+        "entries": 1,
+        "unsafe": []
+      }
+    },
+    {
+      "name": "comparison_zip_crc_integrity",
+      "passed": true,
+      "details": {
+        "first_bad_entry": null,
+        "entries": 1,
+        "zip_sha256": "23b3cef2b6fbeb827f896ddaa0d5deb877b56ec97b520defbd6c57dc9bb726c2",
+        "zip_size_bytes": 2191
+      }
+    },
+    {
+      "name": "extraction_completed",
+      "passed": true,
+      "details": {
+        "reports_target": "models\\metadata\\runs\\finetune_20261004_133620",
+        "model_target": "models\\finetune_20261004_133620",
+        "comparison_target": "models\\metadata\\comparison\\validation_comparison.json"
+      }
+    },
+    {
+      "name": "extracted_files_byte_identical_to_zip_entries",
+      "passed": true,
+      "details": {
+        "mismatches": []
+      }
+    },
+    {
+      "name": "source_zips_unmodified_by_import",
+      "passed": true,
+      "details": {
+        "before": {
+          "reports": "6053abfb31d00d82958dac32b420fd9f1bbf4f027c4e9922a7ed5ca9061977e1",
+          "model": "5c8df428958a82d4d0a0ac9dba13ba0d3a541a7360bef0d38d8200ee7bd1116c",
+          "comparison": "23b3cef2b6fbeb827f896ddaa0d5deb877b56ec97b520defbd6c57dc9bb726c2"
+        },
+        "after": {
+          "reports": "6053abfb31d00d82958dac32b420fd9f1bbf4f027c4e9922a7ed5ca9061977e1",
+          "model": "5c8df428958a82d4d0a0ac9dba13ba0d3a541a7360bef0d38d8200ee7bd1116c",
+          "comparison": "23b3cef2b6fbeb827f896ddaa0d5deb877b56ec97b520defbd6c57dc9bb726c2"
+        }
+      }
+    },
+    {
+      "name": "run_metadata_identical_in_reports_and_model_zips",
+      "passed": true,
+      "details": {
+        "reports_sha256": "c663f96e39a92e255770a10fb04de6c3f16b21a4e20251c49832b692ff4063bf",
+        "model_sha256": "c663f96e39a92e255770a10fb04de6c3f16b21a4e20251c49832b692ff4063bf"
+      }
+    },
+    {
+      "name": "run_metadata_identity",
+      "passed": true,
+      "details": {
+        "run_id": "finetune_20261004_133620",
+        "profile": "finetune",
+        "status": "ok"
+      }
+    },
+    {
+      "name": "class_order_json_identical_across_bundles",
+      "passed": true,
+      "details": {
+        "reports": {
+          "class_order": [
+            "metal",
+            "organic",
+            "paper",
+            "plastic"
+          ],
+          "class_index": {
+            "metal": 0,
+            "organic": 1,
+            "paper": 2,
+            "plastic": 3
+          }
+        },
+        "model": {
+          "class_order": [
+            "metal",
+            "organic",
+            "paper",
+            "plastic"
+          ],
+          "class_index": {
+            "metal": 0,
+            "organic": 1,
+            "paper": 2,
+            "plastic": 3
+          }
+        }
+      }
+    },
+    {
+      "name": "class_order_consistent_across_all_sources",
+      "passed": true,
+      "details": {
+        "configs/class_mapping.json": [
+          "metal",
+          "organic",
+          "paper",
+          "plastic"
+        ],
+        "run_metadata.json": [
+          "metal",
+          "organic",
+          "paper",
+          "plastic"
+        ],
+        "reports class_order.json": [
+          "metal",
+          "organic",
+          "paper",
+          "plastic"
+        ],
+        "model bundle class_order.json": [
+          "metal",
+          "organic",
+          "paper",
+          "plastic"
+        ],
+        "validation_comparison.json": [
+          "metal",
+          "organic",
+          "paper",
+          "plastic"
+        ]
+      }
+    },
+    {
+      "name": "model_checksum_matches_required_value",
+      "passed": true,
+      "details": {
+        "required": "39f7b78befd182c6a65cc94db3a2f3a09d15018ab5ae34145ed4a48f28e1cb4a",
+        "run_metadata": "39f7b78befd182c6a65cc94db3a2f3a09d15018ab5ae34145ed4a48f28e1cb4a",
+        "extracted_file": "39f7b78befd182c6a65cc94db3a2f3a09d15018ab5ae34145ed4a48f28e1cb4a",
+        "comparison_report": "39f7b78befd182c6a65cc94db3a2f3a09d15018ab5ae34145ed4a48f28e1cb4a"
+      }
+    },
+    {
+      "name": "baseline_checksum_consistent_with_comparison",
+      "passed": true,
+      "details": {
+        "comparison": "c25f275cba8b5520c65af78716c844889fb0e8ff1a407b3215170674332b524f",
+        "baseline_run_metadata": "c25f275cba8b5520c65af78716c844889fb0e8ff1a407b3215170674332b524f"
+      }
+    },
+    {
+      "name": "train_and_validation_manifest_checksums_match",
+      "passed": true,
+      "details": {
+        "train.csv": {
+          "recorded": "f76d789b7bc6a1ac8fa168ee824ab975e44bfa29df19df8327aa9f7f9fa3abbc",
+          "local": "f76d789b7bc6a1ac8fa168ee824ab975e44bfa29df19df8327aa9f7f9fa3abbc",
+          "match": true
+        },
+        "validation.csv": {
+          "recorded": "77423bfc11f37df0bb836210f4866543857b56bfe73572054438902ecae6997d",
+          "local": "77423bfc11f37df0bb836210f4866543857b56bfe73572054438902ecae6997d",
+          "match": true
+        }
+      }
+    },
+    {
+      "name": "comparison_validation_manifest_matches_local",
+      "passed": true,
+      "details": {
+        "comparison": {
+          "path": "data/metadata/validation.csv",
+          "sha256": "77423bfc11f37df0bb836210f4866543857b56bfe73572054438902ecae6997d",
+          "rows": 458
+        },
+        "local_validation_csv": "77423bfc11f37df0bb836210f4866543857b56bfe73572054438902ecae6997d"
+      }
+    },
+    {
+      "name": "test_manifest_matches_split_summary",
+      "passed": true,
+      "details": {
+        "local_test_csv": "74494c13f6d9be7f1fc3a00124a7138035c96d866abe96cfa2eefc84d7530c2d",
+        "split_summary": "74494c13f6d9be7f1fc3a00124a7138035c96d866abe96cfa2eefc84d7530c2d",
+        "expected_rows": 459
+      }
+    },
+    {
+      "name": "comparison_status_complete_and_finetuned_selected",
+      "passed": true,
+      "details": {
+        "status": "complete",
+        "selected": "finetuned",
+        "reason": "rule step 1: macro F1 improved 0.932254 -> 0.937250"
+      }
+    },
+    {
+      "name": "selection_rule_is_the_predetermined_one",
+      "passed": true,
+      "details": {
+        "id": "validation_macro_f1_then_accuracy",
+        "steps": [
+          "1. If the fine-tuned model's macro F1 is strictly higher than the baseline's, select the fine-tuned model.",
+          "2. If macro F1 is equal, select the fine-tuned model only when its validation accuracy is strictly higher.",
+          "3. Otherwise (macro F1 lower, or both metrics equal), keep the baseline."
+        ],
+        "within_a_run": "best checkpoint = lowest val_loss (unchanged; this rule never compares checkpoints inside one run)",
+        "test_set_used": false,
+        "fixed_before_running": "This rule lives in src/compare_validation.py and was written before any comparison ran; measured metrics can never change it."
+      }
+    },
+    {
+      "name": "no_test_set_access_recorded",
+      "passed": true,
+      "details": {
+        "finetune_run": false,
+        "comparison": false
+      }
+    },
+    {
+      "name": "git_flags_recorded_as_found",
+      "passed": true,
+      "details": {
+        "finetune_run": {
+          "commit": "7a7fdd99041b5a912f0ad867dc260fa7fd25afed",
+          "branch": "main",
+          "uncommitted_changes": false,
+          "status": "ok"
+        },
+        "comparison": {
+          "commit": "7a7fdd99041b5a912f0ad867dc260fa7fd25afed",
+          "branch": "main",
+          "uncommitted_changes": true,
+          "status": "ok"
+        },
+        "note": "flags copied verbatim from the imported reports; not rewritten"
+      }
+    }
+  ],
+  "verification_status": "pass",
+  "failed_checks": [],
+  "notes": [
+    "ZIPs were read only; their SHA-256 was identical before and after extraction.",
+    "No target directory existed before extraction, so no previous run was overwritten.",
+    "Original run metadata and reports were copied byte-for-byte, never edited.",
+    "No model was loaded and no image was opened by this import verification."
+  ]
+}

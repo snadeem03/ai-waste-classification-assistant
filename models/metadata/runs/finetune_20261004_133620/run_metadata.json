@@ -1,0 +1,281 @@
+{
+  "run_id": "finetune_20261004_133620",
+  "profile": "finetune",
+  "status": "ok",
+  "started_at_utc": "2026-10-04T13:36:20+00:00",
+  "finished_at_utc": "2026-10-04T13:38:42+00:00",
+  "wall_time_seconds": 139.56,
+  "git": {
+    "commit": "7a7fdd99041b5a912f0ad867dc260fa7fd25afed",
+    "branch": "main",
+    "uncommitted_changes": false,
+    "status": "ok"
+  },
+  "parent": {
+    "model_file": "/content/baseline_model/best_model.keras",
+    "sha256": "c25f275cba8b5520c65af78716c844889fb0e8ff1a407b3215170674332b524f",
+    "size_bytes": 9691268,
+    "unchanged_after_training": true,
+    "run_id": "baseline_20261003_172906",
+    "code_commit": "199f2539c821ee1b70d673cec8050ed86cf62e2e",
+    "baseline_best": {
+      "epoch": 14,
+      "loss": 0.1419820487499237,
+      "accuracy": 0.9420831203460693,
+      "val_loss": 0.20965705811977386,
+      "val_accuracy": 0.932314395904541
+    },
+    "metadata_file": "/content/baseline_model/run_metadata.json",
+    "checksum_verified": true,
+    "class_order_verified": true,
+    "class_order_source": "class_order.json"
+  },
+  "fine_tuning_policy": {
+    "start_block": 13,
+    "start_layer": "block_13_expand",
+    "backbone": "mobilenetv2_1.00_224",
+    "backbone_layers": 154,
+    "backbone_call_training": false,
+    "backbone_trainable_layers": [
+      "block_13_expand",
+      "block_13_expand_relu",
+      "block_13_pad",
+      "block_13_depthwise",
+      "block_13_depthwise_relu",
+      "block_13_project",
+      "block_14_expand",
+      "block_14_expand_relu",
+      "block_14_depthwise",
+      "block_14_depthwise_relu",
+      "block_14_project",
+      "block_14_add",
+      "block_15_expand",
+      "block_15_expand_relu",
+      "block_15_depthwise",
+      "block_15_depthwise_relu",
+      "block_15_project",
+      "block_15_add",
+      "block_16_expand",
+      "block_16_expand_relu",
+      "block_16_depthwise",
+      "block_16_depthwise_relu",
+      "block_16_project",
+      "Conv_1",
+      "out_relu"
+    ],
+    "backbone_frozen_layers_count": 129,
+    "batch_norm_layers": 52,
+    "batch_norm_layers_trainable": 0,
+    "trainable_layers_with_weights": [
+      "block_13_expand",
+      "block_13_depthwise",
+      "block_13_project",
+      "block_14_expand",
+      "block_14_depthwise",
+      "block_14_project",
+      "block_15_expand",
+      "block_15_depthwise",
+      "block_15_project",
+      "block_16_expand",
+      "block_16_depthwise",
+      "block_16_project",
+      "Conv_1",
+      "predictions"
+    ],
+    "head_layers": [
+      "image",
+      "global_average_pooling",
+      "dropout",
+      "predictions"
+    ],
+    "head_trainable": true,
+    "policy": "Backbone MobileNetV2: only non-BatchNorm layers from block_13 onward are trainable; all earlier backbone layers and every BatchNormalization layer stay frozen. The backbone keeps being called with training=False, so BN running statistics never change. The classification head (global_average_pooling, dropout, predictions) remains trainable."
+  },
+  "configuration": {
+    "config_path": "/content/ai-waste-classification-assistant/configs/training.json",
+    "finetune_defaults": {
+      "max_epochs": 10,
+      "learning_rate": 1e-05,
+      "start_block": 13
+    },
+    "epochs_requested": 10,
+    "epochs_completed": 9,
+    "batch_size": 16,
+    "learning_rate": 1e-05,
+    "image_size": 224,
+    "seed": 42,
+    "start_block": 13,
+    "dropout_loaded_from_parent": 0.2,
+    "optimizer": "Adam (fresh instance; baseline optimizer state not reused)",
+    "loss": "SparseCategoricalCrossentropy",
+    "early_stopping": {
+      "enabled": true,
+      "monitor": "val_loss",
+      "patience": 3,
+      "restore_best_weights": true
+    }
+  },
+  "seed_and_determinism": {
+    "seed": 42,
+    "seeded_rngs": [
+      "python.random",
+      "numpy",
+      "tensorflow"
+    ],
+    "pythonhashseed": "42",
+    "enable_op_determinism": "enabled",
+    "limits": [
+      "Bitwise-identical results are expected only on the same hardware, OS, and library versions.",
+      "Different GPU/CPU models, drivers, or oneDNN/cuDNN builds can change floating-point results slightly.",
+      "PYTHONHASHSEED only affects hash randomization when set before the interpreter starts; the CLI sets it for child processes it launches, but a manually started Python needs it in the environment.",
+      "Augmentation draws from TensorFlow's RNGs each epoch by design, so augmented pixel values differ per epoch."
+    ]
+  },
+  "class_order": [
+    "metal",
+    "organic",
+    "paper",
+    "plastic"
+  ],
+  "class_index": {
+    "metal": 0,
+    "organic": 1,
+    "paper": 2,
+    "plastic": 3
+  },
+  "class_weights": {
+    "enabled": false,
+    "mode": "off",
+    "method": "none",
+    "computed_from": "train.csv labels only (validation labels never used)",
+    "passed_to_model_fit": false,
+    "values": null
+  },
+  "data": {
+    "train_images": 2141,
+    "validation_images": 458,
+    "manifests": {
+      "train.csv": {
+        "path": "data/metadata/train.csv",
+        "sha256": "f76d789b7bc6a1ac8fa168ee824ab975e44bfa29df19df8327aa9f7f9fa3abbc"
+      },
+      "validation.csv": {
+        "path": "data/metadata/validation.csv",
+        "sha256": "77423bfc11f37df0bb836210f4866543857b56bfe73572054438902ecae6997d"
+      }
+    },
+    "validation_pass": "full pass over every validation image including the final partial batch (validation_steps not set)",
+    "test_manifest_used": false
+  },
+  "environment": {
+    "python": "3.13.15",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "tensorflow": "2.20.0",
+    "keras": "3.13.2",
+    "numpy": "2.1.3",
+    "physical_devices": [
+      "CPU:/physical_device:CPU:0",
+      "GPU:/physical_device:GPU:0"
+    ],
+    "gpu_count": 1
+  },
+  "training": {
+    "history": [
+      {
+        "epoch": 1,
+        "accuracy": 0.9486221671104431,
+        "loss": 0.13988693058490753,
+        "val_accuracy": 0.9192139506340027,
+        "val_loss": 0.21107949316501617
+      },
+      {
+        "epoch": 2,
+        "accuracy": 0.9588977098464966,
+        "loss": 0.11402112990617752,
+        "val_accuracy": 0.9301310181617737,
+        "val_loss": 0.2099311351776123
+      },
+      {
+        "epoch": 3,
+        "accuracy": 0.9649696350097656,
+        "loss": 0.10237479209899902,
+        "val_accuracy": 0.932314395904541,
+        "val_loss": 0.2023872435092926
+      },
+      {
+        "epoch": 4,
+        "accuracy": 0.9659037590026855,
+        "loss": 0.09213371574878693,
+        "val_accuracy": 0.932314395904541,
+        "val_loss": 0.20049981772899628
+      },
+      {
+        "epoch": 5,
+        "accuracy": 0.9701074361801147,
+        "loss": 0.07915831357240677,
+        "val_accuracy": 0.9388646483421326,
+        "val_loss": 0.1917872130870819
+      },
+      {
+        "epoch": 6,
+        "accuracy": 0.9803829789161682,
+        "loss": 0.06085016205906868,
+        "val_accuracy": 0.9366812109947205,
+        "val_loss": 0.18806086480617523
+      },
+      {
+        "epoch": 7,
+        "accuracy": 0.9827183485031128,
+        "loss": 0.05641523748636246,
+        "val_accuracy": 0.9301310181617737,
+        "val_loss": 0.1983713060617447
+      },
+      {
+        "epoch": 8,
+        "accuracy": 0.9827183485031128,
+        "loss": 0.0464654266834259,
+        "val_accuracy": 0.9344978332519531,
+        "val_loss": 0.20806659758090973
+      },
+      {
+        "epoch": 9,
+        "accuracy": 0.9808500409126282,
+        "loss": 0.04966435953974724,
+        "val_accuracy": 0.932314395904541,
+        "val_loss": 0.21468357741832733
+      }
+    ],
+    "best": {
+      "epoch": 6,
+      "loss": 0.06085016205906868,
+      "accuracy": 0.9803829789161682,
+      "val_loss": 0.18806086480617523,
+      "val_accuracy": 0.9366812109947205
+    }
+  },
+  "model": {
+    "file": "best_model.keras",
+    "sha256": "39f7b78befd182c6a65cc94db3a2f3a09d15018ab5ae34145ed4a48f28e1cb4a",
+    "reload_ok_in_this_environment": true,
+    "parameter_counts": {
+      "trainable": 1668484,
+      "non_trainable": 594624,
+      "total": 2263108
+    }
+  },
+  "artifacts": {
+    "plots": [
+      "plots/loss_curve.png",
+      "plots/accuracy_curve.png"
+    ],
+    "history_csv": "history.csv",
+    "environment_freeze": "environment_freeze.txt",
+    "class_order": "class_order.json"
+  },
+  "honesty_notes": [
+    "All numbers in this file come from this fine-tuning run only (validation metrics only; no test-set metrics).",
+    "The parent model is whatever --parent-model pointed at; its checksum and sidecar reports were verified before training and the file is re-checked afterwards (parent.unchanged_after_training).",
+    "Validation metrics from this run are NOT directly comparable to the baseline's recorded best: run src/compare_validation.py, which evaluates both models on the identical validation pipeline."
+  ]
+}

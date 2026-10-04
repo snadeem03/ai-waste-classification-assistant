@@ -1,0 +1,424 @@
+{
+  "report_type": "post_training_compatibility_verification",
+  "run_id": "finetune_20261004_133620",
+  "purpose": "Verify the fine-tuned artifact (run finetune_20261004_133620) loads and executes in the separate inference environment (.venv-infer). No retraining, no model conversion, no test-set access.",
+  "created_at_utc": "2026-10-04T14:13:16.956896+00:00",
+  "environment": {
+    "python": "3.11.9",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "tensorflow": "2.20.0",
+    "keras": "3.13.2",
+    "numpy": "2.4.6",
+    "physical_devices": [
+      "PhysicalDevice(name='/physical_device:CPU:0', device_type='CPU')"
+    ]
+  },
+  "model": {
+    "path": "models/finetune_20261004_133620/best_model.keras",
+    "sha256_expected": "39f7b78befd182c6a65cc94db3a2f3a09d15018ab5ae34145ed4a48f28e1cb4a",
+    "sha256_actual": "39f7b78befd182c6a65cc94db3a2f3a09d15018ab5ae34145ed4a48f28e1cb4a",
+    "sha256_match": true,
+    "load_options": {
+      "compile": false,
+      "safe_mode": true
+    },
+    "unsafe_deserialization_used": false,
+    "load_warnings": []
+  },
+  "class_order": [
+    "metal",
+    "organic",
+    "paper",
+    "plastic"
+  ],
+  "input_shape": [
+    null,
+    224,
+    224,
+    3
+  ],
+  "output_shape": [
+    null,
+    4
+  ],
+  "synthetic_check": {
+    "input_shape": [
+      2,
+      224,
+      224,
+      3
+    ],
+    "input_scale": "float32 0-255",
+    "predictions": [
+      [
+        0.9620175957679749,
+        0.037669308483600616,
+        2.674877760000527e-05,
+        0.0002863793633878231
+      ],
+      [
+        0.9355481863021851,
+        0.06346739083528519,
+        5.587052146438509e-05,
+        0.0009284982224926353
+      ]
+    ],
+    "note": "Predictions on a synthetic pattern image prove execution only. They are not accuracy measurements."
+  },
+  "real_image_sample_check": {
+    "source_manifest": "data/metadata/train.csv",
+    "test_manifest_opened": false,
+    "sample_size": 6,
+    "sample_rows": [
+      {
+        "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_10.jpg",
+        "target": "metal",
+        "class_index": 0,
+        "predicted_index": 0,
+        "predicted_label": "metal",
+        "scores": [
+          0.9939163327217102,
+          0.0005293320864439011,
+          0.00011070196342188865,
+          0.005443669855594635
+        ]
+      },
+      {
+        "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_1.jpg",
+        "target": "organic",
+        "class_index": 1,
+        "predicted_index": 1,
+        "predicted_label": "organic",
+        "scores": [
+          4.806826048309176e-09,
+          0.9999960660934448,
+          6.177695865972055e-08,
+          3.800502327067079e-06
+        ]
+      },
+      {
+        "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_1.jpg",
+        "target": "paper",
+        "class_index": 2,
+        "predicted_index": 2,
+        "predicted_label": "paper",
+        "scores": [
+          0.036851800978183746,
+          2.0291613509471063e-06,
+          0.9631006717681885,
+          4.548245851765387e-05
+        ]
+      },
+      {
+        "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_1.jpg",
+        "target": "plastic",
+        "class_index": 3,
+        "predicted_index": 3,
+        "predicted_label": "plastic",
+        "scores": [
+          0.000342737213941291,
+          5.16590183963217e-08,
+          0.0034213599283248186,
+          0.9962359070777893
+        ]
+      },
+      {
+        "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_100.jpg",
+        "target": "metal",
+        "class_index": 0,
+        "predicted_index": 0,
+        "predicted_label": "metal",
+        "scores": [
+          0.7330246567726135,
+          0.0003956237924285233,
+          1.2710994269582443e-05,
+          0.26656702160835266
+        ]
+      },
+      {
+        "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_101.jpg",
+        "target": "organic",
+        "class_index": 1,
+        "predicted_index": 1,
+        "predicted_label": "organic",
+        "scores": [
+          0.0003740376851055771,
+          0.9694886207580566,
+          0.02245529182255268,
+          0.00768211018294096
+        ]
+      }
+    ],
+    "note": "Recorded to verify execution and index -> label mapping only. No accuracy metric is computed from this training sample."
+  },
+  "cross_machine_comparison": {},
+  "checks": [
+    {
+      "name": "model_file_exists",
+      "passed": true,
+      "details": {
+        "path": "models/finetune_20261004_133620/best_model.keras"
+      }
+    },
+    {
+      "name": "sha256_matches_original_run_metadata",
+      "passed": true,
+      "details": {
+        "expected": "39f7b78befd182c6a65cc94db3a2f3a09d15018ab5ae34145ed4a48f28e1cb4a",
+        "actual": "39f7b78befd182c6a65cc94db3a2f3a09d15018ab5ae34145ed4a48f28e1cb4a"
+      }
+    },
+    {
+      "name": "model_loads_compile_false_safe_mode_true",
+      "passed": true,
+      "details": {
+        "load_options": {
+          "compile": false,
+          "safe_mode": true
+        },
+        "unsafe_deserialization_used": false,
+        "warnings": [],
+        "error": null
+      }
+    },
+    {
+      "name": "class_order_consistent_across_sources",
+      "passed": true,
+      "details": {
+        "configs/class_mapping.json": [
+          "metal",
+          "organic",
+          "paper",
+          "plastic"
+        ],
+        "run_metadata.json": [
+          "metal",
+          "organic",
+          "paper",
+          "plastic"
+        ],
+        "model_bundle/class_order.json": [
+          "metal",
+          "organic",
+          "paper",
+          "plastic"
+        ]
+      }
+    },
+    {
+      "name": "input_shape_is_224x224x3",
+      "passed": true,
+      "details": {
+        "actual": [
+          null,
+          224,
+          224,
+          3
+        ]
+      }
+    },
+    {
+      "name": "output_shape_has_four_classes",
+      "passed": true,
+      "details": {
+        "actual": [
+          null,
+          4
+        ],
+        "class_order": [
+          "metal",
+          "organic",
+          "paper",
+          "plastic"
+        ]
+      }
+    },
+    {
+      "name": "synthetic_batch_shape_dtype_range",
+      "passed": true,
+      "details": {
+        "shape": [
+          2,
+          224,
+          224,
+          3
+        ],
+        "dtype": "float32",
+        "min": 0.0,
+        "max": 255.0
+      }
+    },
+    {
+      "name": "predictions_shape_2x4",
+      "passed": true,
+      "details": {
+        "actual": [
+          2,
+          4
+        ]
+      }
+    },
+    {
+      "name": "predictions_finite",
+      "passed": true,
+      "details": {
+        "nonfinite_count": 0
+      }
+    },
+    {
+      "name": "softmax_sums_close_to_one",
+      "passed": true,
+      "details": {
+        "sums": [
+          1.0,
+          0.9999999403953552
+        ],
+        "max_abs_deviation": 5.960464477539063e-08
+      }
+    },
+    {
+      "name": "scores_within_0_1",
+      "passed": true,
+      "details": {
+        "min": 2.674877760000527e-05,
+        "max": 0.9620175957679749
+      }
+    },
+    {
+      "name": "repeated_inference_stable_training_false",
+      "passed": true,
+      "details": {
+        "runs": 3,
+        "max_abs_diff_between_runs": 0.0
+      }
+    },
+    {
+      "name": "backbone_layer_present",
+      "passed": true,
+      "details": {
+        "layers": [
+          "image (InputLayer)",
+          "augmentation (Sequential)",
+          "mobilenetv2_1.00_224 (Functional)",
+          "global_average_pooling (GlobalAveragePooling2D)",
+          "dropout (Dropout)",
+          "predictions (Dense)"
+        ]
+      }
+    },
+    {
+      "name": "mobilenetv2_preprocessing_embedded_and_applied_once",
+      "passed": true,
+      "details": {
+        "0.0": {
+          "input_value": 0.0,
+          "expected": -1.0,
+          "min": -1.0,
+          "max": -1.0,
+          "mean": -1.0
+        },
+        "127.5": {
+          "input_value": 127.5,
+          "expected": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "mean": 0.0
+        },
+        "255.0": {
+          "input_value": 255.0,
+          "expected": 1.0,
+          "min": 1.0,
+          "max": 1.0,
+          "mean": 1.0
+        }
+      }
+    },
+    {
+      "name": "no_normalization_outside_pretrained_backbone",
+      "passed": true,
+      "details": {
+        "stray_layers": []
+      }
+    },
+    {
+      "name": "preprocessing_ops_in_saved_config",
+      "passed": true,
+      "details": {
+        "TrueDivide": true,
+        "Subtract": true
+      }
+    },
+    {
+      "name": "sample_images_shape_dtype",
+      "passed": true,
+      "details": {
+        "shape": [
+          6,
+          224,
+          224,
+          3
+        ],
+        "dtype": "float32"
+      }
+    },
+    {
+      "name": "manifest_labels_match_class_order",
+      "passed": true,
+      "details": {
+        "class_order": [
+          "metal",
+          "organic",
+          "paper",
+          "plastic"
+        ],
+        "sample": [
+          {
+            "target": "metal",
+            "class_index": 0
+          },
+          {
+            "target": "organic",
+            "class_index": 1
+          },
+          {
+            "target": "paper",
+            "class_index": 2
+          },
+          {
+            "target": "plastic",
+            "class_index": 3
+          },
+          {
+            "target": "metal",
+            "class_index": 0
+          },
+          {
+            "target": "organic",
+            "class_index": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "real_sample_execution_ok",
+      "passed": true,
+      "details": {
+        "predictions_shape": [
+          6,
+          4
+        ],
+        "finite": true,
+        "max_sum_deviation": 5.960464477539063e-08
+      }
+    }
+  ],
+  "errors": [],
+  "verification_status": "pass",
+  "failed_checks": [],
+  "notes": [
+    "Synthetic predictions verify execution only; they are not accuracy.",
+    "No test image or test manifest was opened by this script.",
+    "run_metadata.json and all original run artifacts were read, never written.",
+    "Numerical parity with the Colab runtime is NOT claimed unless a cross-machine comparison file exists and passes the tolerance."
+  ]
+}
