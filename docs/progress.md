@@ -872,4 +872,89 @@ Command used for rows 1–6:
 
 ---
 
+## Milestone 10 — Selected-model import and held-out test evaluation
+
+**Date:** 2026-10-04  
+**Status:** Complete — fine-tuned artifacts imported + verified, selection recorded **before** the test split was opened, `src/evaluate.py` written and tested, test set evaluated **once** (459/459 images). No further training, no Streamlit.
+
+### What was done
+
+1. **Import (24/24 checks passed).** Located the three Colab ZIPs in the repo root (`reports_finetune_20261004_133620.zip`, `model_finetune_20261004_133620.zip`, `validation_comparison.zip`); `ZipFile.testzip()` OK, no absolute/`..` members, targets did not pre-exist, extraction byte-identical, source ZIPs never modified. Extracted to `models/metadata/runs/finetune_20261004_133620/` (6 report files, tracked), `models/finetune_20261004_133620/` (model bundle, Git-ignored), `models/metadata/comparison/validation_comparison.json` (tracked). Evidence: [`models/metadata/verification/import_finetune_20261004_133620.json`](../models/metadata/verification/import_finetune_20261004_133620.json) — model SHA `39f7b78b…` consistent across run metadata, comparison report, and the extracted file; class order and manifest checksums agree with the committed configs.
+2. **Local compatibility of the fine-tuned artifact (19/19 checks passed).** `src/verify_baseline_inference.py` gained generic *subject* naming (baseline vs fine-tuned, derived from `run_metadata["profile"]`) — no check logic changed. Run in `.venv-infer` against the fine-tuned model: SHA match, load with `compile=False, safe_mode=True` (no warnings), `(None, 224, 224, 3) → (None, 4)`, softmax sums dev ≤ 5.96e-08, repeated inference max abs diff 0.0, preprocessing once inside the graph. Evidence: `models/metadata/verification/post_training_compatibility_finetune_20261004_133620.json`.
+3. **Selection record frozen before test access.** `models/metadata/selection/selected_model.json` written from the comparison report + run metadata + model file (script refuses to overwrite an existing record): `selected: finetuned`, reason `rule step 1: macro F1 improved 0.932254 -> 0.937250`, model SHA, class order, verification evidence, and the **git checkout flags as found**. The comparison report's `uncommitted_changes: true` (created 13:42:01Z) vs the fine-tune run's `false` (finished 13:38:42Z) is recorded verbatim with `confirmation_status: not confirmed by runtime output` — the code path (`collect_git_info` = `git status --porcelain`, non-empty because the notebook exported run reports **inside the clone** before `run_metadata.json` was written) is documented as a *mechanism*, not a proven cause. **The flag was not rewritten and no cause was invented.**
+4. **`src/evaluate.py`** (new) — held-out test evaluation with guard rails: the model path comes from the selection record only (no `--model` flag, so the choice cannot be reopened); model SHA re-checked against the record; `test.csv` SHA-256 + row count re-checked against committed `split_summary.json`; class order must agree across selection record, config, and model bundle; coverage assertion requires **every image exactly once** (row count, prediction count, no duplicate path). Metrics reuse `compare_validation.metrics_from_predictions` (same code as validation). No fitting, no tuning, argmax predictions, row-normalized confusion matrix, per-image score table, optional misclassification grid into the **Git-ignored** `models/runs/misclassified_grids/`. Default output: `models/metadata/evaluation/test_evaluation.json`.
+5. **`tests/test_evaluate.py`** (new, 21 tests, synthetic fixtures in `tmp_path`): hand-computed confusion normalization, prediction/label row alignment, coverage refusals (missing/extra predictions, duplicate path, manifest≠summary count), manifest and model checksum refusals, class-order disagreement, swapped-label detection via a monkeypatched dataset, a spy proving **only `test.csv` is opened**, self-consistent report invariants, `model.fit` never called, determinism across runs, grid locality, CLI help/exit codes. A local fixture helper builds `test.csv` + `split_summary.json` because `build_tiny_manifests` deliberately creates none.
+6. **Test-set evaluation executed once** with `.venv-infer\Scripts\python.exe src\evaluate.py` → report written, exit 0 (results below).
+7. **Docs:** created [`docs/model_card.md`](model_card.md); updated `README.md` (status, layout, test commands, milestone-9 status now *executed*, new milestone-10 section), `models/README.md` (imported fine-tune bundle + selection/evaluation locations), and this entry.
+
+### Actual measured test results (from the run's own report)
+
+Command: `.venv-infer\Scripts\python.exe src\evaluate.py` →
+[`models/metadata/evaluation/test_evaluation.json`](../models/metadata/evaluation/test_evaluation.json)
+(created 2026-10-04T14:48:16Z; **one execution**, no re-run for better numbers).
+
+| Metric | Value |
+|---|---:|
+| Images | 459 (430 correct, 29 misclassified; each evaluated exactly once) |
+| Loss | 0.17239077061109537 |
+| Accuracy | 0.9368191721132898 |
+| Macro F1 | 0.934730625209095 |
+
+| Class | Precision | Recall | F1 | Support |
+|---|---:|---:|---:|---:|
+| metal | 0.8837209302325582 | 0.957983193277311 | 0.9193548387096775 | 119 |
+| organic | 1.0 | 1.0 | 1.0 | 127 |
+| paper | 0.9078947368421053 | 0.92 | 0.913907284768212 | 75 |
+| plastic | 0.9448818897637795 | 0.8695652173913043 | 0.9056603773584906 | 138 |
+
+Confusion matrix (rows true, columns predicted; order metal, organic, paper, plastic):
+
+|  | metal | organic | paper | plastic |
+|---|---:|---:|---:|---:|
+| **metal** | 114 | 0 | 1 | 4 |
+| **organic** | 0 | 127 | 0 | 0 |
+| **paper** | 3 | 0 | 69 | 3 |
+| **plastic** | 12 | 0 | 6 | 120 |
+
+Also held in the report: protocol (no fitting / no tuning / augmentation inert / final partial batch kept), coverage block, both checksum verifications, per-image softmax scores (459 rows), 5 honesty notes, environment (Python 3.11.9, TF 2.20.0, Keras 3.13.2) and the git block. The grid (29 wrong images) was written to `models/runs/misclassified_grids/sample_grid_test_misclassified.png` and confirmed **ignored** by `.gitignore:57 models/*`.
+
+### Verification (actual runs)
+
+| Check | Result |
+|---|---|
+| Import verification | **24/24 passed**, evidence JSON written |
+| Fine-tuned artifact compatibility (`.venv-infer`) | **19/19 passed** |
+| `pytest` full suite in `.venv` | **129 passed, 4 skipped** (108 prior + 21 new), 0 failed |
+| `pytest` full suite in `.venv-infer` | **133 passed**, 0 failed |
+| `src/evaluate.py --help` | exit 0 |
+| Real evaluation run (`.venv-infer`) | exit 0; coverage `459/459`, `each_image_evaluated_exactly_once: true` |
+| Model SHA vs selection record | match (`39f7b78befd182c6…`) |
+| `test.csv` SHA vs `split_summary.json` | match (`74494c13f6d9be7f…`) |
+| Class order (selection / config / model bundle) | identical, verified |
+| `git check-ignore` on the misclassification grid | ignored (`.gitignore:57`) |
+| Test images opened before the selection record | **no** — training/fine-tune/compare recorded `test_manifest_used: false`; compatibility runs recorded `test_manifest_opened: false` |
+| Baseline artifact unchanged | SHA still `c25f275cba8b5520…` (never modified) |
+| Model choice influenced by test results | **no** — the selection record predates `src/evaluate.py` and this run |
+
+Honest note on the evaluation run's own git block: it records
+`uncommitted_changes: true` because the milestone-10 files were not yet
+committed when the script ran (HEAD was `7db03a6`, the import/selection
+commit); nothing in the report or the model was changed afterwards.
+
+### Blockers
+
+- None for this milestone. Remaining limitations are documented, not
+  blocking: closed set of four classes (no unknown rejection), single
+  dataset/single seed, small selection gain, and unconfirmed dirty-checkout
+  cause on the Colab comparison run (recorded in the selection record).
+
+### Next milestone (not started)
+
+- **Milestone 11 — Streamlit app:** serve the selected model
+  (`models/finetune_20261004_133620/best_model.keras`, Git-ignored) with
+  upload → predict → display, class order from `configs/class_mapping.json`,
+  honest confidence wording, and tests. Do not retrain or re-evaluate.
+
+---
+
 *Append new milestones below this line.*

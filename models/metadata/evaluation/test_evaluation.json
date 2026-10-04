@@ -1,0 +1,6658 @@
+{
+  "report_type": "test_set_evaluation",
+  "status": "ok",
+  "created_at_utc": "2026-10-04T14:48:16+00:00",
+  "split": "test",
+  "selection": {
+    "record": "models/metadata/selection/selected_model.json",
+    "selected": "finetuned",
+    "selection_reason": "rule step 1: macro F1 improved 0.932254 -> 0.937250",
+    "selection_rule": {
+      "id": "validation_macro_f1_then_accuracy",
+      "steps": [
+        "1. If the fine-tuned model's macro F1 is strictly higher than the baseline's, select the fine-tuned model.",
+        "2. If macro F1 is equal, select the fine-tuned model only when its validation accuracy is strictly higher.",
+        "3. Otherwise (macro F1 lower, or both metrics equal), keep the baseline."
+      ],
+      "within_a_run": "best checkpoint = lowest val_loss (unchanged; this rule never compares checkpoints inside one run)",
+      "test_set_used": false,
+      "fixed_before_running": "This rule lives in src/compare_validation.py and was written before any comparison ran; measured metrics can never change it."
+    },
+    "record_created_at": "2026-10-04T14:15:46+00:00",
+    "recorded_before_test_evaluation": true
+  },
+  "model": {
+    "path": "models/finetune_20261004_133620/best_model.keras",
+    "sha256": "39f7b78befd182c6a65cc94db3a2f3a09d15018ab5ae34145ed4a48f28e1cb4a",
+    "sha256_matches_selection_record": true,
+    "run_id": "finetune_20261004_133620",
+    "size_bytes": 23001516,
+    "load_options": {
+      "compile": false,
+      "safe_mode": true
+    }
+  },
+  "manifest": {
+    "path": "data/metadata/test.csv",
+    "sha256": "74494c13f6d9be7f1fc3a00124a7138035c96d866abe96cfa2eefc84d7530c2d",
+    "sha256_matches_split_summary": true,
+    "rows": 459,
+    "split_summary": "split_summary.json"
+  },
+  "class_order_check": {
+    "verified": true,
+    "sources": {
+      "selection_record": [
+        "metal",
+        "organic",
+        "paper",
+        "plastic"
+      ],
+      "configs/class_mapping.json": [
+        "metal",
+        "organic",
+        "paper",
+        "plastic"
+      ],
+      "model_bundle/class_order.json": [
+        "metal",
+        "organic",
+        "paper",
+        "plastic"
+      ]
+    },
+    "class_order": [
+      "metal",
+      "organic",
+      "paper",
+      "plastic"
+    ]
+  },
+  "protocol": {
+    "pipeline": "src/data_pipeline.make_dataset with training=False: manifest order, no shuffle, augmentation inert, float32 0-255 RGB, preprocessing applied once inside the model",
+    "image_size": 224,
+    "batch_size": 16,
+    "seed": 42,
+    "final_partial_batch": "kept (drop_remainder=False)",
+    "extra_normalization": "none",
+    "augmentation": "none (training=False)",
+    "fitting": "none \u2014 weights are loaded, never updated",
+    "threshold_tuning": "none \u2014 prediction is argmax of softmax",
+    "model_selection": "none at evaluation time \u2014 the checkpoint was fixed by the validation selection record written before this run"
+  },
+  "coverage": {
+    "expected_images": 459,
+    "manifest_rows": 459,
+    "predictions_made": 459,
+    "unique_image_paths": 459,
+    "each_image_evaluated_exactly_once": true
+  },
+  "metrics": {
+    "images": 459,
+    "loss": 0.17239077061109537,
+    "accuracy": 0.9368191721132898,
+    "macro_f1": 0.934730625209095,
+    "per_class": {
+      "metal": {
+        "precision": 0.8837209302325582,
+        "recall": 0.957983193277311,
+        "f1": 0.9193548387096775,
+        "support": 119,
+        "predicted_count": 129
+      },
+      "organic": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 127,
+        "predicted_count": 127
+      },
+      "paper": {
+        "precision": 0.9078947368421053,
+        "recall": 0.92,
+        "f1": 0.913907284768212,
+        "support": 75,
+        "predicted_count": 76
+      },
+      "plastic": {
+        "precision": 0.9448818897637795,
+        "recall": 0.8695652173913043,
+        "f1": 0.9056603773584906,
+        "support": 138,
+        "predicted_count": 127
+      }
+    },
+    "confusion_matrix": {
+      "order": [
+        "metal",
+        "organic",
+        "paper",
+        "plastic"
+      ],
+      "rows_true_columns_predicted": [
+        [
+          114,
+          0,
+          1,
+          4
+        ],
+        [
+          0,
+          127,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          69,
+          3
+        ],
+        [
+          12,
+          0,
+          6,
+          120
+        ]
+      ]
+    }
+  },
+  "confusion_matrix_row_normalized": {
+    "order": [
+      "metal",
+      "organic",
+      "paper",
+      "plastic"
+    ],
+    "rows_true_columns_predicted": [
+      [
+        0.957983193277311,
+        0.0,
+        0.008403361344537815,
+        0.03361344537815126
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.04,
+        0.0,
+        0.92,
+        0.04
+      ],
+      [
+        0.08695652173913043,
+        0.0,
+        0.043478260869565216,
+        0.8695652173913043
+      ]
+    ],
+    "note": "each row scaled by that class's support; rows sum to 1"
+  },
+  "summary": {
+    "images": 459,
+    "correct": 430,
+    "misclassified": 29
+  },
+  "misclassified_grid": {
+    "path": "D:/-_-/ai-waste-classification-assistant/models/runs/misclassified_grids/sample_grid_test_misclassified.png",
+    "tracked_in_git": false,
+    "reason": "grid images are dataset photographs; .gitignore blocks models/* and **/sample_grid*"
+  },
+  "environment": {
+    "python": "3.11.9",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "machine": "AMD64",
+    "tensorflow": "2.20.0",
+    "keras": "3.13.2",
+    "numpy": "2.4.6",
+    "physical_devices": [
+      "CPU:/physical_device:CPU:0"
+    ],
+    "gpu_count": 0
+  },
+  "git": {
+    "commit": "7db03a614200969b63069062a6f45e1f05b00d9b",
+    "branch": "main",
+    "uncommitted_changes": true,
+    "status": "ok"
+  },
+  "predictions": [
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_108.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        9.250806033378467e-05,
+        0.9961743354797363,
+        0.00041788184898905456,
+        0.0033152883406728506
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_11.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.7852266814297764e-06,
+        0.9999816417694092,
+        1.469550880983661e-08,
+        1.4584675227524713e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_111.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.00016593243344686925,
+        0.9992019534111023,
+        2.6772738692670828e-06,
+        0.0006293650367297232
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_114.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        5.668687663273886e-06,
+        0.9997673630714417,
+        1.3747010143561056e-06,
+        0.00022563387756235898
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_125.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        5.6188586313510314e-05,
+        0.9949939846992493,
+        5.775279419140134e-07,
+        0.0049492665566504
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_140.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        7.848543464206159e-05,
+        0.9477431178092957,
+        8.138104931276757e-06,
+        0.05217023938894272
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_146.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.6955861781298154e-07,
+        0.9999330043792725,
+        3.0341318051796407e-05,
+        3.646806362667121e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_148.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        5.732970384997316e-05,
+        0.9998335838317871,
+        1.7138853536380338e-07,
+        0.00010889728582696989
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_149.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.935191489290446e-05,
+        0.9997428059577942,
+        2.5298425043729367e-06,
+        0.00021539381123147905
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_159.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.4115629493337565e-09,
+        1.0,
+        4.4701803147972896e-08,
+        2.047546487915497e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_167.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        4.965192257344597e-09,
+        0.9999974966049194,
+        2.150953378077247e-06,
+        3.224845102067775e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_178.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.01294418703764677,
+        0.9480350017547607,
+        1.9468521017529383e-08,
+        0.03902081027626991
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_185.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.132104093277576e-08,
+        0.9999798536300659,
+        9.05482855362294e-10,
+        2.0172052245470695e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_191.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.999846232005666e-09,
+        0.9999995231628418,
+        8.829379538610738e-08,
+        3.034000997104158e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_194.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        4.772118336404674e-05,
+        0.9980992674827576,
+        1.6433805285487324e-06,
+        0.0018514014082029462
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_203.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.9945547314346186e-07,
+        0.9999622106552124,
+        7.970855975258928e-09,
+        3.740346437552944e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_209.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.001130615477450192,
+        0.7420842051506042,
+        3.516820243021357e-06,
+        0.2567817270755768
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_21.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        6.604797817999497e-05,
+        0.9994246959686279,
+        9.935212437994778e-05,
+        0.0004099858342669904
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_215.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.6961337173124775e-06,
+        0.9996351003646851,
+        5.089403316560492e-07,
+        0.00036067483597435057
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_236.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.0528319510049187e-05,
+        0.9999672174453735,
+        1.3522232222840103e-07,
+        1.2100496860512067e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_239.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.0947169307182776e-06,
+        0.9999960660934448,
+        2.6587518853204983e-09,
+        7.833152153580158e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_264.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        4.164804340689443e-05,
+        0.999953031539917,
+        2.774200311250752e-06,
+        2.5275335246988107e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_267.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        5.567103471548762e-07,
+        0.9999918937683105,
+        1.6569480010275583e-08,
+        7.563123290310614e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_269.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.005542977247387171,
+        0.9919891953468323,
+        4.351152711024042e-06,
+        0.0024634150322526693
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_27.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        5.627840096167347e-07,
+        0.9999918937683105,
+        1.5788350182788236e-08,
+        7.464830559911206e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_275.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        4.945090040564537e-05,
+        0.9997583031654358,
+        1.6980008510358857e-08,
+        0.0001921829825732857
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_276.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.00012539666204247624,
+        0.9975866079330444,
+        4.7509948331025953e-07,
+        0.0022876339498907328
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_277.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        8.330132459377637e-07,
+        0.9999793767929077,
+        1.0926839877356542e-07,
+        1.9662913473439403e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_278.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.791740214684978e-05,
+        0.9998846054077148,
+        1.7721996092845416e-10,
+        9.749009768711403e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_295.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        9.63985669066858e-10,
+        0.9999715089797974,
+        4.0025578407210105e-09,
+        2.8490079785115086e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_299.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.825281697482751e-08,
+        0.9999978542327881,
+        2.094876890623709e-06,
+        2.8436144106080974e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_302.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        6.464833859354258e-07,
+        0.9999961853027344,
+        5.036331594820975e-12,
+        3.2684922643966274e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_308.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.0002733497240114957,
+        0.9597923159599304,
+        0.0018421430140733719,
+        0.038092270493507385
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_311.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.695722989505157e-05,
+        0.9996360540390015,
+        0.00016901812341529876,
+        0.00015795939543750137
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_320.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        5.841123766003875e-06,
+        0.999955415725708,
+        2.1866466681785823e-07,
+        3.850938082905486e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_321.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        7.963977850522497e-07,
+        0.9999657869338989,
+        6.288434519774455e-07,
+        3.283941623521969e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_323.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.353601303184405e-05,
+        0.9999500513076782,
+        3.7056273072266777e-07,
+        2.5973520678235218e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_330.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.002023320412263274,
+        0.9979755282402039,
+        7.726306705535535e-08,
+        1.0276894499838818e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_331.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.0002771568833850324,
+        0.9997194409370422,
+        1.0170160749112256e-06,
+        2.4056121219473425e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_337.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        9.454836344957585e-07,
+        0.9999297857284546,
+        6.127455765003731e-10,
+        6.926085916347802e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_349.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.0017320112092420459,
+        0.9865862131118774,
+        5.3068269778577815e-08,
+        0.011681799776852131
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_351.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.6796614704949206e-08,
+        0.9999996423721313,
+        3.410353249799769e-11,
+        3.1198561600831454e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_353.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.2592088498640805e-05,
+        0.9999173879623413,
+        1.2761356416035596e-08,
+        5.9944966778857633e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_354.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.0628404197632335e-05,
+        0.9999409914016724,
+        1.1693804253809503e-06,
+        4.722264930023812e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_357.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.3782225323666353e-05,
+        0.999889612197876,
+        8.623235459026546e-09,
+        9.659150964580476e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_36.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        7.804328924976289e-05,
+        0.9998581409454346,
+        4.768647841046914e-07,
+        6.334421050269157e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_361.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.00021662305516656488,
+        0.9969999194145203,
+        9.468630196352024e-06,
+        0.00277399062179029
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_369.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        6.345127621898428e-05,
+        0.9998227953910828,
+        3.6370659017848084e-07,
+        0.0001134818303398788
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_370.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        6.778438091714634e-06,
+        0.9915596842765808,
+        0.0004541990056168288,
+        0.007979252375662327
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_372.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.0009313620976172388,
+        0.9725492596626282,
+        0.0014136958634480834,
+        0.02510565146803856
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_378.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.0002193014370277524,
+        0.990943968296051,
+        1.5380213653770625e-06,
+        0.008835230953991413
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_381.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.301284646615386e-05,
+        0.9982099533081055,
+        4.853178779740119e-06,
+        0.001772200339473784
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_390.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.9290473321452737e-05,
+        0.9998973608016968,
+        4.22155777002331e-09,
+        7.329734216909856e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_399.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.455039040365591e-07,
+        0.9999305009841919,
+        1.0479179302080865e-08,
+        6.936315912753344e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_403.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.9298264305689372e-05,
+        0.9607170820236206,
+        6.506868430733448e-07,
+        0.03926299884915352
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_409.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        9.200774002238177e-06,
+        0.9923315048217773,
+        2.1516570747337482e-09,
+        0.0076592047698795795
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_42.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        4.1595223592594266e-05,
+        0.9986152648925781,
+        2.629280686505808e-07,
+        0.001342762028798461
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_46.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.536695771799714e-07,
+        0.9999955892562866,
+        1.1149745660077315e-06,
+        3.034004748769803e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_53.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.003870111657306552,
+        0.5087006092071533,
+        0.00015433070075232536,
+        0.48727497458457947
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_56.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.0002472259511705488,
+        0.8097987174987793,
+        8.547314064344391e-05,
+        0.18986853957176208
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_61.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.00026787625392898917,
+        0.8687335252761841,
+        3.3206495118065504e-06,
+        0.13099530339241028
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_69.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.06740210950374603,
+        0.8837575316429138,
+        6.943932385183871e-05,
+        0.04877081140875816
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_79.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        4.071567261121345e-08,
+        0.9999220371246338,
+        3.4856856956366755e-08,
+        7.783272303640842e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Food Organics/Food Organics_99.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        5.381733672038536e-07,
+        0.999920129776001,
+        4.370668591491267e-07,
+        7.896557508502156e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_104.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.7160282731056213,
+        4.9446593038737774e-05,
+        0.00010870789992623031,
+        0.2838134765625
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_121.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9808427095413208,
+        6.662519353994867e-06,
+        0.0002879943640436977,
+        0.018862659111618996
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_123.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9873506426811218,
+        7.1952117650653236e-06,
+        1.3692892935068812e-05,
+        0.012628459371626377
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_126.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9989307522773743,
+        4.117668140679598e-06,
+        1.3542049600800965e-05,
+        0.001051520579494536
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_128.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.8704519271850586,
+        1.0274750820826739e-05,
+        2.084259449475212e-06,
+        0.12953567504882812
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_139.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9957312941551208,
+        3.8563405269087525e-07,
+        2.8336657464933523e-07,
+        0.004268140532076359
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_140.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": false,
+      "scores": [
+        0.28843656182289124,
+        0.0004436041635926813,
+        0.37805482745170593,
+        0.333065003156662
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_150.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.6385432481765747,
+        2.3106251774152042e-06,
+        8.726164196559694e-06,
+        0.36144569516181946
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_16.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.999907374382019,
+        2.2054368054025275e-10,
+        8.30417512531767e-09,
+        9.26260108826682e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_163.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9911760091781616,
+        6.061970907467185e-07,
+        5.1290444389451295e-06,
+        0.0088182482868433
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_165.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9582824110984802,
+        9.768029229917374e-08,
+        5.733857122436348e-08,
+        0.041717350482940674
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_171.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.5145494937896729,
+        0.00047335884300991893,
+        1.7149724953924306e-05,
+        0.4849599301815033
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_172.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9986294507980347,
+        2.9113325581420213e-06,
+        1.7244361515622586e-05,
+        0.0013504273956641555
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_18.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999929666519165,
+        1.0825513818701893e-09,
+        6.638065741526589e-08,
+        6.895319074828876e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_184.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999210834503174,
+        3.551763825271337e-07,
+        1.08019821709604e-06,
+        7.749682117719203e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_185.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.5475196242332458,
+        0.0009161460911855102,
+        0.15937350690364838,
+        0.2921907603740692
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_189.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": false,
+      "scores": [
+        0.24284425377845764,
+        6.177219802339096e-06,
+        0.002111907349899411,
+        0.7550376057624817
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_192.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9981333613395691,
+        8.03446909003469e-08,
+        0.00020098971435800195,
+        0.0016656675143167377
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_193.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9882793426513672,
+        1.4516611912540611e-08,
+        3.016827747615025e-07,
+        0.011720247566699982
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_201.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9455288648605347,
+        3.975662912125699e-05,
+        0.022129621356725693,
+        0.03230177238583565
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_213.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": false,
+      "scores": [
+        0.07032688707113266,
+        1.958941538759973e-05,
+        2.107827822328545e-05,
+        0.9296324253082275
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_227.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9964728951454163,
+        9.478608120616627e-08,
+        1.2233667803229764e-06,
+        0.003525796812027693
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_230.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9617668986320496,
+        7.221934197332303e-07,
+        0.0003560915938578546,
+        0.03787625581026077
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_242.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9650101065635681,
+        1.759486440278124e-05,
+        1.192147806250432e-06,
+        0.03497115150094032
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_246.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999972581863403,
+        1.319630293927787e-09,
+        1.9095746495167987e-07,
+        2.514021616661921e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_249.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": false,
+      "scores": [
+        0.35247960686683655,
+        3.0704894015798345e-05,
+        0.01382487453520298,
+        0.6336649060249329
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_25.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9998486042022705,
+        6.490554760318901e-10,
+        3.1214524298661672e-09,
+        0.00015139290189836174
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_257.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9979515671730042,
+        2.778919849788508e-07,
+        1.9885161236743443e-05,
+        0.002028290182352066
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_276.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9966662526130676,
+        6.356030285425973e-11,
+        0.003257057163864374,
+        7.662093412363902e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_282.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": false,
+      "scores": [
+        0.20747435092926025,
+        4.5545632019639015e-05,
+        0.0033403541892766953,
+        0.7891398072242737
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_292.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9612330794334412,
+        0.00012379007239360362,
+        1.682020774751436e-05,
+        0.03862626850605011
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_294.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9699636101722717,
+        3.929173075789549e-08,
+        1.031455394695513e-05,
+        0.030026063323020935
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_295.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9401723742485046,
+        2.240996400360018e-05,
+        0.0010023072827607393,
+        0.05880294367671013
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_298.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9947010278701782,
+        1.3256677675599349e-06,
+        0.0001717776176519692,
+        0.005125898402184248
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_30.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9580879211425781,
+        3.155189551762305e-05,
+        0.0003509737434796989,
+        0.04152948036789894
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_300.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9813629388809204,
+        4.5844859414501116e-05,
+        0.0005717879394069314,
+        0.018019353970885277
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_301.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9948530793190002,
+        9.550788035994628e-07,
+        0.0010600000387057662,
+        0.004085924476385117
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_304.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.5265107154846191,
+        4.211631676298566e-05,
+        0.03213896229863167,
+        0.4413082003593445
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_309.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9972455501556396,
+        2.0137866929559323e-09,
+        3.963113613281166e-06,
+        0.0027505510952323675
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_31.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.6781558990478516,
+        5.0088528951164335e-06,
+        8.15148996480275e-06,
+        0.3218309283256531
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_313.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.6146292090415955,
+        1.6785495517979143e-06,
+        0.0016906597884371877,
+        0.38367846608161926
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_324.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9977433681488037,
+        2.8174315502838e-06,
+        0.0021095178090035915,
+        0.00014433200703933835
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_342.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9998061060905457,
+        6.8417507463891525e-06,
+        5.816308767947476e-09,
+        0.00018704058311413974
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_343.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9720203876495361,
+        0.000351772119756788,
+        2.341837443964323e-06,
+        0.027625558897852898
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_345.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.989013671875,
+        5.71684950045892e-06,
+        0.010044599883258343,
+        0.0009360118419863284
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_346.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999862909317017,
+        2.5610041864965183e-10,
+        1.8629021951710456e-06,
+        1.1815129255410284e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_348.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9998711347579956,
+        8.691885886946693e-05,
+        3.8164780562510714e-05,
+        3.7944216728647007e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_352.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999685287475586,
+        2.0133038560743444e-05,
+        6.538627076224657e-06,
+        4.735421043733368e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_355.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999663829803467,
+        2.7903723776034894e-08,
+        1.939271641049345e-07,
+        3.3337277272948995e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_366.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999570846557617,
+        2.3656590997234161e-07,
+        4.252387225278653e-05,
+        1.607694883887234e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_37.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.8911218643188477,
+        2.9193897717050277e-05,
+        2.953564262497821e-06,
+        0.10884589701890945
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_39.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9961740374565125,
+        1.456887912354432e-05,
+        2.5593304599169642e-05,
+        0.0037857298739254475
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_390.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9924672245979309,
+        8.409986484991805e-09,
+        1.092776358291303e-08,
+        0.00753277912735939
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_399.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.7887997627258301,
+        2.6576794098787104e-09,
+        0.21119844913482666,
+        1.7618912124817143e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_409.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.8295156359672546,
+        0.1636480838060379,
+        0.0037322682328522205,
+        0.0031040366739034653
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_412.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999802112579346,
+        2.140194410582552e-10,
+        1.7358868120709303e-08,
+        1.9822004105662927e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_416.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9993619322776794,
+        4.0952241420200153e-07,
+        0.0006067772046662867,
+        3.087498771492392e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_426.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9940628409385681,
+        3.362317215760413e-07,
+        0.0002153561363229528,
+        0.005721533205360174
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_43.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999867677688599,
+        1.2597856091645099e-08,
+        3.105734094788204e-06,
+        1.0156388270843308e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_432.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9996527433395386,
+        0.00021638280304614455,
+        6.614979793084785e-05,
+        6.474228575825691e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_435.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9998623132705688,
+        2.3400649297400378e-05,
+        0.00011324759543640539,
+        1.0440350024509826e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_440.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9997428059577942,
+        2.7446554668131284e-05,
+        0.00019957104814238846,
+        3.011601438629441e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_448.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9897127151489258,
+        8.583839189668652e-06,
+        0.010274302214384079,
+        4.383593932288932e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_449.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9998026490211487,
+        7.107998044375563e-06,
+        0.00018800368707161397,
+        2.2663625713903457e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_45.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9982168078422546,
+        1.818574128265027e-05,
+        7.658532922505401e-06,
+        0.0017574210651218891
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_464.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.8321654200553894,
+        0.0003407432232052088,
+        0.03281950205564499,
+        0.1346742808818817
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_469.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999470710754395,
+        8.745232662477065e-06,
+        7.111863169484423e-07,
+        4.351019379100762e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_486.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9977275729179382,
+        1.556051938678138e-05,
+        0.0022516525350511074,
+        5.266343578114174e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_489.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9702848196029663,
+        0.02909153141081333,
+        0.0002439497911836952,
+        0.00037967500975355506
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_512.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999285936355591,
+        1.2897006795853372e-09,
+        6.953344563953578e-05,
+        1.8621250319483806e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_517.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9977311491966248,
+        0.0005675319698639214,
+        0.0004936002660542727,
+        0.0012076939456164837
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_521.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.999480664730072,
+        4.501028882941682e-08,
+        0.000360796635504812,
+        0.00015848298789933324
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_522.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9610700607299805,
+        1.4929413509889855e-06,
+        0.0388665497303009,
+        6.187500548548996e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_525.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9902271032333374,
+        0.0023305171635001898,
+        0.0003645498654805124,
+        0.0070778862573206425
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_56.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999856948852539,
+        1.1018341794510889e-08,
+        1.6124646435855539e-06,
+        1.2568509191623889e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_565.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.7685284614562988,
+        0.10659763962030411,
+        8.927758244681172e-06,
+        0.12486499547958374
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_591.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9938533306121826,
+        4.692595201305494e-10,
+        0.005850914865732193,
+        0.00029565897420980036
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_594.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999467134475708,
+        1.8795974554564054e-08,
+        3.436070983298123e-05,
+        1.896996036521159e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_601.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999392032623291,
+        1.7202310409469845e-10,
+        4.935819106322015e-06,
+        5.589680222328752e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_608.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9978926777839661,
+        0.00028839308652095497,
+        0.00083769770571962,
+        0.0009813013020902872
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_612.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999508857727051,
+        1.2470909860340385e-09,
+        3.9071676383173326e-07,
+        4.874825754086487e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_616.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9822850227355957,
+        0.0003770001349039376,
+        0.00010825318895513192,
+        0.017229832708835602
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_621.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999198913574219,
+        3.6680248740594834e-05,
+        7.952607461447769e-07,
+        4.263895607437007e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_631.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999701976776123,
+        1.7582779037184082e-05,
+        7.89923797128722e-06,
+        4.310744316171622e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_642.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9998026490211487,
+        2.0098205044671857e-10,
+        5.2736460929736495e-05,
+        0.0001446466048946604
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_643.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9866207838058472,
+        4.766051517890446e-07,
+        1.2302733694014023e-06,
+        0.01337754912674427
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_654.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9989452958106995,
+        1.0990707721703075e-07,
+        4.2035844671772793e-07,
+        0.001054084044881165
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_656.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999663829803467,
+        1.2381795588822797e-09,
+        4.1780589299378335e-07,
+        3.3167492802022025e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_660.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.8620349764823914,
+        0.00020176467660348862,
+        2.0045270332502696e-07,
+        0.1377630978822708
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_67.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9942097663879395,
+        2.6514758246776182e-06,
+        6.170998676680028e-05,
+        0.00572590297088027
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_679.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.8928357362747192,
+        7.370731509581674e-07,
+        0.1053617000579834,
+        0.0018018858972936869
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_685.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.7875475883483887,
+        1.7996599126490764e-06,
+        0.0911329984664917,
+        0.12131768465042114
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_689.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.999724805355072,
+        9.050681001099292e-06,
+        7.26484313418041e-06,
+        0.0002589050855021924
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_69.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9852741956710815,
+        1.0624308742990252e-05,
+        0.00154880213085562,
+        0.013166449032723904
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_692.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9697452783584595,
+        4.15157273891964e-06,
+        1.726658283018878e-08,
+        0.03025059588253498
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_697.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9998348951339722,
+        1.2293059903356607e-09,
+        3.5503163076100464e-07,
+        0.0001647264143684879
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_699.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9985124468803406,
+        2.893978923168561e-08,
+        3.5805394418275682e-06,
+        0.0014839702052995563
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_703.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.993423342704773,
+        1.6424962723249337e-07,
+        2.935090606115409e-06,
+        0.006573469843715429
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_709.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.999005138874054,
+        4.8947094910545275e-06,
+        5.30739598616492e-05,
+        0.000936864351388067
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_717.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.999967098236084,
+        2.725527359359603e-08,
+        1.2454423085728195e-05,
+        2.0477751604630612e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_722.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.992550253868103,
+        6.910604033460999e-11,
+        5.945789638417409e-08,
+        0.007449626922607422
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_729.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9872495532035828,
+        6.318613259281847e-07,
+        0.006962734740227461,
+        0.0057870494201779366
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_740.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.811079204082489,
+        6.894540092616808e-06,
+        0.014777708798646927,
+        0.17413610219955444
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_742.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9994022846221924,
+        1.3889879824091622e-07,
+        2.6817410514468065e-08,
+        0.0005975636304356158
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_746.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9828311204910278,
+        4.035377787658945e-05,
+        0.00014706066576763988,
+        0.016981545835733414
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_749.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.897040605545044,
+        3.821022983174771e-05,
+        0.06877560168504715,
+        0.03414555639028549
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_76.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.999998927116394,
+        7.590756911923791e-10,
+        1.8805337287375323e-09,
+        1.1265192370046861e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_769.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999343156814575,
+        1.125232351739669e-08,
+        5.622442040476017e-05,
+        9.357046110380907e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_774.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.999962329864502,
+        2.6908637540401514e-09,
+        7.044018843771482e-07,
+        3.6979588912799954e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_779.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9987006187438965,
+        2.7019937398620186e-09,
+        1.2114080618630396e-06,
+        0.001298197079449892
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_78.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999886751174927,
+        2.299909818148649e-09,
+        3.907015866388974e-08,
+        1.1265988177910913e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_782.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9998074173927307,
+        2.371884910701283e-09,
+        3.5644842455440084e-07,
+        0.0001922993251355365
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_783.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9683004021644592,
+        2.0505907741608098e-05,
+        0.031226882711052895,
+        0.0004521553055383265
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_80.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.6346357464790344,
+        1.5690846339566633e-05,
+        0.0002748914703261107,
+        0.36507362127304077
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_84.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999423027038574,
+        9.444798365620954e-07,
+        4.229421028867364e-05,
+        1.4432512216444593e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_85.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9989149570465088,
+        2.2078660322222277e-07,
+        0.0004885472590103745,
+        0.0005962026189081371
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_88.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9999901056289673,
+        9.265463951635411e-10,
+        5.8378736866870895e-06,
+        3.9941578506841324e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_90.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.994886577129364,
+        1.061117416156776e-08,
+        0.005069016944617033,
+        4.435080336406827e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Metal/Metal_94.jpg",
+      "target": "metal",
+      "target_index": 0,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": true,
+      "scores": [
+        0.9997254014015198,
+        3.051097152706461e-08,
+        1.758726102707442e-05,
+        0.0002568816125858575
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_108.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.0030172993429005146,
+        4.547020125755807e-06,
+        0.990200936794281,
+        0.006777285598218441
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_133.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.6884086728096008,
+        5.690114267054014e-05,
+        0.29168036580085754,
+        0.019854029640555382
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_134.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        7.955055281172463e-08,
+        5.442803541200192e-09,
+        0.9999971389770508,
+        2.720693373703398e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_135.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        3.096163345617242e-05,
+        2.6274600273268334e-08,
+        0.9960284233093262,
+        0.003940612077713013
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_14.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.0001625425211386755,
+        1.3960890044018015e-07,
+        0.9997960925102234,
+        4.125091072637588e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_146.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        1.1229184337935294e-06,
+        3.5251970231797713e-09,
+        0.9998509883880615,
+        0.0001479171187384054
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_148.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.001265962840989232,
+        6.696909986203536e-05,
+        0.9986422657966614,
+        2.4782611944829114e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_151.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        5.979049433335604e-07,
+        1.3956687361371678e-08,
+        0.999984622001648,
+        1.4744456166226882e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_166.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.018693944439291954,
+        2.2457696104538627e-05,
+        0.9078426957130432,
+        0.07344096153974533
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_167.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        1.468556263262144e-07,
+        1.1973239288920468e-08,
+        0.9999363422393799,
+        6.348094757413492e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_17.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.9899035692214966,
+        2.8558308258652687e-05,
+        0.0035095440689474344,
+        0.006558426655828953
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_177.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        2.917049641837366e-07,
+        2.5116844160066876e-09,
+        0.999992847442627,
+        6.914335699548246e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_178.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.001926629920490086,
+        3.627797559602186e-05,
+        0.9657342433929443,
+        0.03230292722582817
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_179.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        6.422075966838747e-05,
+        3.267849635335551e-08,
+        0.9716402888298035,
+        0.028295494616031647
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_180.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.0026813510339707136,
+        1.279289153899299e-05,
+        0.9954668283462524,
+        0.0018390793120488524
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_189.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        9.959522685676347e-06,
+        8.934377859759479e-08,
+        0.9996753931045532,
+        0.00031448036315850914
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_190.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.000167170655913651,
+        4.476709818845848e-06,
+        0.9996067881584167,
+        0.0002216324646724388
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_200.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.00047008192632347345,
+        1.6004914868972264e-06,
+        0.9992295503616333,
+        0.0002988501510117203
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_207.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.003555970499292016,
+        4.531037120614201e-06,
+        0.9962477087974548,
+        0.00019180223171133548
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_210.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.2586419880390167,
+        8.554260944038106e-07,
+        0.6751487851142883,
+        0.06620842218399048
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_217.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        6.046052931196755e-06,
+        1.3541230359237488e-09,
+        0.9998977184295654,
+        9.617627074476331e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_232.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.24389122426509857,
+        8.894528946257196e-06,
+        0.4633646011352539,
+        0.29273536801338196
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_241.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        1.910385071823839e-05,
+        1.6674486857937154e-07,
+        0.9999475479125977,
+        3.315696812933311e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_249.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        1.5351713955169544e-05,
+        5.798882707352959e-09,
+        0.9999526739120483,
+        3.1924548238748685e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_252.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        5.562585101870354e-06,
+        1.534704523464825e-07,
+        0.9999938011169434,
+        4.5282422433956526e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_255.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.00015136561705730855,
+        1.3349153782371559e-08,
+        0.999714195728302,
+        0.00013446850061882287
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_26.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.0007999998051673174,
+        1.9810556750599062e-08,
+        0.9991973042488098,
+        2.6829893613466993e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_260.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.13988097012043,
+        0.0035695196129381657,
+        0.856545090675354,
+        4.353110853116959e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_266.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        3.120249675703235e-05,
+        1.4497075540020887e-07,
+        0.9989199638366699,
+        0.0010487181134521961
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_281.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        4.214502951072063e-06,
+        1.1839275337877098e-08,
+        0.9999761581420898,
+        1.9666074877022766e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_284.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.01794644445180893,
+        3.4654867704375647e-06,
+        0.9812393188476562,
+        0.0008107952307909727
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_286.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.002964621875435114,
+        1.183673475679825e-06,
+        0.9958211183547974,
+        0.0012130576651543379
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_291.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        1.0616469126034644e-06,
+        8.325233558093004e-11,
+        0.9999957084655762,
+        3.1795341328688664e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_30.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.0005954571533948183,
+        8.630043879520599e-08,
+        0.9993471503257751,
+        5.73311117477715e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_305.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        1.824999890231993e-05,
+        6.259214302417604e-08,
+        0.9999408721923828,
+        4.0793886000756174e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_310.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        3.484840590317617e-06,
+        2.573409005890426e-07,
+        0.9999932050704956,
+        3.1130548450164497e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_312.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": false,
+      "scores": [
+        0.008859248831868172,
+        5.497523034136975e-06,
+        0.3014712333679199,
+        0.6896640062332153
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_326.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.00032388957333751023,
+        4.71913921273881e-08,
+        0.9995104074478149,
+        0.00016566405247431248
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_334.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        2.510650119802449e-05,
+        7.234318672999507e-07,
+        0.9991999268531799,
+        0.0007742302841506898
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_340.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.005412442144006491,
+        1.1828603163621665e-07,
+        0.9945084452629089,
+        7.890095730544999e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_343.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.0005711067351512611,
+        3.618658581672207e-07,
+        0.9994068145751953,
+        2.170159132219851e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_359.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        6.571729045390384e-07,
+        9.673136069920929e-09,
+        0.9999936819076538,
+        5.558390057558427e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_36.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        6.502970791189e-05,
+        7.103475127223646e-06,
+        0.998241662979126,
+        0.001686292584054172
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_366.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.0005201418534852564,
+        4.5246793888509274e-05,
+        0.9869622588157654,
+        0.01247225422412157
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_370.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        8.252270345110446e-05,
+        6.079993909224868e-05,
+        0.9552766680717468,
+        0.04458002746105194
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_377.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.5721282958984375,
+        0.29730820655822754,
+        0.08611129969358444,
+        0.04445222392678261
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_384.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        9.850026799540501e-06,
+        2.212812205470982e-06,
+        0.9999872446060181,
+        6.37777020529029e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_389.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.0031161510851234198,
+        7.849666872061789e-06,
+        0.9967605471611023,
+        0.00011543529399204999
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_391.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        4.274196726328228e-06,
+        1.1777257213907433e-06,
+        0.9999940395355225,
+        4.894321818937897e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_394.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.09866296499967575,
+        0.08829066902399063,
+        0.42139944434165955,
+        0.39164695143699646
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_397.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        4.130785964662209e-05,
+        9.876025615085382e-06,
+        0.9992427825927734,
+        0.0007060252246446908
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_400.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        2.9157336030039005e-05,
+        3.1186473847810703e-07,
+        0.998375654220581,
+        0.001594872446730733
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_412.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        3.368327088537626e-05,
+        9.433954801352229e-06,
+        0.9999165534973145,
+        4.029362025903538e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_417.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.0068662166595458984,
+        0.001361265080049634,
+        0.7381010055541992,
+        0.2536714971065521
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_426.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        9.18410369195044e-05,
+        1.1872984817529186e-09,
+        0.999901533126831,
+        6.6217103267263155e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_434.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.00013363748439587653,
+        2.4485946141794557e-06,
+        0.9990656971931458,
+        0.0007982483948580921
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_442.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": false,
+      "scores": [
+        0.0004067441914230585,
+        4.5699431211687624e-05,
+        0.20095188915729523,
+        0.798595666885376
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_447.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        1.2321786471147789e-06,
+        1.1020345525025732e-08,
+        0.9997766613960266,
+        0.0002221263712272048
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_449.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.00042449860484339297,
+        7.427384502989298e-07,
+        0.9885663390159607,
+        0.01100850384682417
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_45.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        9.502281500317622e-06,
+        2.1669517735745103e-08,
+        0.9983596205711365,
+        0.0016307939076796174
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_455.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.031428012996912,
+        3.244166464355658e-06,
+        0.8445532321929932,
+        0.1240154579281807
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_457.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        6.726410362034585e-08,
+        1.6688033177558736e-09,
+        0.9999997615814209,
+        1.0967674768380675e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_458.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.0011420893715694547,
+        6.751284420403181e-09,
+        0.9937167763710022,
+        0.005141116678714752
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_469.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        3.804334482992999e-05,
+        5.252773462416371e-06,
+        0.999923825263977,
+        3.28660462400876e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_475.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        3.7105157844052883e-06,
+        2.390345477110145e-09,
+        0.9998602867126465,
+        0.00013600029342342168
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_477.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.000164415396284312,
+        2.6772950079134716e-08,
+        0.9997569918632507,
+        7.853074203012511e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_482.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        2.6349373001721688e-05,
+        4.3592214282739405e-09,
+        0.9987804293632507,
+        0.0011932575143873692
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_489.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        1.5880646969890222e-05,
+        1.2840826180138265e-08,
+        0.9999837875366211,
+        3.477923939954053e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_496.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": false,
+      "scores": [
+        0.0004803001065738499,
+        4.214887638909204e-08,
+        0.47075673937797546,
+        0.528762936592102
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_50.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        1.357224164166837e-06,
+        1.9568711095985236e-09,
+        0.9998082518577576,
+        0.0001904261443996802
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_65.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.0008421496604569256,
+        2.6533668915362796e-06,
+        0.9991291165351868,
+        2.6062642064061947e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_72.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        7.964168617036194e-05,
+        2.5123753744082933e-07,
+        0.9996585845947266,
+        0.0002616008569020778
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_82.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        1.8748052752926014e-05,
+        8.188211886306362e-09,
+        0.9996193647384644,
+        0.00036192801780998707
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_86.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        0.013922877609729767,
+        3.969165845774114e-06,
+        0.8827241659164429,
+        0.10334905982017517
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Paper/Paper_95.jpg",
+      "target": "paper",
+      "target_index": 2,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": true,
+      "scores": [
+        4.536058258963749e-05,
+        1.2613679245987441e-05,
+        0.9998843669891357,
+        5.754460653406568e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_122.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": false,
+      "scores": [
+        0.0019248008029535413,
+        2.908803935497417e-06,
+        0.9948821067810059,
+        0.0031902401242405176
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_125.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.03118344396352768,
+        1.1064325633469707e-07,
+        3.0287748131740955e-07,
+        0.9688161611557007
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_127.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.08505842834711075,
+        5.677131412085146e-06,
+        6.568523531313986e-05,
+        0.9148702025413513
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_137.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.13027450442314148,
+        1.3184610736516333e-07,
+        1.404057343279419e-06,
+        0.8697239756584167
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_140.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.07964399456977844,
+        1.0822180229297373e-05,
+        1.3193704035074916e-05,
+        0.9203320145606995
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_15.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.01589861512184143,
+        3.0119110761006596e-07,
+        1.4604812577090343e-06,
+        0.9840995073318481
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_159.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": false,
+      "scores": [
+        0.0028019065503031015,
+        1.2592183296078474e-08,
+        0.6200026869773865,
+        0.3771953284740448
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_16.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.6601341366767883,
+        7.933811139082536e-05,
+        0.0023340871557593346,
+        0.3374524712562561
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_167.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        2.6655509373085806e-06,
+        1.0727601562621203e-07,
+        7.251010742947983e-07,
+        0.999996542930603
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_171.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.002072588074952364,
+        4.059326238348149e-05,
+        0.002121348399668932,
+        0.9957654476165771
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_174.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.006050752010196447,
+        4.482446820475161e-05,
+        2.850351165761822e-06,
+        0.9939016103744507
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_179.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.014639334753155708,
+        1.2979338634977466e-06,
+        6.035642172719236e-07,
+        0.9853588342666626
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_18.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.009431786835193634,
+        1.1980756653429125e-07,
+        9.821249591368542e-08,
+        0.9905679821968079
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_185.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0021874168887734413,
+        4.702947535406565e-06,
+        0.0011396475601941347,
+        0.9966681599617004
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_210.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0003918327856808901,
+        3.299005868484528e-08,
+        3.0819450330454856e-05,
+        0.9995773434638977
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_213.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0015882024308666587,
+        4.006292328995187e-06,
+        0.023285923525691032,
+        0.9751219153404236
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_214.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.1539803147315979,
+        2.454898321957444e-06,
+        0.00043312791967764497,
+        0.8455840945243835
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_217.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.019385751336812973,
+        7.484813977498561e-06,
+        1.949339548446005e-06,
+        0.9806047677993774
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_218.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.2408020794391632,
+        0.01665148138999939,
+        8.403513493249193e-05,
+        0.7424624562263489
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_227.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.000148838444147259,
+        6.785647656215588e-06,
+        7.14772099286165e-08,
+        0.9998443126678467
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_24.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.8517279624938965,
+        0.00018150707182940096,
+        1.039062595964424e-07,
+        0.14809048175811768
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_240.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.26685282588005066,
+        8.273490675492212e-05,
+        3.0503912284984835e-07,
+        0.7330641150474548
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_244.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.009180603548884392,
+        3.696926285101654e-07,
+        4.806848252769669e-09,
+        0.9908190369606018
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_248.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.7969712018966675,
+        2.815892185026314e-05,
+        0.15173088014125824,
+        0.0512697733938694
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_250.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.08495765924453735,
+        3.439549254835583e-05,
+        1.2106952453905251e-05,
+        0.9149958491325378
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_254.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.6989871263504028,
+        0.026028191670775414,
+        0.00041100752423517406,
+        0.2745736539363861
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_257.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.3703122138977051,
+        1.1765764611482155e-06,
+        5.4019951676309574e-06,
+        0.6296812295913696
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_26.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0004204009601380676,
+        2.194715591485874e-07,
+        3.7183423273745575e-07,
+        0.9995790123939514
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_267.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.9737421870231628,
+        0.0001383488706778735,
+        0.0059976838529109955,
+        0.020121701061725616
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_280.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": false,
+      "scores": [
+        0.001306668040342629,
+        5.9568301402634916e-09,
+        0.9950673580169678,
+        0.003626032965257764
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_284.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.00017200717411469668,
+        2.062263959601296e-08,
+        0.0004990772577002645,
+        0.9993289709091187
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_293.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.006673549767583609,
+        0.06745713204145432,
+        3.3296873880317435e-06,
+        0.9258660078048706
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_305.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.060280147939920425,
+        3.193158022440912e-07,
+        4.12107056035893e-06,
+        0.9397153854370117
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_306.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.01197895035147667,
+        1.5503005670325365e-06,
+        0.00852673128247261,
+        0.9794928431510925
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_317.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.005559000186622143,
+        0.0013757318956777453,
+        0.00021019860287196934,
+        0.9928550124168396
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_324.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.6320924758911133,
+        6.921002932358533e-05,
+        1.4936776437934896e-07,
+        0.36783820390701294
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_33.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0014975392259657383,
+        0.00014631800877396017,
+        1.9282890661997953e-06,
+        0.9983543157577515
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_343.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.08163479715585709,
+        0.0024953323882073164,
+        0.013193078339099884,
+        0.9026768207550049
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_352.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.17151661217212677,
+        1.306455033045495e-05,
+        6.16374563833233e-06,
+        0.8284642100334167
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_360.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.8698334097862244,
+        1.1134342457808089e-05,
+        7.0030009737820365e-06,
+        0.13014842569828033
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_366.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0388944074511528,
+        1.0088450835610274e-05,
+        3.7957644849484495e-07,
+        0.9610950946807861
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_367.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.00012560735922306776,
+        6.024801223247778e-06,
+        2.4338859816452896e-07,
+        0.9998680353164673
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_376.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0027724425308406353,
+        0.00470714271068573,
+        0.16535134613513947,
+        0.8271691203117371
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_378.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0021470182109624147,
+        0.027503052726387978,
+        0.008350473828613758,
+        0.9619994163513184
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_379.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0003792594070546329,
+        2.588335057396307e-08,
+        2.1595362341031432e-05,
+        0.9995991587638855
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_38.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.013821940869092941,
+        1.6375504856114276e-05,
+        0.0009778117528185248,
+        0.9851839542388916
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_384.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0045543876476585865,
+        7.498317427234724e-05,
+        9.97530378299416e-07,
+        0.9953696131706238
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_391.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.00020694303384516388,
+        0.2741714417934418,
+        1.5925820662232582e-07,
+        0.7256214618682861
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_394.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.002185842487961054,
+        0.00035096239298582077,
+        5.42679785553446e-08,
+        0.9974631071090698
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_397.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.05684272572398186,
+        0.0011799312196671963,
+        2.1579239728453103e-06,
+        0.9419751167297363
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_41.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.005511924624443054,
+        0.00266945268958807,
+        0.0001356173015665263,
+        0.9916830062866211
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_416.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.597619354724884,
+        0.0004908377304673195,
+        2.9107561204000376e-05,
+        0.4018607437610626
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_418.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0008575154352001846,
+        1.4012704774302165e-08,
+        2.7298563054500846e-07,
+        0.9991421699523926
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_419.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.005751111079007387,
+        5.755436305321382e-08,
+        1.949483241503458e-08,
+        0.9942488670349121
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_431.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.00010160979581996799,
+        4.507317044044612e-07,
+        3.074441701755859e-05,
+        0.9998672008514404
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_432.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0032475816551595926,
+        9.16341780232699e-10,
+        1.957339605951347e-07,
+        0.9967522621154785
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_439.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.04583458602428436,
+        1.7053642409337044e-07,
+        0.0003106777439825237,
+        0.9538546800613403
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_466.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.00022177417122293264,
+        8.942832323555194e-07,
+        4.803787874152476e-07,
+        0.9997767806053162
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_477.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.00014663978072348982,
+        9.675719780943837e-09,
+        2.740840727710747e-06,
+        0.9998506307601929
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_478.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.001667275675572455,
+        1.5079855142374754e-09,
+        4.2805648263311014e-05,
+        0.9982898831367493
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_483.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0003918760339729488,
+        1.8086429065533594e-07,
+        0.014698794111609459,
+        0.9849091172218323
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_499.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        5.369479367800523e-06,
+        1.7533686786919134e-06,
+        3.880270014633425e-06,
+        0.9999889135360718
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_513.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.029980212450027466,
+        1.5010138909588022e-08,
+        1.3794367987429723e-05,
+        0.970005989074707
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_529.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0005227618385106325,
+        8.674217788495753e-09,
+        0.00027281383518129587,
+        0.9992044568061829
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_53.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0016364007024094462,
+        0.00013391247193794698,
+        0.07687728106975555,
+        0.9213524460792542
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_540.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        4.874670977983442e-08,
+        2.411374921962306e-08,
+        2.5003696890735227e-08,
+        0.9999998807907104
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_544.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.001684415154159069,
+        1.309517614345168e-07,
+        0.007341617718338966,
+        0.9909738898277283
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_554.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        1.1886893958035216e-07,
+        3.310109377707704e-07,
+        1.9108115338895004e-06,
+        0.999997615814209
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_558.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        1.2818863069696818e-05,
+        0.00016286203754134476,
+        2.1350871975300834e-05,
+        0.9998030066490173
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_562.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        1.5750555348859052e-07,
+        2.2971438085050977e-08,
+        7.627897247175497e-08,
+        0.9999997615814209
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_568.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.001807744731195271,
+        6.653426680713892e-05,
+        2.3626233769391547e-07,
+        0.9981254935264587
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_576.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        6.5370859374525025e-06,
+        3.463136266645961e-08,
+        0.000450444029411301,
+        0.9995430707931519
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_577.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        8.200057095564262e-07,
+        6.417148057380473e-08,
+        4.709211498266086e-05,
+        0.999951958656311
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_578.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        2.513153503969079e-06,
+        4.5020406846951744e-10,
+        1.1357459470673348e-06,
+        0.9999963045120239
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_584.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        1.8621855133460485e-06,
+        8.373722835131048e-07,
+        8.620419578164729e-08,
+        0.9999972581863403
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_591.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        4.601695036399178e-05,
+        1.305383466387866e-05,
+        6.204724195413291e-05,
+        0.9998787641525269
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_6.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        6.413958908524364e-05,
+        2.1637553970776935e-08,
+        6.042829880925638e-08,
+        0.9999357461929321
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_601.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        4.547130174614722e-06,
+        4.2412962031335155e-09,
+        3.3015205644915113e-06,
+        0.9999921321868896
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_606.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.01696716621518135,
+        1.3725943404097052e-07,
+        5.9383484767749906e-05,
+        0.9829733371734619
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_607.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.420985609292984,
+        1.490082922828151e-06,
+        0.000430804182542488,
+        0.5785820484161377
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_61.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.08102045208215714,
+        0.00334763596765697,
+        0.14438842236995697,
+        0.7712435722351074
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_619.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        5.207290087128058e-06,
+        0.000323995016515255,
+        3.314586865599267e-05,
+        0.9996376037597656
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_626.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0036545759066939354,
+        0.0026184157468378544,
+        0.0012789001921191812,
+        0.992448091506958
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_627.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.044901154935359955,
+        0.00033312480081804097,
+        0.0007602045661769807,
+        0.9540055394172668
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_629.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        1.6942723959800787e-05,
+        9.832089808980982e-09,
+        2.463415000875102e-07,
+        0.9999828338623047
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_630.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        7.423674105666578e-05,
+        0.016202831640839577,
+        0.00014452714822255075,
+        0.9835784435272217
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_634.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.049844514578580856,
+        3.848662890959531e-05,
+        6.861361907795072e-05,
+        0.9500483870506287
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_640.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        2.000408585445257e-07,
+        2.1103376639075577e-05,
+        1.1243321296205977e-07,
+        0.9999785423278809
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_645.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0003040857845917344,
+        2.2105313135512006e-08,
+        1.0772486902510536e-08,
+        0.999695897102356
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_657.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.00027826326549984515,
+        9.031069794218638e-07,
+        0.0003077759756706655,
+        0.999413013458252
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_663.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        5.468770268635126e-06,
+        1.1115803832950633e-09,
+        1.6539125624603912e-07,
+        0.9999943971633911
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_666.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.005088369827717543,
+        2.1881555767322425e-07,
+        0.002240548375993967,
+        0.9926708936691284
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_669.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.015993336215615273,
+        1.2568760894282605e-06,
+        5.156752536095155e-07,
+        0.9840048551559448
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_675.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        1.8726765119936317e-05,
+        1.5540239246547571e-06,
+        2.1665114218194503e-06,
+        0.9999775886535645
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_676.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.000507438788190484,
+        3.00311094179051e-05,
+        9.904682883643545e-06,
+        0.9994526505470276
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_678.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        1.6601306924712844e-05,
+        2.8669307994277915e-07,
+        2.2493358642350358e-07,
+        0.9999829530715942
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_685.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        4.3119030124216806e-08,
+        1.3665242271088118e-08,
+        4.672055240462214e-07,
+        0.9999995231628418
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_688.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.00018506038759369403,
+        4.576947048917646e-06,
+        7.460077000587262e-09,
+        0.9998103976249695
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_689.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0005630698869936168,
+        1.4415611815365992e-07,
+        0.00021665000531356782,
+        0.9992201328277588
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_69.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.011698868125677109,
+        1.203538175786889e-07,
+        5.271993359201588e-06,
+        0.9882957935333252
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_690.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        3.439636429902748e-06,
+        7.838635696089113e-08,
+        9.344383045117866e-08,
+        0.9999963045120239
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_691.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        9.717618922877591e-07,
+        0.0017463236581534147,
+        2.7954106371907983e-06,
+        0.9982498288154602
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_7.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.29806917905807495,
+        1.0910805940511636e-05,
+        0.0028710609767585993,
+        0.6990488767623901
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_706.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        2.5550511395522335e-07,
+        0.00013547553680837154,
+        5.424903429229744e-05,
+        0.9998100399971008
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_714.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        8.91043382580392e-05,
+        0.0004553532926365733,
+        2.4644514269311912e-05,
+        0.9994308352470398
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_726.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.01431841216981411,
+        1.1643566722341347e-05,
+        0.002159691881388426,
+        0.9835102558135986
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_728.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        5.358391717891209e-05,
+        1.1835347322630696e-05,
+        3.8935181692068e-06,
+        0.999930739402771
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_730.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.00013982673408463597,
+        0.04679630324244499,
+        0.013566212728619576,
+        0.9394976496696472
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_745.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": false,
+      "scores": [
+        0.01730688102543354,
+        5.46461196790915e-05,
+        0.7501299381256104,
+        0.23250851035118103
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_753.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.03617694228887558,
+        0.021514389663934708,
+        0.01229584589600563,
+        0.9300128221511841
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_755.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.00017903803382068872,
+        0.0013911430723965168,
+        1.5465415344806388e-05,
+        0.9984143972396851
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_760.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.529912531375885,
+        0.00010778866271721199,
+        0.2708398997783661,
+        0.1991397887468338
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_762.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.9831610321998596,
+        1.233662806043867e-05,
+        3.2430202168143296e-07,
+        0.016826294362545013
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_763.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.05719380080699921,
+        1.5945055338306702e-06,
+        5.189431107055498e-08,
+        0.9428045153617859
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_806.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.03699677810072899,
+        6.311200309028209e-07,
+        0.17231343686580658,
+        0.7906891703605652
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_807.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        4.201747287879698e-05,
+        9.468131167977845e-09,
+        5.1476849449727524e-09,
+        0.9999579191207886
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_808.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.01522388681769371,
+        1.5302254041671404e-07,
+        1.634380275561398e-08,
+        0.984775960445404
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_81.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.004209523089230061,
+        5.530846891588226e-08,
+        1.0789407589584243e-08,
+        0.9957905411720276
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_818.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.046288762241601944,
+        3.761564215665203e-08,
+        2.304856934642885e-05,
+        0.9536882042884827
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_828.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        6.790356110286666e-06,
+        2.6097865202245885e-08,
+        7.421361374326807e-07,
+        0.9999924898147583
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_83.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": false,
+      "scores": [
+        0.12226230651140213,
+        1.574658199388068e-05,
+        0.7559822797775269,
+        0.12173955142498016
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_830.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        8.649649316794239e-07,
+        1.878021696488652e-11,
+        8.726389637558896e-07,
+        0.9999982118606567
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_837.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0011184813920408487,
+        5.881425386178307e-05,
+        4.100701644915716e-08,
+        0.9988226294517517
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_84.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.8983157277107239,
+        2.109452907461673e-06,
+        8.343879471794935e-07,
+        0.10168130695819855
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_846.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 2,
+      "predicted": "paper",
+      "correct": false,
+      "scores": [
+        0.003273991635069251,
+        6.100900463934522e-06,
+        0.5442519187927246,
+        0.45246800780296326
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_859.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.004120734054595232,
+        8.681216058903374e-06,
+        1.3753474377153907e-05,
+        0.9958568215370178
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_861.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.03460254520177841,
+        2.164097026025047e-07,
+        2.612101290822011e-08,
+        0.9653972387313843
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_863.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.001580596435815096,
+        3.080464328064636e-09,
+        1.9736492617994372e-07,
+        0.9984191656112671
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_868.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.008062281645834446,
+        9.290204872058894e-08,
+        4.5522506297857035e-06,
+        0.9919330477714539
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_877.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.00015184418589342386,
+        2.3124982817535056e-06,
+        7.706353777336972e-09,
+        0.9998458623886108
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_879.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        5.154481641511666e-07,
+        9.71683604689133e-08,
+        6.6628183005568165e-12,
+        0.9999994039535522
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_88.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 0,
+      "predicted": "metal",
+      "correct": false,
+      "scores": [
+        0.6919870972633362,
+        9.60427860263735e-06,
+        0.0007833596901036799,
+        0.307219922542572
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_884.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0004310412041377276,
+        1.0092229558722465e-06,
+        5.764840352640022e-06,
+        0.9995622038841248
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_893.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.008585581555962563,
+        0.00014066633593756706,
+        7.551965245511383e-05,
+        0.9911982417106628
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_894.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.0030752462334930897,
+        3.548140011844225e-05,
+        9.38066114031244e-06,
+        0.9968798160552979
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_913.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.000532871054019779,
+        8.14473910537572e-09,
+        9.659420356911141e-06,
+        0.9994574189186096
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_921.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.20129233598709106,
+        3.8223015508265235e-06,
+        0.00022209848975762725,
+        0.7984817624092102
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Plastic/Plastic_96.jpg",
+      "target": "plastic",
+      "target_index": 3,
+      "predicted_index": 3,
+      "predicted": "plastic",
+      "correct": true,
+      "scores": [
+        0.003724888898432255,
+        2.5797503440116998e-06,
+        2.185239509344683e-06,
+        0.9962702989578247
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_101.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        8.173490186891286e-07,
+        0.999998927116394,
+        1.4974290252212086e-07,
+        1.2543948457732768e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_103.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.1900240224349545e-06,
+        0.9999967813491821,
+        7.059510198637042e-10,
+        1.9758624603127828e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_120.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        6.2601781536386625e-09,
+        1.0,
+        7.510780192232502e-13,
+        2.6985990331240828e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_135.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        8.818342678296176e-08,
+        0.9999998807907104,
+        2.214377303744186e-08,
+        3.18654436171073e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_141.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.7121803469754013e-08,
+        1.0,
+        1.3398893550231605e-08,
+        1.8122030098766118e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_147.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        7.380386250588344e-06,
+        0.9999886751174927,
+        6.805604413351318e-10,
+        3.8966600186540745e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_157.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.2432165931386407e-05,
+        0.9999426603317261,
+        2.0156905478074805e-08,
+        4.499501665122807e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_161.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.2790353543532547e-08,
+        1.0,
+        2.703000601123051e-10,
+        2.515903396727026e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_165.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.438757056883901e-10,
+        1.0,
+        7.88663023776337e-10,
+        3.090294908858482e-09
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_168.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.938217221526429e-06,
+        0.9999947547912598,
+        1.4726414292454137e-06,
+        8.070377930380346e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_17.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.00014962289424147457,
+        0.9997593760490417,
+        7.258838081725116e-07,
+        9.021467121783644e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_170.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.5444543972724378e-13,
+        1.0,
+        3.6825087250391686e-12,
+        1.6233864946757492e-11
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_175.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.0002387245331192389,
+        0.9994605183601379,
+        5.619482908514328e-05,
+        0.00024461260181851685
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_179.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.896946964232484e-06,
+        0.9999955892562866,
+        3.997828628143907e-07,
+        1.3078249594400404e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_18.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.00019161042291671038,
+        0.9997414946556091,
+        1.441847103933469e-07,
+        6.676730117760599e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_181.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.9873995771877446e-10,
+        1.0,
+        2.2125672821671216e-11,
+        5.27034915709379e-10
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_182.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        4.673738089877588e-07,
+        0.9999991655349731,
+        1.4725009123139898e-07,
+        2.5254655611206545e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_185.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.4436435158415861e-08,
+        1.0,
+        2.2790221099189267e-10,
+        1.1293443513693546e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_205.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.3737093215459026e-06,
+        0.9999721050262451,
+        5.357085228752112e-07,
+        2.5010553144966252e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_212.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        4.997172709408915e-06,
+        0.9999866485595703,
+        8.81183037648725e-09,
+        8.358733794011641e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_218.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.8374155530409553e-08,
+        0.9999998807907104,
+        2.2678201330728065e-11,
+        9.348837437528346e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_220.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.7962259991909377e-06,
+        0.9999971389770508,
+        1.7959495224317834e-08,
+        1.467649379804925e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_222.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.9674400795775e-06,
+        0.9999960660934448,
+        9.544642853853702e-10,
+        4.599875680355581e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_236.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.4290413236371933e-08,
+        1.0,
+        2.3364372936374167e-11,
+        2.016162348184025e-09
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_239.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        5.674268277466865e-10,
+        1.0,
+        6.951138015881542e-12,
+        1.082658940276815e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_240.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        6.35784189739752e-08,
+        0.9999997615814209,
+        9.492355790285956e-10,
+        1.2069668287040258e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_241.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.4344909138894764e-09,
+        0.9999998807907104,
+        2.2614101563567246e-11,
+        7.700830195744857e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_254.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.3233408033847809,
+        0.6763197183609009,
+        2.294336627528537e-05,
+        0.000316554622258991
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_258.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.1130683560622856e-05,
+        0.9999165534973145,
+        2.9300281312316656e-07,
+        7.195893704192713e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_260.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.9043123808691895e-11,
+        1.0,
+        9.466560564955206e-13,
+        1.0054720944729922e-11
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_265.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.5249167972797295e-06,
+        0.9999964237213135,
+        3.0257825756052625e-07,
+        1.7588768059795257e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_272.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.4444251067734513e-08,
+        1.0,
+        7.772127830207864e-09,
+        6.860226609006759e-09
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_279.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        5.7472959724691464e-08,
+        1.0,
+        3.891021671531547e-10,
+        2.84164025643463e-09
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_28.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.00022484001237899065,
+        0.9997351765632629,
+        3.373595518496586e-07,
+        3.9698355976725e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_291.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.3565168899276614e-07,
+        0.9999970197677612,
+        1.3441344890452456e-06,
+        1.5857345943004475e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_309.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.514772529631614e-09,
+        1.0,
+        6.415455944264181e-10,
+        2.240586738366801e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_317.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.2394828274864267e-07,
+        0.9999932050704956,
+        2.852489444649109e-07,
+        6.382641458912985e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_324.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.626973355290829e-06,
+        0.9999711513519287,
+        3.1550132462143665e-07,
+        2.5850089514278807e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_340.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.0003279591037426144,
+        0.9994502663612366,
+        0.00011743797949748114,
+        0.00010434495925437659
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_345.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        7.729476614315445e-09,
+        0.9999998807907104,
+        1.6440345751433938e-09,
+        1.0767960390012377e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_361.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.629047437745612e-05,
+        0.9999818801879883,
+        1.5625429838905802e-08,
+        1.7670726037977147e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_365.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.2988895580056123e-05,
+        0.9998443126678467,
+        4.479324644535154e-08,
+        0.00013265428424347192
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_366.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.010243368335068226,
+        0.9461427927017212,
+        0.0023938394151628017,
+        0.04121997579932213
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_367.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        5.356156179914251e-06,
+        0.9998819828033447,
+        8.273299556549318e-08,
+        0.00011252528929617256
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_372.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        6.744509732925508e-07,
+        0.9999990463256836,
+        1.5625027660615132e-10,
+        1.958075301899953e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_376.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.5238479136314709e-06,
+        0.9999980926513672,
+        1.1458676141273827e-07,
+        2.625479567086586e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_377.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        2.2272727164818207e-06,
+        0.9999977350234985,
+        7.10165863893053e-08,
+        1.6171609829029876e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_382.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.00134299008641392,
+        0.9985419511795044,
+        1.242598045791965e-05,
+        0.00010264553566230461
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_385.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.660539427130516e-09,
+        1.0,
+        6.366925080691574e-14,
+        3.6717835438793145e-09
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_393.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.002259444212540984,
+        0.9973701238632202,
+        1.052778407029109e-05,
+        0.0003598780604079366
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_394.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.0011257658479735255,
+        0.9984392523765564,
+        0.00023971487826202065,
+        0.0001953113969648257
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_397.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        9.49310333453468e-07,
+        0.9999988079071045,
+        7.501484589056417e-08,
+        1.0928135907306569e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_406.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.00011645688209682703,
+        0.9998699426651001,
+        6.850104341538099e-07,
+        1.2899558896606322e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_41.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.00778613518923521,
+        0.9908722043037415,
+        0.0006321730907075107,
+        0.000709542422555387
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_413.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.00024245395616162568,
+        0.9996316432952881,
+        7.724373062956147e-06,
+        0.00011818212078651413
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_416.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        0.0034483957570046186,
+        0.9914484024047852,
+        0.000636188080534339,
+        0.0044669839553534985
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_420.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.015712669527602e-08,
+        1.0,
+        3.4799557679932036e-10,
+        3.930140124452919e-08
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_428.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        3.3868109312606975e-06,
+        0.9999954700469971,
+        1.540039562542006e-07,
+        9.091187394005829e-07
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_52.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        8.663008799203453e-08,
+        0.9999092817306519,
+        9.098364422976957e-11,
+        9.053384565049782e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_57.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        8.859916852088645e-05,
+        0.999800980091095,
+        1.8920403817901388e-05,
+        9.157783642876893e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_65.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.317713122261921e-05,
+        0.9999451637268066,
+        5.181315827940125e-06,
+        3.641700459411368e-05
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_71.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        7.253820058394922e-06,
+        0.9999810457229614,
+        6.22260631644167e-06,
+        5.435129878605949e-06
+      ]
+    },
+    {
+      "path": "data/raw/realwaste-main/RealWaste/Vegetation/Vegetation_84.jpg",
+      "target": "organic",
+      "target_index": 1,
+      "predicted_index": 1,
+      "predicted": "organic",
+      "correct": true,
+      "scores": [
+        1.5427961685965386e-10,
+        1.0,
+        1.6141961085933826e-13,
+        7.701248527780535e-10
+      ]
+    }
+  ],
+  "honesty_notes": [
+    "These are HELD-OUT TEST metrics for the four selected RealWaste classes only (metal, organic, paper, plastic). They are separate from the validation numbers used to pick this model.",
+    "The test split was opened for the first time by this evaluation; no training, fine-tuning or model selection used it.",
+    "Nothing here was fitted, tuned or chosen after seeing test results \u2014 the checkpoint comes from the selection record committed beforehand.",
+    "These numbers do not measure rejection of unknown objects, out-of-distribution inputs, or deployment accuracy in the wild.",
+    "Per-image scores are raw softmax outputs; no calibration was applied."
+  ]
+}

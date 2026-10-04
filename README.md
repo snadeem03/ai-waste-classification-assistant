@@ -1,6 +1,6 @@
 # AI Waste Classification Assistant
 
-College AIML Project-Based Learning (PBL) — **status: dataset downloaded, splits created, model built, first Colab baseline run completed (validation metrics recorded); baseline model verified to load + execute locally in the isolated `.venv-infer` environment (TensorFlow 2.20 / Keras 3); controlled fine-tuning + validation comparison code, tests, and Colab notebook prepared — no fine-tuning run has executed yet.**
+College AIML Project-Based Learning (PBL) — **status: dataset downloaded, splits created, model built, Colab baseline run completed, controlled fine-tuning executed in Colab, artifacts imported and verified locally, model selected from validation comparison, and the held-out test set evaluated once (459/459 images; accuracy 0.9368, macro F1 0.9347 — see [`docs/model_card.md`](docs/model_card.md)). Next milestone: the Streamlit app.**
 
 ## What this project will do
 
@@ -22,7 +22,7 @@ The planned approach:
 
 ## Important honesty note
 
-**Honest status.** Milestones 1–4 defined scope, downloaded RealWaste, and wrote duplicate-checked 70/15/15 split manifests. Milestone 5 added the input pipeline and model *construction*. Milestone 6 added the training workflow (`src/train.py`) and the Colab notebook. **The first real baseline run has now executed in Google Colab** (run `baseline_20261003_172906`, recorded below and in `docs/progress.md`): its **validation** metrics are real, read from that run's own `run_metadata.json`/`history.csv`, and verified against the extracted artifacts. **The saved model now loads and executes locally** in a separate inference environment (`.venv-infer`, TensorFlow 2.20 / Keras 3 — post-training compatibility verification passed, see *Local compatibility status*). Milestone 9 added controlled fine-tuning (`src/finetune.py`), validation-only comparison/model selection (`src/compare_validation.py`), their tests, and `notebooks/finetune_colab.ipynb` — **the notebook has not been executed, so no fine-tuning metrics or selection decision exist yet.** No test-set evaluation and no demo app exist.
+**Honest status.** Milestones 1–4 defined scope, downloaded RealWaste, and wrote duplicate-checked 70/15/15 split manifests. Milestone 5 added the input pipeline and model *construction*. Milestone 6 added the training workflow (`src/train.py`) and the Colab notebook. The first real baseline run executed in Google Colab (run `baseline_20261003_172906`) and the saved model loads and executes locally in `.venv-infer` (TF 2.20 / Keras 3). Milestone 9 added controlled fine-tuning and validation-only comparison; **that notebook has now been executed** (fine-tune run `finetune_20261004_133620`), its artifacts were imported and verified (24/24 + 19/19 checks), and the comparison selected the fine-tuned model. Milestone 10 then wrote `src/evaluate.py` and **evaluated that selection on the held-out test split exactly once** — the numbers in this README and in [`docs/model_card.md`](docs/model_card.md) come from `models/metadata/evaluation/test_evaluation.json`, which the script itself wrote. No test image was opened before the selection record existed. No demo app exists yet.
 
 ## Project documentation
 
@@ -30,6 +30,7 @@ The planned approach:
 |---|---|
 | [`docs/project_scope.md`](docs/project_scope.md) | Problem, objectives, stack, scope, acceptance criteria, limitations |
 | [`docs/dataset.md`](docs/dataset.md) | RealWaste source, license, categories, mapping, exclusions, split plan |
+| [`docs/model_card.md`](docs/model_card.md) | Selected model: identity, selection rule, validation + held-out test results, limitations |
 | [`configs/class_mapping.json`](configs/class_mapping.json) | Machine-readable source→target map + fixed class order |
 | [`data/README.md`](data/README.md) | What belongs under `data/` and why images stay out of Git |
 | [`models/README.md`](models/README.md) | What belongs under `models/` and why weights stay out of Git |
@@ -62,6 +63,7 @@ ai-waste-classification-assistant/
 ├── docs/
 │   ├── project_scope.md       # scope and acceptance criteria
 │   ├── dataset.md             # RealWaste mapping and license notes
+│   ├── model_card.md          # selected model + validation/test results
 │   ├── load_failure_baseline_20261003_172906.txt  # Keras 2 load error (captured)
 │   └── progress.md            # milestone log
 ├── data/
@@ -81,12 +83,14 @@ ai-waste-classification-assistant/
 │   ├── train.py               # frozen-base baseline training CLI (Colab)
 │   ├── finetune.py            # controlled fine-tuning CLI (block_13+, no test set)
 │   ├── compare_validation.py  # baseline vs fine-tuned validation comparison
+│   ├── evaluate.py            # held-out test evaluation of the SELECTED model
+│   │                          #   (run with .venv-infer, NOT .venv)
 │   └── verify_baseline_inference.py  # post-training compatibility verification
 │                              #   (run with .venv-infer, NOT .venv)
 ├── app/                       # Streamlit UI (future)
 ├── notebooks/
-│   ├── train_colab.ipynb      # Colab baseline training (first run 2026-10-03)
-│   └── finetune_colab.ipynb   # Colab fine-tune + compare (prepared; not run yet)
+│   ├── train_colab.ipynb      # Colab baseline training (run 2026-10-03)
+│   └── finetune_colab.ipynb   # Colab fine-tune + compare (run 2026-10-04)
 └── tests/                     # pytest checks (synthetic images; no download)
 ```
 
@@ -97,7 +101,7 @@ ai-waste-classification-assistant/
 | Environment | Versions | Used for |
 |---|---|---|
 | `.venv` | TensorFlow 2.15.1 / Keras 2.15 | Tests, development (`pytest`, pipeline, training code) |
-| `.venv-infer` | TensorFlow 2.20.0 / Keras 3.13.2 | Loading + running the baseline model; Keras 3 test suite; fine-tune/compare CLIs (matches the Colab training run) |
+| `.venv-infer` | TensorFlow 2.20.0 / Keras 3.13.2 | Loading + running the saved models; Keras 3 test suite; fine-tune/compare/evaluate CLIs (matches the Colab training runs) |
 
 The baseline artifact is a **Keras 3** file; the main `.venv` (Keras 2) cannot
 deserialize it — that failure is captured in
@@ -156,8 +160,9 @@ py -3.11 -m venv .venv-infer
 ```
 
 Use `.venv-infer\Scripts\python.exe` for anything that loads
-`models/*/best_model.keras` (including `src/finetune.py` and
-`src/compare_validation.py` when they touch the real Keras 3 baseline).
+`models/*/best_model.keras` (including `src/finetune.py`,
+`src/compare_validation.py`, and `src/evaluate.py` when they touch the real
+Keras 3 artifacts).
 Use `.venv\Scripts\python.exe` for `pytest` and the data/training scripts —
 they do not load the artifact.
 
@@ -195,6 +200,9 @@ claimed.**
 
 # Milestone-9 fine-tuning + comparison (+ its Colab notebook structure)
 .venv\Scripts\python.exe -m pytest tests\test_finetune.py tests\test_compare_validation.py tests\test_finetune_notebook.py -v
+
+# Milestone-10 held-out test evaluation (synthetic fixtures only)
+.venv\Scripts\python.exe -m pytest tests\test_evaluate.py -v
 
 # Keras 3-only tests (real baseline policy/training checks) — run in .venv-infer
 .venv-infer\Scripts\python.exe -m pytest tests\test_finetune_keras3.py -v
@@ -359,17 +367,19 @@ produce one).
   typed by hand, and an interrupted run is marked as such.
 - **Reports ≠ model:** the exported `models/metadata/runs/<run_id>/` folder
   never contains weights; `.gitignore` blocks `*.keras` and `*.zip`.
-- **Validation only, for now:** the recorded numbers are validation metrics
-  from the actual Colab run. The test split has not been evaluated and the
-  model has not been fine-tuned. Local loading now works — in `.venv-infer`
-  only (see *Local compatibility status*) — and the verification report
-  deliberately contains execution checks, not accuracy claims.
+- **Test split, opened once:** the test manifest was evaluated for the
+  first time by `src/evaluate.py` (milestone 10), after the selection record
+  was committed. Training, fine-tuning, and comparison all recorded
+  `test_manifest_used: false`.
 
 ## Controlled fine-tuning and model selection (milestone 9)
 
-**Honest status: the code, tests, and notebook exist; no fine-tuning run has
-been executed, so no fine-tuning metrics and no model-selection decision
-exist yet.** Everything below is prepared and test-covered, not measured.
+**Executed.** `notebooks/finetune_colab.ipynb` ran in Google Colab on
+2026-10-04: fine-tune run `finetune_20261004_133620` (9/10 epochs, best
+epoch 6) plus the validation comparison, whose rule selected the
+**fine-tuned** model. Those artifacts are imported and verified locally —
+details in [`docs/progress.md`](docs/progress.md) (milestones 9–10) and
+[`docs/model_card.md`](docs/model_card.md).
 
 | File | Purpose |
 |---|---|
@@ -407,6 +417,46 @@ Fine-tuned artifacts land in a separate `models/runs/finetune_<timestamp>/`
 bundle (same layout as a baseline run) and the comparison report in
 `models/metadata/comparison/`; both are documented in
 [`models/README.md`](models/README.md).
+
+## Held-out test evaluation (milestone 10)
+
+| File | Purpose |
+|---|---|
+| [`src/evaluate.py`](src/evaluate.py) | Evaluates **the model named in the selection record** on `test.csv` — exactly one pass, no fitting, no tuning, no `--model` flag (the choice was already frozen) |
+| [`tests/test_evaluate.py`](tests/test_evaluate.py) | Synthetic tests: metric math, label alignment, coverage ("every image exactly once"), checksum/class-order refusals, `model.fit` never called (run in `.venv`) |
+| [`docs/model_card.md`](docs/model_card.md) | Model card: identity, selection, validation + test results, limitations |
+| [`models/metadata/evaluation/test_evaluation.json`](models/metadata/evaluation/test_evaluation.json) | The machine-written test report (tracked) |
+
+### Measured test results (459 images, one pass, 2026-10-04)
+
+```powershell
+# run with .venv-infer (the selected artifact is a Keras 3 file)
+.venv-infer\Scripts\python.exe src\evaluate.py
+```
+
+| Metric | Value |
+|---|---:|
+| Images evaluated | **459** (each exactly once; 430 correct, 29 misclassified) |
+| Loss | **0.1724** |
+| Accuracy | **0.9368** |
+| Macro F1 | **0.9347** |
+
+| Class | Precision | Recall | F1 | Support |
+|---|---:|---:|---:|---:|
+| metal | 0.8837 | 0.9580 | 0.9194 | 119 |
+| organic | 1.0000 | 1.0000 | 1.0000 | 127 |
+| paper | 0.9079 | 0.9200 | 0.9139 | 75 |
+| plastic | 0.9449 | 0.8696 | 0.9057 | 138 |
+
+These are **test** metrics for the selected fine-tuned model, distinct from
+the **validation** numbers that selected it (validation macro F1 0.9372 vs
+baseline 0.9323). The checkpoint, its SHA-256, and the selection rule were
+recorded in `models/metadata/selection/selected_model.json` *before* this
+script existed. Full confusion matrix, per-image scores, protocol, and
+honesty notes live in the report; the misclassification grid goes to the
+Git-ignored `models/runs/misclassified_grids/`. Limitations (closed set of
+four classes, no unknown rejection, one dataset/one run): see
+[`docs/model_card.md`](docs/model_card.md).
 
 ## Git workflow
 
