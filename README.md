@@ -1,6 +1,6 @@
 # AI Waste Classification Assistant
 
-College AIML Project-Based Learning (PBL) — **status: dataset downloaded, splits created, model built, Colab baseline run completed, controlled fine-tuning executed in Colab, artifacts imported and verified locally, model selected from validation comparison, and the held-out test set evaluated once (459/459 images; accuracy 0.9368, macro F1 0.9347 — see [`docs/model_card.md`](docs/model_card.md)). Next milestone: the Streamlit app.**
+College AIML Project-Based Learning (PBL) — **status: dataset downloaded, splits created, model built, Colab baseline run completed, controlled fine-tuning executed in Colab, artifacts imported and verified locally, model selected from validation comparison, the held-out test set evaluated once (459/459 images; accuracy 0.9368, macro F1 0.9347 — see [`docs/model_card.md`](docs/model_card.md)), and the Streamlit app now serves that selected model with upload → predict → display (milestone 11). Next milestone: not assigned — hosting/deployment is deliberately out of scope.**
 
 ## What this project will do
 
@@ -22,7 +22,7 @@ The planned approach:
 
 ## Important honesty note
 
-**Honest status.** Milestones 1–4 defined scope, downloaded RealWaste, and wrote duplicate-checked 70/15/15 split manifests. Milestone 5 added the input pipeline and model *construction*. Milestone 6 added the training workflow (`src/train.py`) and the Colab notebook. The first real baseline run executed in Google Colab (run `baseline_20261003_172906`) and the saved model loads and executes locally in `.venv-infer` (TF 2.20 / Keras 3). Milestone 9 added controlled fine-tuning and validation-only comparison; **that notebook has now been executed** (fine-tune run `finetune_20261004_133620`), its artifacts were imported and verified (24/24 + 19/19 checks), and the comparison selected the fine-tuned model. Milestone 10 then wrote `src/evaluate.py` and **evaluated that selection on the held-out test split exactly once** — the numbers in this README and in [`docs/model_card.md`](docs/model_card.md) come from `models/metadata/evaluation/test_evaluation.json`, which the script itself wrote. No test image was opened before the selection record existed. No demo app exists yet.
+**Honest status.** Milestones 1–4 defined scope, downloaded RealWaste, and wrote duplicate-checked 70/15/15 split manifests. Milestone 5 added the input pipeline and model *construction*. Milestone 6 added the training workflow (`src/train.py`) and the Colab notebook. The first real baseline run executed in Google Colab (run `baseline_20261003_172906`) and the saved model loads and executes locally in `.venv-infer` (TF 2.20 / Keras 3). Milestone 9 added controlled fine-tuning and validation-only comparison; **that notebook has now been executed** (fine-tune run `finetune_20261004_133620`), its artifacts were imported and verified (24/24 + 19/19 checks), and the comparison selected the fine-tuned model. Milestone 10 then wrote `src/evaluate.py` and **evaluated that selection on the held-out test split exactly once** — the numbers in this README and in [`docs/model_card.md`](docs/model_card.md) come from `models/metadata/evaluation/test_evaluation.json`, which the script itself wrote. No test image was opened before the selection record existed. Milestone 11 added `src/predict.py` and the Streamlit app (`app/app.py`): it serves **only** the selected artifact (checksum and class order re-verified at every load) and was verified with automated UI tests, a headless startup check, and a CLI smoke run — no accuracy beyond the recorded test metrics is claimed for it.
 
 ## Project documentation
 
@@ -57,6 +57,8 @@ ai-waste-classification-assistant/
 ├── requirements-infer.txt     # inference env direct deps (.venv-infer)
 ├── requirements-infer.lock.txt# exact Windows versions (.venv-infer)
 ├── requirements-infer-test.txt# pytest + matplotlib for .venv-infer's test suite
+├── requirements-app.txt       # Streamlit app deps for .venv-infer
+├── requirements-app.lock.txt  # exact app versions (full .venv-infer freeze)
 ├── configs/
 │   ├── class_mapping.json     # source→target map + class order (single source of truth)
 │   └── training.json          # seed, image/batch size, lr, epochs, dropout
@@ -85,9 +87,12 @@ ai-waste-classification-assistant/
 │   ├── compare_validation.py  # baseline vs fine-tuned validation comparison
 │   ├── evaluate.py            # held-out test evaluation of the SELECTED model
 │   │                          #   (run with .venv-infer, NOT .venv)
+│   ├── predict.py             # verified inference for the selected model
+│   │                          #   (decode/EXIF/resize + checksum checks)
 │   └── verify_baseline_inference.py  # post-training compatibility verification
 │                              #   (run with .venv-infer, NOT .venv)
-├── app/                       # Streamlit UI (future)
+├── app/
+│   └── app.py                 # Streamlit UI: upload → predict → display
 ├── notebooks/
 │   ├── train_colab.ipynb      # Colab baseline training (run 2026-10-03)
 │   └── finetune_colab.ipynb   # Colab fine-tune + compare (run 2026-10-04)
@@ -101,7 +106,7 @@ ai-waste-classification-assistant/
 | Environment | Versions | Used for |
 |---|---|---|
 | `.venv` | TensorFlow 2.15.1 / Keras 2.15 | Tests, development (`pytest`, pipeline, training code) |
-| `.venv-infer` | TensorFlow 2.20.0 / Keras 3.13.2 | Loading + running the saved models; Keras 3 test suite; fine-tune/compare/evaluate CLIs (matches the Colab training runs) |
+| `.venv-infer` | TensorFlow 2.20.0 / Keras 3.13.2 | Loading + running the saved models; the Streamlit app; Keras 3 test suite; fine-tune/compare/evaluate CLIs (matches the Colab training runs) |
 
 The baseline artifact is a **Keras 3** file; the main `.venv` (Keras 2) cannot
 deserialize it — that failure is captured in
@@ -149,6 +154,9 @@ py -3.11 -m venv .venv-infer
 
 # test/workflow extras (pytest + matplotlib) for this env's test suite
 .venv-infer\Scripts\python.exe -m pip install -r requirements-infer-test.txt
+
+# Streamlit app deps (app/app.py runs in this env because the artifact is Keras 3)
+.venv-infer\Scripts\python.exe -m pip install -r requirements-app.txt
 
 # dependency + import check
 .venv-infer\Scripts\python.exe -m pip check
@@ -203,6 +211,13 @@ claimed.**
 
 # Milestone-10 held-out test evaluation (synthetic fixtures only)
 .venv\Scripts\python.exe -m pytest tests\test_evaluate.py -v
+
+# Milestone-11 inference + Streamlit app (synthetic images, tiny fixture model;
+# real-artifact tests are skipped here because .venv is Keras 2)
+.venv\Scripts\python.exe -m pytest tests\test_predict.py tests\test_app.py -v
+
+# the same files with the REAL selected model included (read-only) — run in .venv-infer
+.venv-infer\Scripts\python.exe -m pytest tests\test_predict.py tests\test_app.py -v
 
 # Keras 3-only tests (real baseline policy/training checks) — run in .venv-infer
 .venv-infer\Scripts\python.exe -m pytest tests\test_finetune_keras3.py -v
@@ -457,6 +472,71 @@ honesty notes live in the report; the misclassification grid goes to the
 Git-ignored `models/runs/misclassified_grids/`. Limitations (closed set of
 four classes, no unknown rejection, one dataset/one run): see
 [`docs/model_card.md`](docs/model_card.md).
+
+## Streamlit app (milestone 11)
+
+| File | Purpose |
+|---|---|
+| [`src/predict.py`](src/predict.py) | Reusable inference: selection record → checksum/class-order verification → load (`compile=False, safe_mode=True`) → Pillow decode (EXIF orientation, grayscale, transparency) → shared resize → validated softmax scores. Also a one-image CLI. |
+| [`app/app.py`](app/app.py) | Streamlit UI: upload → preview → **Classify waste** → category + confidence + per-class score chart, with the recorded test metrics shown only when they belong to the loaded artifact |
+| [`requirements-app.txt`](requirements-app.txt), [`requirements-app.lock.txt`](requirements-app.lock.txt) | App dependencies for `.venv-infer` (Streamlit 1.60.0, Pillow 12.3.0 + full freeze) |
+| [`tests/test_predict.py`](tests/test_predict.py) | Decoding/orientation/resize/output-validation/verification tests (31 tests) |
+| [`tests/test_app.py`](tests/test_app.py) | UI tests through Streamlit's `AppTest` harness (10 tests: flow, stale-result clearing, corrupt/oversize uploads, missing-model instructions) |
+
+### Run it (Windows, repo root)
+
+```powershell
+# 1. model file in place (it is Git-ignored — see "Model placement" below)
+# 2. start the app from the inference environment:
+.\.venv-infer\Scripts\python.exe -m streamlit run app/app.py
+# -> open http://localhost:8501, upload a JPG/PNG (max 10 MB), click "Classify waste"
+```
+
+**Model placement.** The selected artifact
+`models/finetune_20261004_133620/best_model.keras` is intentionally not in
+Git. On a fresh clone the app shows the exact missing path and tells you to
+extract `model_finetune_20261004_133620.zip` (from your Colab outputs) into
+`models\` — it never downloads or guesses a model. The app refuses to start
+inference if the file's SHA-256 or class order disagrees with the committed
+selection record.
+
+**What the user sees.** The four supported categories with examples, an
+upload button, the image preview, and after classification: the predicted
+category, the model's confidence (the highest class score), a bar chart of
+all four scores, and an expandable panel with the recorded RealWaste
+held-out test results (accuracy 0.9368 / macro F1 0.9347 — milestone 10,
+shown only because the loaded model's checksum matches the report).
+
+**Honesty rules built into the app.**
+
+- There is **no "unknown" class and no confidence threshold**: an object
+  outside the four categories still gets one of the four labels. The caption
+  under the result says so.
+- Confidence is the softmax score of the winning class — not a guarantee.
+- A new upload always clears the previous prediction, so a stale result can
+  never appear next to a different image.
+- Uploaded bytes stay in memory for that browser session: nothing is written
+  to disk, nothing is cached across sessions, nothing is sent anywhere.
+- Only the model named in `models/metadata/selection/selected_model.json`
+  can be served; there is no `--model` flag.
+
+**How it was verified (2026-10-05).** Full test suites:
+`.venv` → **167 passed, 7 skipped**; `.venv-infer` → **174 passed** (0 failed).
+The UI flow (upload → classify → result, new-upload stale clearing, corrupt
+and oversize rejection, EXIF-rotated uploads, missing-model instructions) was
+exercised through Streamlit's own `AppTest` harness, which runs the real
+`app/app.py` script — including one end-to-end run against the real selected
+model. Headless startup was checked separately: `streamlit run
+--server.headless true --server.port 8511` answered **HTTP 200** with a clean
+log, then was stopped. The CLI (`src/predict.py`) was smoke-tested on a
+synthetic, non-test image (exit 0, verified artifact
+`39f7b78befd182c6…`). **Not performed:** a manual human browser session — no
+GUI automation was used, so the checks above are the evidence.
+
+**Limitations.** Single prominent item on a simple background (the dataset's
+own style); closed set of four classes; single-image uploads only (no
+batches); local single-user launch only (no authentication, no hosting) —
+deployment is out of scope for this project.
 
 ## Git workflow
 

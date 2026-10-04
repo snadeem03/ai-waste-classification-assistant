@@ -229,15 +229,26 @@ def load_splits(
     return loaded
 
 
+def resize_to_model_input(image: tf.Tensor, image_size: int) -> tf.Tensor:
+    """Resize to (image_size, image_size) and emit float32 on the 0-255 scale.
+
+    Shared by this pipeline (training/validation/evaluation) and the
+    application inference path (`src/predict.py`), so the model always sees
+    the same size and value scale no matter which entry point produced the
+    pixels. `tf.image.resize` keeps the original 0-255 range; MobileNetV2
+    preprocessing maps that to [-1, 1] exactly once, inside the saved model.
+    """
+    image = tf.image.resize(image, [image_size, image_size])
+    return tf.cast(image, tf.float32)
+
+
 def _decode_to_rgb(path: tf.Tensor, image_size: int) -> tf.Tensor:
     """Decode any supported image to RGB, resize, float32 on the 0-255 scale."""
     raw = tf.io.read_file(path)
     # channels=3 converts grayscale/RGBA to RGB; expand_animations skips GIF frames.
     image = tf.io.decode_image(raw, channels=3, expand_animations=False)
     image.set_shape([None, None, 3])  # decode_image has static shape unknown
-    image = tf.image.resize(image, [image_size, image_size])
-    # resize returns float32 while keeping the original 0-255 value scale.
-    return tf.cast(image, tf.float32)
+    return resize_to_model_input(image, image_size)
 
 
 def make_dataset(

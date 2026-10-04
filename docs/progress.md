@@ -957,4 +957,111 @@ commit); nothing in the report or the model was changed afterwards.
 
 ---
 
+## Milestone 11 — Streamlit upload app (2026-10-05)
+
+### What changed
+
+- **`src/predict.py` (new)** — reusable inference for the SELECTED model only:
+  selection record → `evaluate.py`'s shared checksum + class-order checks →
+  load with `compile=False, safe_mode=True` → Pillow decode (EXIF orientation,
+  grayscale, transparency composited onto white, format/pixel/byte limits) →
+  shared resize helper → `training=False` prediction with strict score
+  validation (finite, `[0,1]`, sum ≈ 1, exactly 4 scores). Includes a
+  one-image CLI (`src/predict.py <image> [--json]`).
+- **`app/app.py` (new)** — Streamlit UI: four category hints, 10 MB upload
+  limit, decoded preview, **Classify waste** button, result (category,
+  confidence, per-class score chart, honest wording), and an expander with
+  the recorded RealWaste test metrics — rendered **only** when the loaded
+  model's sha256 matches the report's. Model loading via `st.cache_resource`
+  keyed on artifact identity (record sha + file size + mtime); selection
+  record and metrics via `st.cache_data`. A new upload clears the previous
+  prediction before it is displayed. Missing model/record → clear
+  `st.error` with the exact path + `model_<run_id>.zip` instructions, then
+  `st.stop()`.
+- **`src/data_pipeline.py`** — added shared `resize_to_model_input` helper
+  (bilinear `tf.image.resize`, float32, 0–255); `_decode_to_rgb` now uses it,
+  so training/validation/evaluation and the app cannot drift apart.
+- **`requirements-app.txt` + `requirements-app.lock.txt` (new)** — app deps
+  for `.venv-infer` only: `streamlit==1.60.0`, `pillow==12.3.0`, plus the
+  full 76-package `pip freeze`. `.venv`, `requirements.txt`,
+  `requirements.lock.txt` untouched.
+- **`tests/test_predict.py` (31 tests)** — decoding (empty/garbage/GIF/
+  truncated/oversize), filename-never-trusted, grayscale→RGB, alpha→white,
+  EXIF orientation, app-vs-evaluation resize consistency, 0–255 scale (no
+  double normalization), score mapping/validation (NaN, wrong shape, bad
+  sum, out-of-range), `training=False` + float32 0–255 input asserted on a
+  stub model, checksum/class-order/shape refusals, missing-model placement
+  message, CLI `--help`, and 2 read-only real-artifact tests (load + CLI
+  smoke; Keras 3 only).
+- **`tests/test_app.py` (10 tests)** — Streamlit `AppTest`: startup elements,
+  missing-model instructions, missing record, classify flow, stale-result
+  clearing on a different upload, corrupt-upload rejection, oversize
+  rejection, EXIF-rotated upload dimensions, performance numbers hidden when
+  the report belongs to another sha256, plus one real-model end-to-end test.
+  Fixture tests point the app at a tiny untrained model through the
+  `WASTE_SELECTION_RECORD` env override (default remains the committed
+  record).
+- **`README.md`** — new "Streamlit app (milestone 11)" section (launch
+  command, model placement, usage, honesty rules, verification, limitations),
+  updated status line, layout, environment and test instructions.
+
+### Key choices (why)
+
+- **Pillow for uploads, TensorFlow for evaluation** — only Pillow applies
+  EXIF orientation and composites transparency; `tf.io.decode_image` ignores
+  EXIF (phone photos would arrive sideways). Both paths share
+  `resize_to_model_input`, and a test asserts max abs diff **0.0** between
+  them.
+- **No extra normalization** — MobileNetV2 preprocessing (0–255 → [-1,1]) is
+  embedded in the saved graph (milestone 8 verification); scaling again would
+  be a double-normalization bug, so a test pins white → 255.0.
+- **Verification at every load** — the app reuses `evaluate.py`'s checksum and
+  class-order functions, so it can never serve a different artifact than the
+  recorded test results describe.
+- **Validate by decoding, not by file name** — corrupt/unsupported uploads
+  get a helpful message before any classification; the preview shows the same
+  orientation-corrected RGB the model sees.
+- **No unknown class, no confidence threshold** — consistent with the model's
+  closed four-class training; the UI states this limitation instead of
+  inventing a rule.
+- **App fixture models must match the committed `configs/training.json`
+  (image_size 224)** — the app resolves configs against the repo root, so the
+  tiny test model is built at 224 (the first test run failed on 32; fixed and
+  re-verified).
+
+### Verification (actual runs)
+
+| Check | Result |
+|---|---|
+| Full `pytest` in `.venv` | **167 passed, 7 skipped**, 0 failed (was 129 + 4) |
+| Full `pytest` in `.venv-infer` | **174 passed**, 0 failed (was 133) |
+| New tests | `test_predict.py` **31 passed**, `test_app.py` **10 passed** (`.venv-infer`) |
+| `pip check` in `.venv-infer` after app deps | No broken requirements |
+| AppTest, real selected model | startup clean; upload → classify → result with 4 scores; new upload clears stale result; corrupt + oversize uploads rejected; EXIF-rotated image reported as 20×40 |
+| AppTest, fixture model | missing model → exact path + `model_finetune_missing.zip` instructions; performance panel hidden when report sha ≠ model sha |
+| Resize consistency (app path vs evaluation path) | max abs diff **0.0** (asserted at 1e-5) |
+| Headless startup (real launch command) | `streamlit run app/app.py --server.headless true --server.port 8511` → **HTTP 200**; log shows "You can now view your Streamlit app in your browser"; no traceback; process stopped afterwards |
+| CLI smoke (`.venv-infer`, real model) | exit 0 on a synthetic non-test image; artifact `39f7b78befd182c6…` verified at load; 4 scores reported |
+| Test-set access | **none** — a monkeypatched `load_manifest` in `test_predict.py` fails the test if the inference code ever opens a manifest |
+| Environments left intact | `.venv`, `requirements.txt`, `requirements.lock.txt` unchanged; only `.venv-infer` gained Streamlit/Pillow |
+
+**Not performed:** a manual human browser session (no GUI automation) — the
+upload → classification → result flow evidence is Streamlit's own `AppTest`
+harness executing the real `app/app.py`, plus the separate headless HTTP
+check. No accuracy beyond the milestone-10 recorded test metrics is claimed,
+and no test image was opened in this milestone.
+
+### Blockers
+
+- None.
+
+### Next milestone (not assigned)
+
+- Deployment/hosting, authentication, batch uploads, and any retraining or
+  re-evaluation are explicitly out of scope (see
+  `docs/project_scope.md` §9). Remaining candidates are documentation
+  polish/submission packaging only — decide before starting.
+
+---
+
 *Append new milestones below this line.*

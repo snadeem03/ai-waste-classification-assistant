@@ -1,0 +1,25 @@
+# Application dependencies for the Streamlit UI (milestone 11).
+# Install into .venv-infer ONLY — the main .venv and its requirement files
+# (requirements.txt / requirements.lock.txt) are intentionally untouched.
+#
+# Environment roles:
+#   .venv        -> tests + development (TensorFlow 2.15 / Keras 2; cannot
+#                   load the Keras 3 selected artifact, so app tests skip)
+#   .venv-infer  -> loading + inference AND the Streamlit app (TensorFlow 2.20 /
+#                   Keras 3, matching the Colab training run)
+#
+# Create/reproduce (in order):
+#   py -3.11 -m venv .venv-infer
+#   .venv-infer\Scripts\python.exe -m pip install -r requirements-infer.txt      # tensorflow + keras
+#   .venv-infer\Scripts\python.exe -m pip install -r requirements-infer-test.txt # pytest + matplotlib
+#   .venv-infer\Scripts\python.exe -m pip install -r requirements-app.txt        # this file
+#   .venv-infer\Scripts\python.exe -m pip check                                 # -> No broken requirements
+#
+# numpy and tensorflow come from requirements-infer.txt; pillow is listed
+# here because src/predict.py imports it directly (EXIF orientation +
+# transparency handling for uploaded images).
+#
+# Exact resolved versions of the whole environment after this install
+# (pip freeze, 2026-10-05): requirements-app.lock.txt
+streamlit==1.60.0
+pillow==12.3.0
