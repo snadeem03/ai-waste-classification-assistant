@@ -62,3 +62,7 @@ logs/
 
 # Streamlit / Jupyter runtime
 .streamlit/secrets.toml
+
+# Demo photographs and screenshots stay local (personal photos are never
+# committed); only the written observations live in docs/demo_results.md
+demo/

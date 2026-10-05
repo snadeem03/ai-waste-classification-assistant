@@ -1064,4 +1064,55 @@ and no test image was opened in this milestone.
 
 ---
 
+## Demo diagnostic — coffee sachet classified as metal (2026-10-05)
+
+### What changed
+
+- **`docs/demo_results.md` (new)** — honest record of the manual demo
+  observation: a Nescafé coffee-sachet photo displayed as **metal, 97.7%**
+  in the app; the expected label **plastic** is marked **user-provided,
+  pending material confirmation** (composition never independently
+  verified). Includes the exact CLI comparison, identity/class-order/
+  preprocessing re-verification, the model-vs-UI conclusion, a
+  one-physical-item comparison checklist (original / tighter crop / new
+  plain-background photo), and what was deliberately not done.
+- **`.gitignore`** — added `demo/`: photographs and screenshots of the demo
+  stay **local only** (copied to `demo\photos\` and `demo\screenshots\`,
+  never staged).
+- **`docs/progress.md`** — this entry.
+
+No code, model, config, selection record, or recorded metric was modified.
+
+### Verification (actual runs)
+
+| Check | Result |
+|---|---|
+| CLI on the exact demo photo | exit 0 → **metal**, top score **0.9769** (`0.9769` formats to the displayed **97.7%**); other scores: organic 0.0209, paper 0.0022, plastic 0.0001 |
+| CLI vs screenshot | **agree**: same category, same displayed precision, bar heights match → recorded as a **model classification failure, not a UI bug** (app and CLI share `predict.predict_image`) |
+| Selected-model identity | file sha256 `39f7b78befd182c6…` == selection record; size 23,001,516 bytes == record; CLI re-verifies checksum every load |
+| Class order (record / config / model bundle) | all three identical: `["metal", "organic", "paper", "plastic"]` |
+| Shared preprocessing | both entry points call `data_pipeline.resize_to_model_input`; focused run `pytest tests/test_predict.py -k "resize_matches or real_selected or class_order or double or scale"` → **8 passed** |
+| Second photo of the same sachet (angle view) | CLI → **plastic 0.7089** (metal 0.0276) — one physical item, two disagreeing observations; grouped as one item in the report |
+| Photos/screenshots in Git | not staged — `demo/` ignored; `git status` clean of demo files |
+
+Context read from the existing test report (unchanged): confusion matrix
+`plastic` row `[12, 0, 6, 120]` — plastic→metal (12) is the largest single
+error type of the 29 test errors, and metal is over-predicted
+(predicted 129 vs support 119).
+
+### Blockers
+
+- None for the recording. Open uncertainty (documented, not blocking): the
+  sachet's material composition is unconfirmed, so the expected label stays
+  user-provided pending confirmation.
+
+### Next steps
+
+- Work through the comparison checklist in `docs/demo_results.md` (tighter
+  crop, new plain-background photo of the **same** item), recording UI and
+  CLI results for each. No corrections, retraining, or test-result changes
+  are planned.
+
+---
+
 *Append new milestones below this line.*
